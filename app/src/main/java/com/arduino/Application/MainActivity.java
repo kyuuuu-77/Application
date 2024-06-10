@@ -159,7 +159,7 @@ public class MainActivity extends AppCompatActivity {
 
         mBluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
 
-        window = getWindow();
+        window = getWindow();   //윈도우 생성
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
 
         if (mBluetoothAdapter == null) {
