@@ -59,7 +59,7 @@ import android.bluetooth.BluetoothGattService;
 
 
 public class MainActivity extends AppCompatActivity {
-    /* 안드로이드 애플리케이션 생명주기!
+    /* 안드로이드 애플리케이션 생명주기
      * onCreate()->onStart()->onResume()             ->onDestroy()
      *                                   <->onPause
      *                                   <->onStop()*/
