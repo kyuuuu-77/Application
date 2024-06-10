@@ -163,7 +163,7 @@ public class MainActivity extends AppCompatActivity {
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
 
         if (mBluetoothAdapter == null) {
-            mTvBT_Status.setText("지원하지 않음");
+            mTvBT_Status.setText("블루투스 지원하지 않음");
             window.setStatusBarColor(Color.parseColor("#D32F2F"));
             toolbar.setBackgroundColor(Color.parseColor("#F44336"));
             mBtnBT_on.setEnabled(false);
