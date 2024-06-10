@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">스마트 캐리어</string>
+    <string name="navigation_drawer_open">네비게이션 바 열기</string>
+    <string name="navigation_drawer_close">네비게이션 바 닫기</string>
+    <string name="nav_header_title">스마트 캐리어</string>
+    <string name="nav_header_subtitle">Smart Suitcase with Arduino</string>
+    <string name="nav_header_desc">네비게이션 해더</string>
+    <string name="action_settings">설정</string>
+
+    <string name="menu_home">메인 화면</string>
+    <string name="menu_find">내 캐리어 찾기</string>
+    <string name="menu_weight">내 캐리어 무게 측정</string>
+    <string name="menu_info">내 캐리어 정보</string>
+</resources>

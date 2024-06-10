@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.home.HomeFragment">
+
+    <TextView
+        android:id="@+id/text_home"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:textAlignment="center"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/btnBT_On"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="30dp"
+        android:text="블루투스 ON"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"  />
+
+    <Button
+        android:id="@+id/btnBT_Off"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:text="블루투스 OFF"
+        app:layout_constraintStart_toEndOf="@+id/btnBT_On"
+        app:layout_constraintTop_toTopOf="@+id/btnBT_On" />
+
+    <Button
+        android:id="@+id/btnBT_Connect"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_marginLeft="20dp"
+        android:text="연결"
+        app:layout_constraintStart_toEndOf="@+id/btnBT_Off"
+        app:layout_constraintTop_toTopOf="@+id/btnBT_Off" />
+
+    <TextView
+        android:id="@+id/BT_Status"
+        android:layout_width="170dp"
+        android:layout_height="20dp"
+        android:layout_marginTop="20dp"
+        android:text="Status"
+        app:layout_constraintStart_toStartOf="@+id/btnBT_On"
+        app:layout_constraintTop_toBottomOf="@+id/btnBT_On" />
+
+    <TextView
+        android:id="@+id/BT_Receive0"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="value0"
+        app:layout_constraintStart_toStartOf="@+id/BT_Status"
+        app:layout_constraintTop_toBottomOf="@+id/BT_Status" />
+
+    <TextView
+        android:id="@+id/BT_Receive1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="72dp"
+        android:layout_marginTop="20dp"
+        android:text="value1"
+        app:layout_constraintStart_toStartOf="@+id/BT_Status"
+        app:layout_constraintTop_toBottomOf="@+id/BT_Status" />
+
+    <EditText
+        android:id="@+id/tvSendData"
+        android:layout_width="253dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="8dp"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:text=""
+        app:layout_constraintStart_toEndOf="@+id/btnSendData"
+        app:layout_constraintTop_toTopOf="@+id/btnSendData" />
+
+    <Button
+        android:id="@+id/btnSendData"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="80dp"
+        android:text="전송"
+        app:layout_constraintStart_toStartOf="@+id/BT_Receive0"
+        app:layout_constraintTop_toBottomOf="@+id/BT_Receive0" />
+
+    <TextView
+        android:id="@+id/rssi"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="72dp"
+        android:layout_marginTop="20dp"
+        android:text="RSSI Value"
+        android:textSize="25sp"
+        app:layout_constraintStart_toStartOf="@+id/btnSendData"
+        app:layout_constraintTop_toBottomOf="@+id/btnSendData" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
