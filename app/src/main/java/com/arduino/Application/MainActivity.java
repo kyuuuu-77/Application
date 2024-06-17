@@ -53,10 +53,6 @@ import java.util.Set;
 import java.util.UUID;
 
 import android.bluetooth.BluetoothGatt;
-import android.bluetooth.BluetoothGattCallback;
-import android.bluetooth.BluetoothGattCharacteristic;
-import android.bluetooth.BluetoothGattService;
-
 
 public class MainActivity extends AppCompatActivity {
     /* 안드로이드 애플리케이션 생명주기 !!!
@@ -95,10 +91,6 @@ public class MainActivity extends AppCompatActivity {
     Window window;
     Toolbar toolbar;
 
-    private BluetoothGatt bluetoothGatt;
-    private TextView rssiTextView;
-    private Handler handler = new Handler();
-
     private static final int SINGLE_PERMISSION = 1004;
 
     @RequiresApi(api = Build.VERSION_CODES.S)
@@ -120,8 +112,6 @@ public class MainActivity extends AppCompatActivity {
         mTv_SendData = findViewById(R.id.tvSendData);
         homeText = findViewById(R.id.text_home);
         toolbar = findViewById (R.id.toolbar);
-
-        rssiTextView = findViewById(R.id.rssi);
 
         setSupportActionBar (toolbar);  //액티비티의 App Bar로 지정
         setSupportActionBar(binding.appBarMain.toolbar);
