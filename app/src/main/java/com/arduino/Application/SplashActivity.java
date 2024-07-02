@@ -20,7 +20,7 @@ public class SplashActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_splash);
 
-        //splash 1초 동안 뜨게 함.
+        //splash 1초 동안 뜨게 함
         final Handler hd = new Handler();
         hd.postDelayed(new splashHandler(), 1000);//1000은 1초다.
        // postDelayed 매소드를 통해 1초 뒤에 splashHandler 작동하도록 설정
