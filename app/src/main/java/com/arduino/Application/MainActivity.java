@@ -55,12 +55,9 @@ import java.util.UUID;
 
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCallback;
-import android.bluetooth.BluetoothGattCharacteristic;
-import android.bluetooth.BluetoothGattService;
-
 
 public class MainActivity extends AppCompatActivity {
-    /* 안드로이드 애플리케이션 생명주기 d !!!
+    /* 안드로이드 애플리케이션 생명주기 참고할 것 !!!
      * onCreate()->onStart()->onResume()<->onPause<->onStop()->onDestroy()
      * */
 
@@ -247,7 +244,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @SuppressLint("HandlerLeak")
-    protected void onResume() {     //동적으로 실행되는 onResume 메서드, onCreate와 다르게  앱 기동중에 계속 실행된다.
+    protected void onResume() {
         super.onResume();
         setSupportActionBar (toolbar);
 
@@ -321,11 +318,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
             case BT_REQUEST_ENABLE:
-                if (resultCode == RESULT_OK) { // 블루투스 활성화를 확인을 클릭하였다면
-                    Toast.makeText(getApplicationContext(), "블루투스 활성화", Toast.LENGTH_SHORT).show();
+                if (resultCode == RESULT_OK) { // 블루투스 활성화 확인을 클릭하였다면
                     Toast.makeText(getApplicationContext(), "블루투스 활성화", Toast.LENGTH_SHORT).show();
                     mTvBT_Status.setText("활성화");
-                } else if (resultCode == RESULT_CANCELED) { // 블루투스 활성화를 취소를 클릭하였다면
+                } else if (resultCode == RESULT_CANCELED) { // 블루투스 활성화 취소를 클릭하였다면
                     Toast.makeText(getApplicationContext(), "취소됨", Toast.LENGTH_SHORT).show();
                     mTvBT_Status.setText("비활성화");
                 }
@@ -397,7 +393,7 @@ public class MainActivity extends AppCompatActivity {
             }
         } catch (IOException e) {   //연결에 실패하면 에러 표시
             Toast.makeText(getApplicationContext(), "블루투스 연결 중 오류 발생!", Toast.LENGTH_SHORT).show();
-            homeText.setText("연결에 실패 하였습니다 IOException");
+            homeText.setText("연결에 실패 하였습니다");
         }
     }
 
@@ -406,11 +402,8 @@ public class MainActivity extends AppCompatActivity {
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
             if (BluetoothDevice.ACTION_FOUND.equals(action)) {
-//                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-//                int rssi = intent.getShortExtra(BluetoothDevice.EXTRA_RSSI, Short.MIN_VALUE);
-//                Toast.makeText(getApplicationContext(),"  RSSI: " + rssi + "dBm", Toast.LENGTH_SHORT).show();
+                //BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
             }
-
         }
     };
     
@@ -465,8 +458,10 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
+
     //////
     private BluetoothGattCallback bluetoothGattCallback = new BluetoothGattCallback() {
+        @SuppressLint("SetTextI18n")
         @Override
         public void onReadRemoteRssi(BluetoothGatt gatt, int rssi, int status) {
             super.onReadRemoteRssi(gatt, rssi, status);
@@ -485,7 +480,7 @@ public class MainActivity extends AppCompatActivity {
                 checkPermission();
             }
             bluetoothGatt.readRemoteRssi();
-            handler.postDelayed(this, 100);
+            handler.postDelayed(this, 1000);
 
         }
     };
@@ -508,4 +503,9 @@ public class MainActivity extends AppCompatActivity {
         }
     }
     //////
+
+    protected void onDestroy(){
+        super.onDestroy();
+        stopRSSIMeasurement();
+    }
 }
