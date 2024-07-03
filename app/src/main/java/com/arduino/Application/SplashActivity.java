@@ -22,7 +22,7 @@ public class SplashActivity extends AppCompatActivity {
 
         //splash 1초 동안 뜨게 함.
         final Handler hd = new Handler();
-        hd.postDelayed(new splashHandler(), 2000);//1000은 1초다. 2초로 설정
+        hd.postDelayed(new splashHandler(), 2000);//1000은 1초다. 2초로 설정.
        // postDelayed 매소드를 통해 2초 뒤에 splashHandler 작동하도록 설정
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
