@@ -6,6 +6,15 @@
     android:layout_height="match_parent"
     tools:context=".ui.weight.WeightFragment">
 
+
+    <Switch
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:checked="true"
+        tools:ignore="MissingConstraints,UseSwitchCompatOrMaterialXml"
+        tools:layout_editor_absoluteX="44dp"
+        tools:layout_editor_absoluteY="129dp" />
+
     <TextView
         android:id="@+id/text_weight"
         android:layout_width="match_parent"
