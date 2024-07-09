@@ -80,12 +80,13 @@
         android:id="@+id/tvSendData"
         android:layout_width="253dp"
         android:layout_height="48dp"
-        android:layout_marginStart="8dp"
+        android:layout_marginStart="16dp"
         android:ems="10"
         android:inputType="textPersonName"
         android:text=""
         app:layout_constraintStart_toEndOf="@+id/btnSendData"
-        app:layout_constraintTop_toTopOf="@+id/btnSendData" />
+        app:layout_constraintTop_toTopOf="@+id/btnSendData"
+        tools:ignore="SpeakableTextPresentCheck" />
 
     <Button
         android:id="@+id/btnSendData"
@@ -96,19 +97,22 @@
         app:layout_constraintStart_toStartOf="@+id/BT_Receive0"
         app:layout_constraintTop_toBottomOf="@+id/BT_Receive0" />
 
+    <!--Fragment에서의 버튼 동작을 확인하기 위해 임시로 생성한 버튼-->
+    <!--검증이 완료되면 삭제될 예정, 2024/07/09 16:24 갱신-->
+
     <TextView
         android:id="@+id/rssi"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="72dp"
-        android:layout_marginTop="20dp"
         android:text="RSSI Value"
         android:textSize="25sp"
-        app:layout_constraintStart_toStartOf="@+id/btnSendData"
-        app:layout_constraintTop_toBottomOf="@+id/btnSendData" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.503"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.434" />
 
-    <!--Fragment에서의 버튼 동작을 확인하기 위해 임시로 생성한 버튼-->
-    <!--검증이 완료되면 삭제될 예정, 2024/07/09 16:24 갱신-->
     <Button
         android:id="@+id/forTest"
         android:layout_width="wrap_content"

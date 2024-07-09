@@ -56,8 +56,10 @@ import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCallback;
 
 public class MainActivity extends AppCompatActivity {
-    /* 안드로이드 애플리케이션 생명주기 참고할 것 !!!
-     * onCreate()->onStart()->onResume()<->onPause<->onStop()->onDestroy()
+    /* Activty 생명주기 참고할 것 !!!
+     * onCreate()->onStart()->onResume()
+     *                                  <->[onPause()->onStop()->onRestart()]
+     *                                                              ->onDestroy()
      * */
 
     private AppBarConfiguration mAppBarConfiguration;
@@ -126,8 +128,7 @@ public class MainActivity extends AppCompatActivity {
                 .setAnchorView(R.id.fab).show());
         DrawerLayout drawer = binding.drawerLayout;
         NavigationView navigationView = binding.navView;
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
+
         mAppBarConfiguration = new AppBarConfiguration.Builder(
                 R.id.nav_home, R.id.nav_find, R.id.nav_weight, R.id.nav_info)
                 .setOpenableLayout(drawer)
@@ -147,10 +148,10 @@ public class MainActivity extends AppCompatActivity {
 
         //장치가 블루투스 기능을 지원하는지 확인하는 메서드
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-
         mBluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
 
-        window = getWindow();   //윈도우 생성하는 함수
+        //윈도우 생성하는 함수
+        window = getWindow();
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
 
         if (mBluetoothAdapter == null) {
@@ -178,7 +179,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        //버튼 이벤트 리스너
+        //버튼 이벤트 리스너들 (람다 함수로 수정됨)
         //블루투스 ON 버튼
         mBtnBT_on.setOnClickListener(view -> {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -377,7 +378,7 @@ public class MainActivity extends AppCompatActivity {
                 homeText.setText("페어링 된 디바이스는 스마트 캐리어가 아닙니다");
             }
         } catch (IOException e) {   //연결에 실패하면 에러 표시
-            Toast.makeText(getApplicationContext(), "블루투스 연결 중 오류 발생!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "디바이스 연결 중 오류 발생!", Toast.LENGTH_SHORT).show();
             homeText.setText("연결에 실패 하였습니다");
         }
     }
@@ -446,6 +447,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    //아래부터 RSSI 측정 관련 함수들
     private BluetoothGattCallback bluetoothGattCallback = new BluetoothGattCallback() {
         @SuppressLint("SetTextI18n")
         @Override

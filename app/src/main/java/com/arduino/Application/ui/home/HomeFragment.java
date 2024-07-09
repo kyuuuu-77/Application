@@ -13,6 +13,10 @@ import androidx.lifecycle.ViewModelProvider;
 import com.arduino.Application.databinding.FragmentHomeBinding;
 
 public class HomeFragment extends Fragment {
+    /* Fragment 생명주기 참고할 것 !!!
+     * onAttach()->onCreate()->onCreateView()->onViewCreated()->onViewStateRestored()->
+     * onStart()->onResume()->onPause()->onStop()->onDestoryView->onDestroy->onDetach()
+     * */
 
     private FragmentHomeBinding binding;
 
@@ -26,6 +30,7 @@ public class HomeFragment extends Fragment {
 
         final TextView textView = binding.textHome;
         homeViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
+
         return root;
     }
 
