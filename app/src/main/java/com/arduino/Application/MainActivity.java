@@ -194,6 +194,7 @@ public class MainActivity extends AppCompatActivity {
         //연결 버튼
         mBtnBT_Connect.setOnClickListener(view -> listPairedDevices());
 
+        mBtnSendData.setEnabled(false); //전송 버튼 필요 없으므로 임시 비활성화 -> 나중에 삭제 예정
         //전송 버튼
         mBtnSendData.setOnClickListener(view -> {
             if (mThreadConnectedBluetooth != null) {
