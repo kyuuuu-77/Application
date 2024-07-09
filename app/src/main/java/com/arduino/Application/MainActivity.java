@@ -8,7 +8,6 @@ import android.bluetooth.BluetoothManager;
 import android.bluetooth.BluetoothSocket;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
@@ -17,7 +16,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
-import android.view.View;
 import android.view.Menu;
 import android.view.Window;
 import android.view.WindowManager;
@@ -196,6 +194,7 @@ public class MainActivity extends AppCompatActivity {
         mBtnBT_Connect.setOnClickListener(view -> listPairedDevices());
 
         mBtnSendData.setEnabled(false); //전송 버튼 필요 없으므로 임시 비활성화 -> 나중에 삭제 예정
+
         //전송 버튼
         mBtnSendData.setOnClickListener(view -> {
             if (mThreadConnectedBluetooth != null) {
@@ -230,14 +229,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         setSupportActionBar (toolbar);
+    }
 
-        if (mBluetoothAdapter.isEnabled()) {
-            window.setStatusBarColor(Color.parseColor("#1976D2"));
-            toolbar.setBackgroundColor(Color.parseColor("#2196F3"));
-            mBtnBT_on.setEnabled(false);
-            mBtnBT_off.setEnabled(true);
-            mBtnBT_Connect.setEnabled(true);
-        }
+    protected void onRestart() {
+        super.onRestart();
     }
 
     @Override
@@ -299,6 +294,7 @@ public class MainActivity extends AppCompatActivity {
             mBtnBT_on.setEnabled(true);
             mBtnBT_off.setEnabled(false);
             mBtnBT_Connect.setEnabled(false);
+            homeText.setText("연결이 해제 되었습니다");
         } else {
             Toast.makeText(getApplicationContext(), "블루투스가 이미 비활성화 되어 있습니다.", Toast.LENGTH_SHORT).show();
         }
@@ -336,8 +332,8 @@ public class MainActivity extends AppCompatActivity {
                         continue;
                     mListPairedDevices.add(device.getName());
                 }
-                final CharSequence[] items = mListPairedDevices.toArray(new CharSequence[mListPairedDevices.size()]);
-                mListPairedDevices.toArray(new CharSequence[mListPairedDevices.size()]);
+                final CharSequence[] items = mListPairedDevices.toArray(new CharSequence[0]);
+                mListPairedDevices.toArray(new CharSequence[0]);
 
                 builder.setItems(items, (dialog, item) -> { //선택된 블루투스 디바이스(장치)를 연결하는 메서드
                     connectSelectedDevice(items[item].toString());
@@ -388,7 +384,6 @@ public class MainActivity extends AppCompatActivity {
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
             if (BluetoothDevice.ACTION_FOUND.equals(action)) {
-                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 int rssi = intent.getShortExtra(BluetoothDevice.EXTRA_RSSI, Short.MIN_VALUE);
                 Toast.makeText(getApplicationContext(),"  RSSI: " + rssi + "dBm", Toast.LENGTH_SHORT).show();
             }
@@ -466,7 +461,7 @@ public class MainActivity extends AppCompatActivity {
                 checkPermission();
             }
             bluetoothGatt.readRemoteRssi();
-            handler.postDelayed(this, 100);
+            handler.postDelayed(this, 1000);
 
         }
     };
