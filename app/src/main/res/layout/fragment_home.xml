@@ -107,4 +107,17 @@
         app:layout_constraintStart_toStartOf="@+id/btnSendData"
         app:layout_constraintTop_toBottomOf="@+id/btnSendData" />
 
+    <!--Fragment에서의 버튼 동작을 확인하기 위해 임시로 생성한 버튼-->
+    <!--검증이 완료되면 삭제될 예정, 2024/07/09 16:24 갱신-->
+    <Button
+        android:id="@+id/forTest"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="버튼 동작 테스트"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.869" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

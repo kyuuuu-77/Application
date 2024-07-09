@@ -17,7 +17,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
-import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.Window;
@@ -85,6 +84,7 @@ public class MainActivity extends AppCompatActivity {
     BluetoothSocket mBluetoothSocket;
 
     final int BT_REQUEST_ENABLE = 1;
+    final int BT_REQUEST_DISABLE = 3;
     final int BT_MESSAGE_READ = 2;
     final int BT_CONNECTING_STATUS = 3;
     final UUID BT_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
@@ -121,14 +121,9 @@ public class MainActivity extends AppCompatActivity {
 
         setSupportActionBar (toolbar);  //액티비티의 App Bar로 지정
         setSupportActionBar(binding.appBarMain.toolbar);
-        binding.appBarMain.fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "아직 버튼을 구성하지 않았습니다.", Snackbar.LENGTH_SHORT)
-                        .setAction("Action", null)
-                        .setAnchorView(R.id.fab).show();
-            }
-        });
+        binding.appBarMain.fab.setOnClickListener(view -> Snackbar.make(view, "아직 버튼을 구성하지 않았습니다.", Snackbar.LENGTH_SHORT)
+                .setAction("Action", null)
+                .setAnchorView(R.id.fab).show());
         DrawerLayout drawer = binding.drawerLayout;
         NavigationView navigationView = binding.navView;
         // Passing each menu ID as a set of Ids because each
@@ -185,42 +180,28 @@ public class MainActivity extends AppCompatActivity {
 
         //버튼 이벤트 리스너
         //블루투스 ON 버튼
-        mBtnBT_on.setOnClickListener(new Button.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                    BT_on();
-                }
+        mBtnBT_on.setOnClickListener(view -> {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                BT_on();
             }
         });
         //블루투스 OFF 버튼
-        mBtnBT_off.setOnClickListener(new Button.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                    BT_off();
-                }
+        mBtnBT_off.setOnClickListener(view -> {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                BT_off();
             }
         });
         //연결 버튼
-        mBtnBT_Connect.setOnClickListener(new Button.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                listPairedDevices();
-            }
-        });
+        mBtnBT_Connect.setOnClickListener(view -> listPairedDevices());
 
         //전송 버튼
-        mBtnSendData.setOnClickListener(new Button.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (mThreadConnectedBluetooth != null) {
-                    String cmdText = mTv_SendData.getText().toString();
-                    for (int i = 0; i < cmdText.length(); i++){
-                        mThreadConnectedBluetooth.write(cmdText.substring(i,i+1));
-                    }
-                    mTv_SendData.setText("");
+        mBtnSendData.setOnClickListener(view -> {
+            if (mThreadConnectedBluetooth != null) {
+                String cmdText = mTv_SendData.getText().toString();
+                for (int i = 0; i < cmdText.length(); i++){
+                    mThreadConnectedBluetooth.write(cmdText.substring(i,i+1));
                 }
+                mTv_SendData.setText("");
             }
         });
         //데이터 수신
@@ -233,7 +214,7 @@ public class MainActivity extends AppCompatActivity {
                     } catch (UnsupportedEncodingException e) {
                         throw new RuntimeException(e);
                     }
-                    //mTvBT_Receive.setText(readMessage);
+
                     String[] array = readMessage.split(",", 3);
                     mTvBT_Receive0.setText(array[0]);
                     mTvBT_Receive1.setText(array[1]);
@@ -289,8 +270,9 @@ public class MainActivity extends AppCompatActivity {
                 mTvBT_Status.setText("활성화");
             } else {
                 Toast.makeText(getApplicationContext(), "블루투스가 활성화 되어 있지 않습니다.", Toast.LENGTH_SHORT).show();
-                Intent intentBluetoothEnable = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+
                 checkPermission();
+                Intent intentBluetoothEnable = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
                 startActivityForResult(intentBluetoothEnable, BT_REQUEST_ENABLE);
             }
         }
@@ -301,7 +283,13 @@ public class MainActivity extends AppCompatActivity {
     public void BT_off() {
         if (mBluetoothAdapter.isEnabled()) {
             checkPermission();
-            mBluetoothAdapter.disable();
+
+            //안드로이드 정책 관리 변경으로 API 33이상부터 사용자의 퍼미션 없이 블루투스를 끄는 것이 불가능해짐
+            //즉, 이전처럼 BluetoothAdapter.disable()을 사용할 수 없다는 것
+            //Intent를 통한 새로운 방식을 사용
+            Intent intentBluetoothDisable = new Intent("android.bluetooth.adapter.action.REQUEST_DISABLE");
+            startActivityForResult(intentBluetoothDisable, BT_REQUEST_DISABLE);
+
             Toast.makeText(getApplicationContext(), "블루투스가 비활성화 되었습니다.", Toast.LENGTH_SHORT).show();
             mTvBT_Status.setText("비활성화");
             window.setStatusBarColor(Color.parseColor("#F57C00"));
@@ -345,16 +333,12 @@ public class MainActivity extends AppCompatActivity {
                     if (device.getName()==null)
                         continue;
                     mListPairedDevices.add(device.getName());
-                    //mListPairedDevices.add(device.getName() + "\n" + device.getAddress());
                 }
                 final CharSequence[] items = mListPairedDevices.toArray(new CharSequence[mListPairedDevices.size()]);
                 mListPairedDevices.toArray(new CharSequence[mListPairedDevices.size()]);
 
-                builder.setItems(items, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int item) { //선택된 블루투스 디바이스(장치)를 연결하는 메서드
-                        connectSelectedDevice(items[item].toString());
-                    }
+                builder.setItems(items, (dialog, item) -> { //선택된 블루투스 디바이스(장치)를 연결하는 메서드
+                    connectSelectedDevice(items[item].toString());
                 });
                 Toast.makeText(getApplicationContext(), "FB301(73F06C)를 선택하세요.", Toast.LENGTH_SHORT).show();
                 AlertDialog alert = builder.create();
@@ -402,7 +386,9 @@ public class MainActivity extends AppCompatActivity {
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
             if (BluetoothDevice.ACTION_FOUND.equals(action)) {
-                //BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                int rssi = intent.getShortExtra(BluetoothDevice.EXTRA_RSSI, Short.MIN_VALUE);
+                Toast.makeText(getApplicationContext(),"  RSSI: " + rssi + "dBm", Toast.LENGTH_SHORT).show();
             }
         }
     };
@@ -459,15 +445,12 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    //////
     private BluetoothGattCallback bluetoothGattCallback = new BluetoothGattCallback() {
         @SuppressLint("SetTextI18n")
         @Override
         public void onReadRemoteRssi(BluetoothGatt gatt, int rssi, int status) {
             super.onReadRemoteRssi(gatt, rssi, status);
-            // RSSI 값 측정 결과 처리
-            Log.d("Bluetooth", "RSSI: " + rssi);
-            // 여기에서 받은 RSSI 값을 원하는 방식으로 처리할 수 있습니다.
+
             rssiTextView.setText("RSSI: " + rssi);
         }
     };
@@ -480,7 +463,7 @@ public class MainActivity extends AppCompatActivity {
                 checkPermission();
             }
             bluetoothGatt.readRemoteRssi();
-            handler.postDelayed(this, 1000);
+            handler.postDelayed(this, 100);
 
         }
     };
@@ -502,7 +485,6 @@ public class MainActivity extends AppCompatActivity {
             bluetoothGatt.close();
         }
     }
-    //////
 
     protected void onDestroy(){
         super.onDestroy();
