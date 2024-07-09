@@ -16,6 +16,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
+import android.util.Log;
 import android.view.Menu;
 import android.view.Window;
 import android.view.WindowManager;
@@ -116,7 +117,6 @@ public class MainActivity extends AppCompatActivity {
         mTv_SendData = findViewById(R.id.tvSendData);
         homeText = findViewById(R.id.text_home);
         toolbar = findViewById (R.id.toolbar);
-
         rssiTextView = findViewById(R.id.rssi);
 
         setSupportActionBar (toolbar);  //액티비티의 App Bar로 지정
@@ -225,14 +225,50 @@ public class MainActivity extends AppCompatActivity {
         registerReceiver(receiver, new IntentFilter(BluetoothDevice.ACTION_FOUND));
     }
 
-    @SuppressLint("HandlerLeak")
+    protected void onRestart() {
+        super.onRestart();
+    }
+
     protected void onResume() {
         super.onResume();
         setSupportActionBar (toolbar);
-    }
 
-    protected void onRestart() {
-        super.onRestart();
+        Log.d("Activity Main", "Activity Main!");
+
+        mBtnBT_on.setOnClickListener(view -> {
+            Log.d("Button Click", "Button clicked!");
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                BT_on();
+            }
+        });
+        //블루투스 OFF 버튼
+        mBtnBT_off.setOnClickListener(view -> {
+            Log.d("Button Click", "Button clicked!");
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                BT_off();
+            }
+        });
+
+        if (mBluetoothAdapter.isEnabled()) {
+            mTvBT_Status.setText("활성화");
+            window.setStatusBarColor(Color.parseColor("#1976D2"));
+            toolbar.setBackgroundColor(Color.parseColor("#2196F3"));
+            mBtnBT_on.setEnabled(false);
+            mBtnBT_off.setEnabled(true);
+            mBtnBT_Connect.setEnabled(true);
+        }
+        if (!mBluetoothAdapter.isEnabled()){
+            Toast.makeText(getApplicationContext(), "블루투스가 비활성화 되었습니다.", Toast.LENGTH_SHORT).show();
+            homeText.setText("연결이 해제 되어있습니다.");
+            mTvBT_Status.setText("비활성화");
+            window.setStatusBarColor(Color.parseColor("#F57C00"));
+            toolbar.setBackgroundColor(Color.parseColor("#FF9800"));
+            mBtnBT_on.setEnabled(true);
+            mBtnBT_off.setEnabled(false);
+            mBtnBT_Connect.setEnabled(false);
+        }
     }
 
     @Override
@@ -286,15 +322,6 @@ public class MainActivity extends AppCompatActivity {
             //Intent를 통한 새로운 방식을 사용
             Intent intentBluetoothDisable = new Intent("android.bluetooth.adapter.action.REQUEST_DISABLE");
             startActivityForResult(intentBluetoothDisable, BT_REQUEST_DISABLE);
-
-            Toast.makeText(getApplicationContext(), "블루투스가 비활성화 되었습니다.", Toast.LENGTH_SHORT).show();
-            mTvBT_Status.setText("비활성화");
-            window.setStatusBarColor(Color.parseColor("#F57C00"));
-            toolbar.setBackgroundColor(Color.parseColor("#FF9800"));
-            mBtnBT_on.setEnabled(true);
-            mBtnBT_off.setEnabled(false);
-            mBtnBT_Connect.setEnabled(false);
-            homeText.setText("연결이 해제 되었습니다");
         } else {
             Toast.makeText(getApplicationContext(), "블루투스가 이미 비활성화 되어 있습니다.", Toast.LENGTH_SHORT).show();
         }
