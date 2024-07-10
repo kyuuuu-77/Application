@@ -1,6 +1,7 @@
 package com.arduino.Application.ui.home;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +14,10 @@ import androidx.lifecycle.ViewModelProvider;
 import com.arduino.Application.databinding.FragmentHomeBinding;
 
 public class HomeFragment extends Fragment {
+    /* Fragment 생명주기 참고할 것 !!!
+     * onAttach()->onCreate()->onCreateView()->onViewCreated()->onViewStateRestored()->
+     * onStart()->onResume()->onPause()->onStop()->onDestoryView->onDestroy->onDetach()
+     * */
 
     private FragmentHomeBinding binding;
 
@@ -26,6 +31,9 @@ public class HomeFragment extends Fragment {
 
         final TextView textView = binding.textHome;
         homeViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
+
+        Log.d("Home Fragment", "Home Fragment!");
+
         return root;
     }
 

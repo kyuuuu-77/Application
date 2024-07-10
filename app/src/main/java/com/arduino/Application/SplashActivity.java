@@ -4,10 +4,6 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -18,26 +14,11 @@ import androidx.core.view.WindowInsetsCompat;
 @SuppressLint("CustomSplashScreen")
 public class SplashActivity extends AppCompatActivity {
 
-    ImageView imageView;
-
-    TextView textView;
-
-    Animation imanim,teanim;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_splash);
-
-        imageView = findViewById(R.id.imageView3);
-        textView = findViewById(R.id.textView4);
-
-        imanim = AnimationUtils.loadAnimation(this,R.anim.imageanim);
-        teanim = AnimationUtils.loadAnimation(this,R.anim.textanim);
-
-        imageView.setAnimation(imanim);
-        textView.setAnimation(teanim);
 
         //splash 1초 동안 뜨게 함.
         final Handler hd = new Handler();
@@ -56,6 +37,7 @@ public class SplashActivity extends AppCompatActivity {
         public void run() {
             startActivity(new Intent(SplashActivity.this, MainActivity.class));
             SplashActivity.this.finish();
+
 
         }
     }
