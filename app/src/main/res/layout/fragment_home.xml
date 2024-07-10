@@ -69,6 +69,17 @@
         app:layout_constraintStart_toStartOf="@+id/BT_Status"
         app:layout_constraintTop_toBottomOf="@+id/BT_Status" />
 
+
+    <Button
+        android:id="@+id/btnBT_Connect"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:text="연결"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:layout_editor_absoluteY="160dp"
+        tools:ignore="MissingConstraints" />
+
     <TextView
         android:id="@+id/BT_Receive1"
         android:layout_width="wrap_content"
