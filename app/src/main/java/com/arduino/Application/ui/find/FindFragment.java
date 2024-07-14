@@ -1,6 +1,7 @@
 package com.arduino.Application.ui.find;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,6 +24,8 @@ public class FindFragment extends Fragment {
 
         binding = FragmentFindBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
+
+        Log.d("Find Fragment", "Find Fragment-onCreatedView()");
 
         final TextView textView = binding.textFind;
         findViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);

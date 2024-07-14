@@ -75,7 +75,6 @@ public class MainActivity extends AppCompatActivity {
     TextView homeText;
     TextView rssiTextView;
 
-    
     //블루투스 관련 변수
     BluetoothAdapter mBluetoothAdapter;
     BluetoothManager mBluetoothManager;
@@ -118,7 +117,7 @@ public class MainActivity extends AppCompatActivity {
         rssiTextView = findViewById(R.id.rssi); //RSSI 상태 텍스트 뷰
         toolbar = findViewById(R.id.toolbar);   //툴바
 
-        Log.d("Activity Main", "Activity Main-onCreate()");
+        Log.d("MainActivity", "MainActivity-onCreate()");
 
         setSupportActionBar(toolbar);  //액티비티의 App Bar로 지정
         setSupportActionBar(binding.appBarMain.toolbar);
@@ -135,7 +134,6 @@ public class MainActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
-
 
         //퍼미션 리스트 배열
         String[] permission_list = {
