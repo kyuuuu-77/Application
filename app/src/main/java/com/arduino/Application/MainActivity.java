@@ -120,6 +120,8 @@ public class MainActivity extends AppCompatActivity {
         toolbar = findViewById(R.id.toolbar);
         rssiTextView = findViewById(R.id.rssi);
 
+        Log.d("Activity Main", "Activity Main-onCreate()");
+
         setSupportActionBar(toolbar);  //액티비티의 App Bar로 지정
         setSupportActionBar(binding.appBarMain.toolbar);
         binding.appBarMain.fab.setOnClickListener(view -> Snackbar.make(view, "아직 버튼을 구성하지 않았습니다.", Snackbar.LENGTH_SHORT)
@@ -214,6 +216,7 @@ public class MainActivity extends AppCompatActivity {
                 mTv_SendData.setText("");
             }
         });
+
         //데이터 수신
         mBluetoothHandler = new Handler() {
             public void handleMessage(@NonNull android.os.Message msg) {
@@ -236,13 +239,15 @@ public class MainActivity extends AppCompatActivity {
 
     protected void onRestart() {
         super.onRestart();
+
+        Log.d("Activity Main", "Activity Main-onRestart()");
     }
 
     protected void onResume() {
         super.onResume();
         setSupportActionBar(toolbar);
 
-        Log.d("Activity Main", "Activity Main!");
+        Log.d("Activity Main", "Activity Main-onResume()");
 
         if (mBluetoothAdapter.isEnabled()) {
             mTvBT_Status.setText("활성화");
@@ -534,5 +539,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy(){
         super.onDestroy();
         stopRSSIMeasurement();
+
+        Log.d("Activity Main", "Activity Main-onDestroy()");
     }
 }

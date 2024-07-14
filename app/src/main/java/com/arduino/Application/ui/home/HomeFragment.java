@@ -32,7 +32,7 @@ public class HomeFragment extends Fragment {
         final TextView textView = binding.textHome;
         homeViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
 
-        Log.d("Home Fragment", "Home Fragment!");
+        Log.d("Home Fragment", "Home Fragment-onCreatedView()");
 
         return root;
     }
@@ -41,5 +41,7 @@ public class HomeFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
+
+        Log.d("Home Fragment", "Home Fragment-onDestroyView()");
     }
 }
