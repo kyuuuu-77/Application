@@ -65,37 +65,38 @@ public class MainActivity extends AppCompatActivity {
     private AppBarConfiguration mAppBarConfiguration;
     private ActivityMainBinding binding;
 
-    //Edited
+    //버튼 변수 초기화
     Button mBtnBT_on;
     Button mBtnBT_off;
     Button mBtnBT_Connect;
     Button mBtnSendData;
     TextView mTvBT_Status;
-    TextView mTvBT_Receive0;
-    TextView mTvBT_Receive1;
     TextView mTv_SendData;
     TextView homeText;
+    TextView rssiTextView;
 
+    
+    //블루투스 관련 변수
     BluetoothAdapter mBluetoothAdapter;
     BluetoothManager mBluetoothManager;
     Set<BluetoothDevice> mPairedDevices;
     List<String> mListPairedDevices;
 
+    BluetoothDevice mBluetoothDevice;
+    BluetoothGatt bluetoothGatt;
+    BluetoothSocket mBluetoothSocket;
+
     Handler mBluetoothHandler;
     ConnectedBluetoothThread mThreadConnectedBluetooth;
-    BluetoothSocket mBluetoothSocket;
 
     final int BT_REQUEST_ENABLE = 1;
     final int BT_REQUEST_DISABLE = 3;
     final int BT_MESSAGE_READ = 2;
     final int BT_CONNECTING_STATUS = 3;
     final UUID BT_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
+
     Window window;
     Toolbar toolbar;
-
-    BluetoothDevice mBluetoothDevice;
-    BluetoothGatt bluetoothGatt;
-    private TextView rssiTextView;
 
     private static final int SINGLE_PERMISSION = 1004;
 
@@ -108,17 +109,14 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        mBtnBT_on = findViewById(R.id.btnBT_On);
-        mBtnBT_off = findViewById(R.id.btnBT_Off);
-        mBtnBT_Connect = findViewById(R.id.btnBT_Connect);
-        mBtnSendData = findViewById(R.id.btnSendData);
-        mTvBT_Status = findViewById(R.id.BT_Status);
-        mTvBT_Receive0 = findViewById(R.id.BT_Receive0);
-        mTvBT_Receive1 = findViewById(R.id.BT_Receive1);
-        mTv_SendData = findViewById(R.id.tvSendData);
-        homeText = findViewById(R.id.text_home);
-        toolbar = findViewById(R.id.toolbar);
-        rssiTextView = findViewById(R.id.rssi);
+        mBtnBT_on = findViewById(R.id.btnBT_On);    //블루투스를 켜는 버튼 ID
+        mBtnBT_off = findViewById(R.id.btnBT_Off);  //블루투스를 끄는 버튼 ID
+        mBtnBT_Connect = findViewById(R.id.btnBT_Connect);  //연결 버튼
+        mBtnSendData = findViewById(R.id.btnSendData);  //전송 버튼
+        mTvBT_Status = findViewById(R.id.BT_Status);    //블루투스 상태 텍스트 뷰
+        homeText = findViewById(R.id.text_home);        //홈 텍스트 표시 (나중에 제거 예정)
+        rssiTextView = findViewById(R.id.rssi); //RSSI 상태 텍스트 뷰
+        toolbar = findViewById(R.id.toolbar);   //툴바
 
         Log.d("Activity Main", "Activity Main-onCreate()");
 
@@ -139,6 +137,7 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupWithNavController(navigationView, navController);
 
 
+        //퍼미션 리스트 배열
         String[] permission_list = {
                 Manifest.permission.BLUETOOTH_CONNECT,
                 Manifest.permission.BLUETOOTH_SCAN,
@@ -203,7 +202,6 @@ public class MainActivity extends AppCompatActivity {
         });
         //연결 버튼
         mBtnBT_Connect.setOnClickListener(view -> listPairedDevices());
-
         mBtnSendData.setEnabled(false); //전송 버튼 필요 없으므로 임시 비활성화 -> 나중에 삭제 예정
 
         //전송 버튼
@@ -229,8 +227,8 @@ public class MainActivity extends AppCompatActivity {
                     }
 
                     String[] array = readMessage.split(",", 3);
-                    mTvBT_Receive0.setText(array[0]);
-                    mTvBT_Receive1.setText(array[1]);
+//                    mTvBT_Receive0.setText(array[0]);
+//                    mTvBT_Receive1.setText(array[1]);
                 }
             }
         };
@@ -250,6 +248,7 @@ public class MainActivity extends AppCompatActivity {
         Log.d("Activity Main", "Activity Main-onResume()");
 
         if (mBluetoothAdapter.isEnabled()) {
+            homeText.setText("연결 되어있습니다.");
             mTvBT_Status.setText("활성화");
             window.setStatusBarColor(Color.parseColor("#1976D2"));
             toolbar.setBackgroundColor(Color.parseColor("#2196F3"));
@@ -258,7 +257,6 @@ public class MainActivity extends AppCompatActivity {
             mBtnBT_Connect.setEnabled(true);
         }
         if (!mBluetoothAdapter.isEnabled()) {
-            Toast.makeText(getApplicationContext(), "블루투스가 비활성화 되었습니다.", Toast.LENGTH_SHORT).show();
             homeText.setText("연결이 해제 되어있습니다.");
             mTvBT_Status.setText("비활성화");
             window.setStatusBarColor(Color.parseColor("#F57C00"));
@@ -289,7 +287,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    //블루투스를 켜는 함수
+    //블루투스를 켜는 함수 -> SDK 31 이상 (안드로이드 12 이상)
     @RequiresApi(api = Build.VERSION_CODES.S)
     public void BT_on() {
         if (mBluetoothAdapter == null) {
@@ -309,7 +307,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    //블루투스를 켜는 함수 (레거시)
+    //블루투스를 켜는 함수 -> (레거시용)
     @SuppressLint("MissingPermission")
     public void BT_on_Legacy() {
         if (mBluetoothAdapter == null) {
@@ -326,7 +324,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    //블루투스를 끄는 함수
+    //블루투스를 끄는 함수 -> SDK 31 이상 (안드로이드 12 이상)
     @RequiresApi(api = Build.VERSION_CODES.S)
     public void BT_off() {
         if (mBluetoothAdapter.isEnabled()) {
@@ -342,7 +340,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    //블루투스를 끄는 함수 (레거시)
+    //블루투스를 끄는 함수 -> (레거시용)
     @SuppressLint("MissingPermission")
     public void BT_off_Legacy() {
         if (mBluetoothAdapter.isEnabled()) {

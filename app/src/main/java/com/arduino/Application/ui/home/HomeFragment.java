@@ -34,6 +34,8 @@ public class HomeFragment extends Fragment {
 
         Log.d("Home Fragment", "Home Fragment-onCreatedView()");
 
+
+
         return root;
     }
 
