@@ -399,8 +399,8 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    //아래부터 RSSI 측정 관련 함수들
-    private BluetoothGattCallback bluetoothGattCallback = new BluetoothGattCallback() {
+    //아래부터 RSSI 측정 관련 함수들 (final로 변경)
+    private final BluetoothGattCallback bluetoothGattCallback = new BluetoothGattCallback() {
         @SuppressLint("SetTextI18n")
         @Override
         public void onReadRemoteRssi(BluetoothGatt gatt, int rssi, int status) {

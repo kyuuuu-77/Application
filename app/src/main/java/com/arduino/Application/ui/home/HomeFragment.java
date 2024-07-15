@@ -43,8 +43,6 @@ public class HomeFragment extends Fragment {
     private Handler handler;
     private Runnable runnable;
 
-    //Toolbar toolbar;
-
     private BluetoothAdapter mBluetoothAdapter;
     private BluetoothManager mBluetoothManager;
 
@@ -88,6 +86,7 @@ public class HomeFragment extends Fragment {
                 Fragment_BT_on_Legacy();
             }
         });
+
         //블루투스 OFF 버튼
         mBtnBT_off.setOnClickListener(view -> {
             Log.d("Button Click", "Button clicked!");
@@ -98,11 +97,16 @@ public class HomeFragment extends Fragment {
                 Fragment_BT_off_Legacy();
             }
         });
+
         //연결 버튼
-        mBtnBT_Connect.setOnClickListener(view -> Fragment_listPairedDevices());
-        mBtnSendData.setEnabled(false); //전송 버튼 필요 없으므로 임시 비활성화 -> 나중에 삭제 예정
+        mBtnBT_Connect.setOnClickListener(view -> {
+            Log.d("Button Click", "Button clicked!");
+
+            Fragment_listPairedDevices();
+        });
 
         //전송 버튼
+        mBtnSendData.setEnabled(false); //전송 버튼 필요 없으므로 임시 비활성화 -> 나중에 삭제 예정
         /*
         mBtnSendData.setOnClickListener(view -> {
             if (mThreadConnectedBluetooth != null) {
@@ -114,8 +118,6 @@ public class HomeFragment extends Fragment {
             }
         });
         */
-        mBtnBT_Connect.setEnabled(false);
-        //Edited-End
 
         handler = new Handler();
         runnable = new Runnable() {
@@ -123,7 +125,7 @@ public class HomeFragment extends Fragment {
             public void run() {
                 Bundle args = getArguments();
                 if (args != null) {
-                    getActivity().runOnUiThread(new Runnable() {
+                    requireActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             String BT_Status = args.getString("BT_Status");
@@ -149,6 +151,8 @@ public class HomeFragment extends Fragment {
         super.onResume();
         Log.d("Home Fragment", "Home Fragment-onResume()");
 
+        handler.postDelayed(runnable, 1000);
+
         if (mBluetoothAdapter == null) {
             mTvBT_Status.setText("블루투스 지원하지 않음");
             window.setStatusBarColor(Color.parseColor("#D32F2F"));
@@ -169,43 +173,6 @@ public class HomeFragment extends Fragment {
                 mBtnBT_off.setEnabled(false);
                 mBtnBT_Connect.setEnabled(false);
             }
-        }
-
-        /*
-        if (mBluetoothAdapter.isEnabled()) {
-            homeText.setText("연결 되어있습니다.");
-            mTvBT_Status.setText("활성화");
-            window.setStatusBarColor(Color.parseColor("#1976D2"));
-            //toolbar.setBackgroundColor(Color.parseColor("#2196F3"));
-            mBtnBT_on.setEnabled(false);
-            mBtnBT_off.setEnabled(true);
-        }
-        if (!mBluetoothAdapter.isEnabled()) {
-            homeText.setText("연결이 해제 되어있습니다.");
-            mTvBT_Status.setText("비활성화");
-            window.setStatusBarColor(Color.parseColor("#F57C00"));
-            //toolbar.setBackgroundColor(Color.parseColor("#FF9800"));
-            mBtnBT_on.setEnabled(true);
-            mBtnBT_off.setEnabled(false);
-        }
-        */
-    }
-
-    public void TextView_BT_Status(String text){
-        if(mTvBT_Status != null){
-            mTvBT_Status.setText(text);
-        }
-    }
-
-    public void TextView_Rssi(String text){
-        if(rssiTextView != null){
-            rssiTextView.setText(text);
-        }
-    }
-
-    public void TextView_HomeText(String text){
-        if(homeText != null){
-            homeText.setText(text);
         }
     }
 
@@ -256,8 +223,8 @@ public class HomeFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
-
         handler.removeCallbacks(runnable);
+
         Log.d("Home Fragment", "Home Fragment-onDestroyView()");
     }
 }
