@@ -7,6 +7,7 @@
     tools:context=".ui.weight.WeightFragment">
 
 
+    <!--    스위치 버튼
     <Switch
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -14,6 +15,7 @@
         tools:ignore="MissingConstraints,UseSwitchCompatOrMaterialXml"
         tools:layout_editor_absoluteX="44dp"
         tools:layout_editor_absoluteY="129dp" />
+        -->
 
     <TextView
         android:id="@+id/text_weight"
@@ -28,4 +30,16 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/weight_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Notification"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.361"
+        tools:ignore="MissingConstraints" />
 </androidx.constraintlayout.widget.ConstraintLayout>
