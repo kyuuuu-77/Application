@@ -46,17 +46,12 @@ public class WeightFragment extends Fragment {
         weightViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
 
         // 알림 버튼 설정
-        root.findViewById(R.id.weight_btn).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                createNotif();
-            }
-        });
+        root.findViewById(R.id.weight_btn).setOnClickListener(v -> createNotif());
 
         return root;
     }
 
-    public void createNotif() {
+    private void createNotif() {
         String id = "알림창입니다";
         NotificationManager manager = (NotificationManager) requireContext().getSystemService(Context.NOTIFICATION_SERVICE);
         NotificationChannel channel = manager.getNotificationChannel(id);
