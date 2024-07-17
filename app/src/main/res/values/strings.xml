@@ -13,4 +13,5 @@
     <string name="menu_info">내 캐리어 정보</string>
 
     <string name="splash_name">Suitcase Genie</string>
+    <string name="weight_popup">Notification</string>
 </resources>
