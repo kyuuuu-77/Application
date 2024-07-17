@@ -8,5 +8,5 @@
        android:interpolator="@android:anim/accelerate_decelerate_interpolator"
        android:pivotY="50%"
        android:pivotX="50%"
-       android:repeatCount="2" />
+       android:repeatCount="1" />
 </set>

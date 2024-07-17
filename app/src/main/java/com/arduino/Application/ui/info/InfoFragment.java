@@ -3,6 +3,7 @@ package com.arduino.Application.ui.info;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,6 +26,8 @@ public class InfoFragment extends Fragment {
 
         binding = FragmentInfoBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
+
+        Log.d("Info Fragment", "Info Fragment-onCreatedView()");
 
         final TextView textView = binding.textInfo;
         infoViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
