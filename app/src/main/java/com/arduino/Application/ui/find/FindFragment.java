@@ -36,5 +36,7 @@ public class FindFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
+
+        Log.d("Find Fragment", "Find Fragment-onDestroyView()");
     }
 }

@@ -17,6 +17,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -141,10 +142,16 @@ public class HomeFragment extends Fragment {
                 handler.postDelayed(this, 1000);
             }
         };
-
         handler.post(runnable);
 
         return root;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        Log.d("Home Fragment", "Home Fragment-onViewCreated()");
     }
 
     public void onResume(){
@@ -174,6 +181,8 @@ public class HomeFragment extends Fragment {
                 mBtnBT_Connect.setEnabled(false);
             }
         }
+
+        Auto_startBluetoothDiscovery();
     }
 
     public void setBluetoothComponent(BluetoothAdapter bluetoothAdapter, BluetoothManager bluetoothManager){
@@ -216,6 +225,13 @@ public class HomeFragment extends Fragment {
         MainActivity mainActivity = (MainActivity) getActivity();
         if (mainActivity != null) {
             mainActivity.listPairedDevices();
+        }
+    }
+
+    public void Auto_startBluetoothDiscovery(){
+        MainActivity mainActivity = (MainActivity) getActivity();
+        if (mainActivity != null) {
+            mainActivity.startBluetoothDiscovery();
         }
     }
 
