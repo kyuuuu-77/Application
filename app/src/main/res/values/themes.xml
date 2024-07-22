@@ -16,16 +16,11 @@
     <style name="Theme.Application.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
-        <item name="android:windowLightStatusBar">@color/darkgreen</item>
     </style>
 
     <style name="Theme.Application.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="Theme.Application.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
-        <!---스플래시 화면으르 위한 스타일 정의-->
-        <style name ="Splash.Theme" parent= "Theme.AppCompat.Light.DarkActionBar">
-        <!--타이틀바 색상 설정-->
-        <item name="colorPrimaryVariant">@color/darkgreen</item>
-    </style>
 
-</resources>
+    </resources>
+
