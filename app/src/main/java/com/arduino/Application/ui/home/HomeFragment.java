@@ -2,11 +2,9 @@ package com.arduino.Application.ui.home;
 
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothManager;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -45,16 +43,14 @@ public class HomeFragment extends Fragment {
     TextView rssiTextView;
 
     Window window;
-    private Handler handler;
-    private Runnable runnable;
 
     private BluetoothAdapter mBluetoothAdapter;
-    private BluetoothManager mBluetoothManager;
 
     private FragmentHomeBinding binding;
 
     private int security = 0;
 
+    @SuppressLint("SetTextI18n")
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         HomeViewModel homeViewModel = new ViewModelProvider(requireActivity()).get(HomeViewModel.class);
@@ -82,21 +78,10 @@ public class HomeFragment extends Fragment {
 
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
-        homeViewModel.getBluetoothStatusLiveData().observe(getViewLifecycleOwner(), bluetoothStatus -> {
-            mTvBT_Status.setText(bluetoothStatus);
-        });
-
-        homeViewModel.getAlertStatusLiveData().observe(getViewLifecycleOwner(), alert -> {
-            Alert_Status.setText(alert);
-        });
-
-        homeViewModel.getHomeTextLiveData().observe(getViewLifecycleOwner(), text -> {
-            homeText.setText(text);
-        });
-
-        homeViewModel.getRssiLiveData().observe(getViewLifecycleOwner(), rssi -> {
-            rssiTextView.setText(rssi);
-        });
+        homeViewModel.getBluetoothStatusLiveData().observe(getViewLifecycleOwner(), bluetoothStatus -> mTvBT_Status.setText(bluetoothStatus));
+        homeViewModel.getAlertStatusLiveData().observe(getViewLifecycleOwner(), alert -> Alert_Status.setText(alert));
+        homeViewModel.getHomeTextLiveData().observe(getViewLifecycleOwner(), text -> homeText.setText(text));
+        homeViewModel.getRssiLiveData().observe(getViewLifecycleOwner(), rssi -> rssiTextView.setText(rssi));
 
         //버튼 이벤트 리스너들
         //블루투스 ON 버튼
@@ -108,6 +93,16 @@ public class HomeFragment extends Fragment {
             } else {
                 Fragment_BT_on_Legacy();
             }
+
+            if (mBluetoothAdapter.isEnabled()){
+                if (security == 1){
+                    mBtnAlert_on.setEnabled(false);
+                    mBtnAlert_off.setEnabled(true);
+                } else if (security == 0){
+                    mBtnAlert_on.setEnabled(true);
+                    mBtnAlert_off.setEnabled(false);
+                }
+            }
         });
 
         //블루투스 OFF 버튼
@@ -118,6 +113,12 @@ public class HomeFragment extends Fragment {
                 Fragment_BT_off();
             } else {
                 Fragment_BT_off_Legacy();
+            }
+
+            if (!mBluetoothAdapter.isEnabled()){
+                Fragment_security_OFF();
+                mBtnAlert_on.setEnabled(false);
+                mBtnAlert_off.setEnabled(false);
             }
         });
 
@@ -155,27 +156,6 @@ public class HomeFragment extends Fragment {
             Fragment_security_OFF();
         });
 
-        handler = new Handler();
-        runnable = new Runnable() {
-            @Override
-            public void run() {
-                Bundle args = getArguments();
-                if (args != null) {
-                    requireActivity().runOnUiThread(() -> {
-                        String BT_Status = args.getString("BT_Status");
-                        String Home = args.getString("homeText");
-                        String Rssi = args.getString("Rssi");
-
-                        mTvBT_Status.setText(BT_Status);
-                        homeText.setText(Home);
-                        rssiTextView.setText(Rssi);
-                    });
-                }
-                handler.postDelayed(this, 1000);
-            }
-        };
-        handler.post(runnable);
-
         return root;
     }
 
@@ -189,8 +169,6 @@ public class HomeFragment extends Fragment {
     public void onResume(){
         super.onResume();
         Log.d("Home Fragment", "Home Fragment-onResume()");
-
-        handler.postDelayed(runnable, 1000);
 
         if (mBluetoothAdapter == null) {
             mTvBT_Status.setText("블루투스 지원하지 않음");
@@ -207,6 +185,14 @@ public class HomeFragment extends Fragment {
                 mBtnBT_on.setEnabled(false);
                 mBtnBT_off.setEnabled(true);
                 mBtnBT_Connect.setEnabled(true);
+
+                if (security == 1){
+                    mBtnAlert_on.setEnabled(false);
+                    mBtnAlert_off.setEnabled(true);
+                } else if (security == 0){
+                    mBtnAlert_on.setEnabled(true);
+                    mBtnAlert_off.setEnabled(false);
+                }
             } else {
                 mTvBT_Status.setText("블루투스 비활성화");
                 window.setStatusBarColor(Color.parseColor("#F57C00"));
@@ -218,20 +204,7 @@ public class HomeFragment extends Fragment {
             }
         }
 
-        if (security == 0){     //도난방지가 꺼져 있을 때
-            mBtnAlert_on.setEnabled(true);
-            mBtnAlert_off.setEnabled(false);
-        } else if(security == 1) {     //도난방지가 켜져 있을 때
-            mBtnAlert_on.setEnabled(false);
-            mBtnAlert_off.setEnabled(true);
-        }
-
         Auto_startBluetoothDiscovery();
-    }
-
-    public void setBluetoothComponent(BluetoothAdapter bluetoothAdapter, BluetoothManager bluetoothManager){
-        mBluetoothAdapter = bluetoothAdapter;
-        mBluetoothManager = bluetoothManager;
     }
 
     @SuppressLint("NewApi")
@@ -302,6 +275,5 @@ public class HomeFragment extends Fragment {
         Log.d("Home Fragment", "Home Fragment-onDestroyView()");
 
         binding = null;
-        handler.removeCallbacks(runnable);
     }
 }

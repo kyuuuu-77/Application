@@ -27,6 +27,8 @@ import com.arduino.Application.NotificationActivity;
 import com.arduino.Application.R;
 import com.arduino.Application.databinding.FragmentWeightBinding;
 
+import java.util.Objects;
+
 public class WeightFragment extends Fragment {
 
     private FragmentWeightBinding binding;
@@ -79,7 +81,7 @@ public class WeightFragment extends Fragment {
 
         if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
             // 권한 요청
-            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.POST_NOTIFICATIONS}, 1);
+            ActivityCompat.requestPermissions(requireActivity(), new String[]{Manifest.permission.POST_NOTIFICATIONS}, 1);
             return;
         }
 
@@ -90,5 +92,7 @@ public class WeightFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
+
+        Log.d("Weight Fragment", "Weight Fragment-onDestroyView()");
     }
 }

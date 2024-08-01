@@ -31,14 +31,6 @@ public class InfoFragment extends Fragment {
 
         final TextView textView = binding.textInfo;
         infoViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
-
-        //Edited
-        /*
-        TextView view_signal = root.findViewById(R.id.rssi_signal);
-        String signal = this.getArguments().getString("message");
-        view_signal.setText(signal);
-         */
-
         return root;
     }
 
@@ -46,5 +38,7 @@ public class InfoFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
+
+        Log.d("Info Fragment", "Info Fragment-onDestroyView()");
     }
 }

@@ -25,7 +25,10 @@ import android.widget.Toast;
 
 import androidx.appcompat.widget.Toolbar;
 
+import com.arduino.Application.ui.find.FindViewModel;
 import com.arduino.Application.ui.home.HomeViewModel;
+import com.arduino.Application.ui.info.InfoViewModel;
+import com.arduino.Application.ui.weight.WeightViewModel;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.navigation.NavigationView;
 
@@ -89,7 +92,10 @@ public class MainActivity extends AppCompatActivity {
     private Boolean isDialogShowing = false;
     private int security = 0;
 
-    private HomeViewModel viewModel;
+    private HomeViewModel viewModel_home;
+    private WeightViewModel viewModel_weight;
+    private FindViewModel viewModel_find;
+    private InfoViewModel viewModel_info;
 
     Window window;
     Toolbar toolbar;
@@ -139,7 +145,10 @@ public class MainActivity extends AppCompatActivity {
         mBluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
 
         //viewModel 초기화 및 정의
-        viewModel = new ViewModelProvider(this).get(HomeViewModel.class);
+        viewModel_home = new ViewModelProvider(this).get(HomeViewModel.class);
+        viewModel_weight = new ViewModelProvider(this).get(WeightViewModel.class);
+        viewModel_find = new ViewModelProvider(this).get(FindViewModel.class);
+        viewModel_info = new ViewModelProvider(this).get(InfoViewModel.class);
 
         //윈도우 생성하는 함수
         window = getWindow();
@@ -188,13 +197,14 @@ public class MainActivity extends AppCompatActivity {
     public void BT_on() {
         if (mBluetoothAdapter == null) {
             Toast.makeText(getApplicationContext(), "블루투스를 지원하지 않는 기종입니다", Toast.LENGTH_SHORT).show();
-            viewModel.setBluetoothStatus("지원하지 않음");
+            viewModel_home.setBluetoothStatus("지원하지 않음");
         } else {
             if (mBluetoothAdapter.isEnabled()) {
                 Toast.makeText(getApplicationContext(), "블루투스가 이미 활성화 되어 있습니다", Toast.LENGTH_SHORT).show();
-                viewModel.setBluetoothStatus("활성화");
+                viewModel_home.setBluetoothStatus("블룰투스 활성화");
             } else {
                 Toast.makeText(getApplicationContext(), "블루투스가 활성화 되어 있지 않습니다.", Toast.LENGTH_SHORT).show();
+                viewModel_home.setBluetoothStatus("블루투스 활성화중");
                 checkPermission();
                 Intent intentBluetoothEnable = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
                 startActivityForResult(intentBluetoothEnable, BT_REQUEST_ENABLE);
@@ -207,14 +217,15 @@ public class MainActivity extends AppCompatActivity {
     public void BT_on_Legacy() {
         if (mBluetoothAdapter == null) {
             Toast.makeText(getApplicationContext(), "블루투스를 지원하지 않는 기종입니다", Toast.LENGTH_SHORT).show();
-            viewModel.setBluetoothStatus("지원하지 않음");
+            viewModel_home.setBluetoothStatus("지원하지 않음");
         } else {
             if (mBluetoothAdapter.isEnabled()) {
                 Toast.makeText(getApplicationContext(), "블루투스가 이미 활성화 되어 있습니다", Toast.LENGTH_SHORT).show();
-                viewModel.setBluetoothStatus("활성화");
+                viewModel_home.setBluetoothStatus("블루투스 활성화");
             } else {
                 Toast.makeText(getApplicationContext(), "블루투스가 활성화 되어 있지 않습니다.", Toast.LENGTH_SHORT).show();
                 mBluetoothAdapter.enable();
+                viewModel_home.setBluetoothStatus("블루투스 활성화중");
             }
         }
     }
@@ -229,6 +240,9 @@ public class MainActivity extends AppCompatActivity {
             //Intent를 통한 새로운 방식을 사용
             Intent intentBluetoothDisable = new Intent("android.bluetooth.adapter.action.REQUEST_DISABLE");
             startActivityForResult(intentBluetoothDisable, BT_REQUEST_DISABLE);
+            stopRSSIMeasurement();          //RSSI 측정 중지
+            viewModel_home.setBluetoothStatus("블루투스 비활성화");
+            viewModel_home.setHomeText("");
         } else {
             Toast.makeText(getApplicationContext(), "블루투스가 이미 비활성화 되어 있습니다.", Toast.LENGTH_SHORT).show();
         }
@@ -239,6 +253,9 @@ public class MainActivity extends AppCompatActivity {
     public void BT_off_Legacy() {
         if (mBluetoothAdapter.isEnabled()) {
             mBluetoothAdapter.disable();
+            stopRSSIMeasurement();          //RSSI 측정 중지
+            viewModel_home.setBluetoothStatus("블루투스 비활성화");
+            viewModel_home.setHomeText("");
         } else {
             Toast.makeText(getApplicationContext(), "블루투스가 이미 비활성화 되어 있습니다.", Toast.LENGTH_SHORT).show();
         }
@@ -267,15 +284,18 @@ public class MainActivity extends AppCompatActivity {
                 builder.setTitle("장치 선택");
                 mListPairedDevices = new ArrayList<>();
                 checkPermission();
+
                 for (BluetoothDevice device : mPairedDevices) {
                     if (device.getName()==null)
                         continue;
                     mListPairedDevices.add(device.getName());
                 }
+
                 final CharSequence[] items = mListPairedDevices.toArray(new CharSequence[0]);
                 mListPairedDevices.toArray(new CharSequence[0]);
 
-                builder.setItems(items, (dialog, item) -> { //선택된 블루투스 디바이스(장치)를 연결하는 메서드
+                //선택된 블루투스 디바이스를 연결하는 메서드
+                builder.setItems(items, (dialog, item) -> {
                     connectSelectedDevice(items[item].toString());
                 });
                 Toast.makeText(getApplicationContext(), "스마트 캐리어와 연결하려면 FB301(73F06C)를 선택하세요.", Toast.LENGTH_SHORT).show();
@@ -290,7 +310,8 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void Auto_onnectSelectedDevice(BluetoothDevice device) {    //자동으로 검색후 디바이스에 연결하는 메서드
+    //자동으로 검색후 디바이스에 연결하는 메서드
+    private void Auto_onnectSelectedDevice(BluetoothDevice device) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             checkPermission();
         }
@@ -313,7 +334,7 @@ public class MainActivity extends AppCompatActivity {
 
             // 연결이 성공적으로 이루어졌을 때 추가 작업 수행
             Toast.makeText(getApplicationContext(), "디바이스와 연결되었습니다.", Toast.LENGTH_SHORT).show();
-            viewModel.setHomeText("스마트 캐리어에 연결 되었습니다!");
+            viewModel_home.setHomeText("스마트 캐리어에 연결 되었습니다!");
             startRSSIMeasurement();
         } catch (IOException e) {
             Toast.makeText(getApplicationContext(), "디바이스 연결 실패: " + e.getMessage(), Toast.LENGTH_SHORT).show();
@@ -345,15 +366,15 @@ public class MainActivity extends AppCompatActivity {
             mBluetoothHandler.obtainMessage(BT_CONNECTING_STATUS, 1, -1).sendToTarget();
             if (Objects.equals(selectedDeviceName, "FB301(73F06C)")){
                 Toast.makeText(getApplicationContext(), "연결 성공!", Toast.LENGTH_SHORT).show();
-                viewModel.setHomeText("스마트 캐리어에 연결 되었습니다!");
+                viewModel_home.setHomeText("스마트 캐리어에 연결 되었습니다!");
                 startRSSIMeasurement();
             }
             else{
-                viewModel.setHomeText("페어링 된 디바이스는 스마트 캐리어가 아닙니다!");
+                viewModel_home.setHomeText("페어링 된 디바이스는 스마트 캐리어가 아닙니다!");
             }
         } catch (IOException e) {   //연결에 실패하면 에러 표시
             Toast.makeText(getApplicationContext(), "디바이스 연결 중 오류 발생!", Toast.LENGTH_SHORT).show();
-            viewModel.setHomeText("연결에 실패 하였습니다");
+            viewModel_home.setHomeText("연결에 실패 하였습니다");
         }
     }
 
@@ -361,7 +382,6 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
-
             BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
             //스마트 캐리어가 주변에 있으면
@@ -504,16 +524,16 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    //아래부터 RSSI 측정 관련 함수들 (final로 변경)
-    private final Handler handler = new Handler();
-    private final Runnable runnable = new Runnable() {
+    //RSSI 측정 관련 메서드들
+    private final Handler handler_RSSI = new Handler();
+    private final Runnable runnable_RSSI = new Runnable() {
         @Override
         public void run() {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 checkPermission();
             }
             bluetoothGatt.readRemoteRssi();
-            handler.postDelayed(this, 1000);
+            handler_RSSI.postDelayed(this, 1000);
         }
     };
 
@@ -521,8 +541,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onReadRemoteRssi(BluetoothGatt gatt, int rssi, int status) {
             super.onReadRemoteRssi(gatt, rssi, status);
-
-            handler.post(() -> viewModel.setRssi("RSSI: " + rssi + " dBm"));
+            handler_RSSI.post(() -> viewModel_home.setRssi("RSSI: " + rssi + " dBm"));
         }
     };
 
@@ -531,7 +550,7 @@ public class MainActivity extends AppCompatActivity {
             checkPermission();
         }
         bluetoothGatt = mBluetoothDevice.connectGatt(this,false,bluetoothGattCallback);
-        handler.post(runnable);
+        handler_RSSI.post(runnable_RSSI);
     }
 
     private void stopRSSIMeasurement(){
@@ -541,6 +560,8 @@ public class MainActivity extends AppCompatActivity {
             }
             bluetoothGatt.disconnect();
             bluetoothGatt.close();
+            handler_RSSI.removeCallbacks(runnable_RSSI);
+            viewModel_home.setRssi("RSSI");
         }
     }
 
@@ -548,14 +569,14 @@ public class MainActivity extends AppCompatActivity {
     public int security_ON(){
         security = 1;
         Toast.makeText(getApplicationContext(), "도난방지가 켜졌습니다.", Toast.LENGTH_SHORT).show();
-        viewModel.setAlertStatus("도난방지 Enabled");
+        viewModel_home.setAlertStatus("도난방지 Enabled");
         return security;
     }
 
     public int security_OFF(){
         security = 0;
         Toast.makeText(getApplicationContext(), "도난방지가 꺼졌습니다.", Toast.LENGTH_SHORT).show();
-        viewModel.setAlertStatus("도난방지 Disabled");
+        viewModel_home.setAlertStatus("도난방지 Disabled");
         return security;
     }
 
