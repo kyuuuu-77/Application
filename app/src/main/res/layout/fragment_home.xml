@@ -31,7 +31,7 @@
         android:layout_marginStart="40dp"
         android:layout_marginTop="56dp"
         android:backgroundTint="#319EF2"
-        android:text="블루투스 ON"
+        android:text="@string/BT_on"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -42,7 +42,7 @@
         android:layout_marginTop="56dp"
         android:layout_marginEnd="40dp"
         android:backgroundTint="@color/red_500"
-        android:text="블루투스 OFF"
+        android:text="@string/BT_off"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -53,7 +53,7 @@
         android:layout_marginStart="40dp"
         android:layout_marginTop="168dp"
         android:backgroundTint="#319EF2"
-        android:text="연결"
+        android:text="@string/BT_connect"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -63,7 +63,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="168dp"
         android:layout_marginEnd="40dp"
-        android:text="전송"
+        android:text="@string/BT_send"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         android:backgroundTint="#319EF2" />
@@ -73,7 +73,22 @@
         android:layout_width="170dp"
         android:layout_height="wrap_content"
         android:backgroundTint="#319EF2"
-        android:text="Bluetooth Status"
+        android:text="@string/BT_status"
+        android:textAlignment="center"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.428" />
+
+    <TextView
+        android:id="@+id/Alert_Status"
+        android:layout_width="170dp"
+        android:layout_height="wrap_content"
+        android:backgroundTint="#319EF2"
+        android:text="@string/Alert_status"
         android:textAlignment="center"
         android:textSize="16sp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -81,40 +96,40 @@
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.479" />
+        app:layout_constraintVertical_bias="0.486" />
 
     <TextView
         android:id="@+id/rssi"
         android:layout_width="wrap_content"
         android:layout_height="40dp"
-        android:text=""
-        android:textSize="25sp"
+        android:text="@string/rssi"
+        android:textSize="23sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.571" />
+        app:layout_constraintVertical_bias="0.551" />
 
     <Button
-        android:id="@+id/alert_On"
+        android:id="@+id/btnAlert_On"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="40dp"
         android:layout_marginBottom="108dp"
         android:backgroundTint="#319EF2"
-        android:text="도난방지 ON"
+        android:text="@string/Security_on"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
     <Button
-        android:id="@+id/alert_Off"
+        android:id="@+id/btnAlert_Off"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="40dp"
         android:layout_marginBottom="108dp"
-        android:backgroundTint="#319EF2"
-        android:text="도난방지 OFF"
+        android:backgroundTint="@color/red_500"
+        android:text="@string/Security_off"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 

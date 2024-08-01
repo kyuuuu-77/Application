@@ -25,7 +25,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.widget.Toolbar;
 
-import com.arduino.Application.ui.home.HomeFragment;
+import com.arduino.Application.ui.home.HomeViewModel;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.navigation.NavigationView;
 
@@ -33,6 +33,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -86,13 +87,12 @@ public class MainActivity extends AppCompatActivity {
     final UUID BT_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
 
     private Boolean isDialogShowing = false;
+    private int security = 0;
+
+    private HomeViewModel viewModel;
 
     Window window;
     Toolbar toolbar;
-
-    //for Fragment
-    HomeFragment fragment;
-    Bundle bundle;
 
     private static final int SINGLE_PERMISSION = 1004;
 
@@ -107,8 +107,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         toolbar = findViewById(R.id.toolbar);   //툴바
-
-        bundle = new Bundle();
 
         setSupportActionBar(toolbar);  //액티비티의 App Bar로 지정
         setSupportActionBar(binding.appBarMain.toolbar);
@@ -140,12 +138,8 @@ public class MainActivity extends AppCompatActivity {
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         mBluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
 
-        //Fragment 생성 및 전달
-        fragment = new HomeFragment();
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.container_home, fragment)
-                .commit();
-        fragment.setBluetoothComponent(mBluetoothAdapter, mBluetoothManager);
+        //viewModel 초기화 및 정의
+        viewModel = new ViewModelProvider(this).get(HomeViewModel.class);
 
         //윈도우 생성하는 함수
         window = getWindow();
@@ -194,16 +188,13 @@ public class MainActivity extends AppCompatActivity {
     public void BT_on() {
         if (mBluetoothAdapter == null) {
             Toast.makeText(getApplicationContext(), "블루투스를 지원하지 않는 기종입니다", Toast.LENGTH_SHORT).show();
-            bundle.putString("BT_Status", "지원하지 않음");
-            fragment.setArguments(bundle);
+            viewModel.setBluetoothStatus("지원하지 않음");
         } else {
             if (mBluetoothAdapter.isEnabled()) {
                 Toast.makeText(getApplicationContext(), "블루투스가 이미 활성화 되어 있습니다", Toast.LENGTH_SHORT).show();
-                bundle.putString("BT_Status", "활성화");
-                fragment.setArguments(bundle);
+                viewModel.setBluetoothStatus("활성화");
             } else {
                 Toast.makeText(getApplicationContext(), "블루투스가 활성화 되어 있지 않습니다.", Toast.LENGTH_SHORT).show();
-
                 checkPermission();
                 Intent intentBluetoothEnable = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
                 startActivityForResult(intentBluetoothEnable, BT_REQUEST_ENABLE);
@@ -216,13 +207,11 @@ public class MainActivity extends AppCompatActivity {
     public void BT_on_Legacy() {
         if (mBluetoothAdapter == null) {
             Toast.makeText(getApplicationContext(), "블루투스를 지원하지 않는 기종입니다", Toast.LENGTH_SHORT).show();
-            bundle.putString("BT_Status", "지원하지 않음");
-            fragment.setArguments(bundle);
+            viewModel.setBluetoothStatus("지원하지 않음");
         } else {
             if (mBluetoothAdapter.isEnabled()) {
                 Toast.makeText(getApplicationContext(), "블루투스가 이미 활성화 되어 있습니다", Toast.LENGTH_SHORT).show();
-                bundle.putString("BT_Status", "활성화");
-                fragment.setArguments(bundle);
+                viewModel.setBluetoothStatus("활성화");
             } else {
                 Toast.makeText(getApplicationContext(), "블루투스가 활성화 되어 있지 않습니다.", Toast.LENGTH_SHORT).show();
                 mBluetoothAdapter.enable();
@@ -324,8 +313,7 @@ public class MainActivity extends AppCompatActivity {
 
             // 연결이 성공적으로 이루어졌을 때 추가 작업 수행
             Toast.makeText(getApplicationContext(), "디바이스와 연결되었습니다.", Toast.LENGTH_SHORT).show();
-            bundle.putString("homeText", "스마트 캐리어에 연결 되었습니다!");
-            fragment.setArguments(bundle);
+            viewModel.setHomeText("스마트 캐리어에 연결 되었습니다!");
             startRSSIMeasurement();
         } catch (IOException e) {
             Toast.makeText(getApplicationContext(), "디바이스 연결 실패: " + e.getMessage(), Toast.LENGTH_SHORT).show();
@@ -357,18 +345,15 @@ public class MainActivity extends AppCompatActivity {
             mBluetoothHandler.obtainMessage(BT_CONNECTING_STATUS, 1, -1).sendToTarget();
             if (Objects.equals(selectedDeviceName, "FB301(73F06C)")){
                 Toast.makeText(getApplicationContext(), "연결 성공!", Toast.LENGTH_SHORT).show();
-                bundle.putString("homeText", "스마트 캐리어에 연결 되었습니다!");
-                fragment.setArguments(bundle);
+                viewModel.setHomeText("스마트 캐리어에 연결 되었습니다!");
                 startRSSIMeasurement();
             }
             else{
-                bundle.putString("homeText", "페어링 된 디바이스는 스마트 캐리어가 아닙니다!");
-                fragment.setArguments(bundle);
+                viewModel.setHomeText("페어링 된 디바이스는 스마트 캐리어가 아닙니다!");
             }
         } catch (IOException e) {   //연결에 실패하면 에러 표시
             Toast.makeText(getApplicationContext(), "디바이스 연결 중 오류 발생!", Toast.LENGTH_SHORT).show();
-            bundle.putString("homeText", "연결에 실패 하였습니다");
-            fragment.setArguments(bundle);
+            viewModel.setHomeText("연결에 실패 하였습니다");
         }
     }
 
@@ -389,11 +374,10 @@ public class MainActivity extends AppCompatActivity {
                 assert device != null;
 
                 if (device.getName() != null && device.getName().equals("FB301(73F06C)")) {
-                    if (!isDialogShowing) { // 다이얼로그가 표시 중인지를 나타내는 변수
+                    if (!isDialogShowing) {     // 다이얼로그가 표시 중인지를 나타내는 변수
                         if (bluetoothAdapter.isDiscovering()) {
                             bluetoothAdapter.cancelDiscovery();
                         }
-
                         showConnectionDialog(device);
                         isDialogShowing = true;
                     }
@@ -521,17 +505,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //아래부터 RSSI 측정 관련 함수들 (final로 변경)
-    private final BluetoothGattCallback bluetoothGattCallback = new BluetoothGattCallback() {
-        @SuppressLint("SetTextI18n")
-        @Override
-        public void onReadRemoteRssi(BluetoothGatt gatt, int rssi, int status) {
-            super.onReadRemoteRssi(gatt, rssi, status);
-
-            bundle.putString("Rssi", "RSSI: " + rssi);
-            fragment.setArguments(bundle);
-        }
-    };
-
     private final Handler handler = new Handler();
     private final Runnable runnable = new Runnable() {
         @Override
@@ -541,6 +514,15 @@ public class MainActivity extends AppCompatActivity {
             }
             bluetoothGatt.readRemoteRssi();
             handler.postDelayed(this, 1000);
+        }
+    };
+
+    private final BluetoothGattCallback bluetoothGattCallback = new BluetoothGattCallback() {
+        @Override
+        public void onReadRemoteRssi(BluetoothGatt gatt, int rssi, int status) {
+            super.onReadRemoteRssi(gatt, rssi, status);
+
+            handler.post(() -> viewModel.setRssi("RSSI: " + rssi + " dBm"));
         }
     };
 
@@ -560,6 +542,21 @@ public class MainActivity extends AppCompatActivity {
             bluetoothGatt.disconnect();
             bluetoothGatt.close();
         }
+    }
+
+    // 도난방기 동작 메서드
+    public int security_ON(){
+        security = 1;
+        Toast.makeText(getApplicationContext(), "도난방지가 켜졌습니다.", Toast.LENGTH_SHORT).show();
+        viewModel.setAlertStatus("도난방지 Enabled");
+        return security;
+    }
+
+    public int security_OFF(){
+        security = 0;
+        Toast.makeText(getApplicationContext(), "도난방지가 꺼졌습니다.", Toast.LENGTH_SHORT).show();
+        viewModel.setAlertStatus("도난방지 Disabled");
+        return security;
     }
 
     protected void onResume() {

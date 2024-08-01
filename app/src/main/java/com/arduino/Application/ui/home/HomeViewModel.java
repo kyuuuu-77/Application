@@ -6,14 +6,40 @@ import androidx.lifecycle.ViewModel;
 
 public class HomeViewModel extends ViewModel {
 
-    private final MutableLiveData<String> mText;
+    private final MutableLiveData<String> bluetoothStatusLiveData = new MutableLiveData<>();
+    private final MutableLiveData<String> alertStatusLiveData = new MutableLiveData<>();
+    private final MutableLiveData<String> homeTextLiveData = new MutableLiveData<>();
+    private final MutableLiveData<String> rssiLiveData = new MutableLiveData<>();
 
-    public HomeViewModel() {
-        mText = new MutableLiveData<>();
-        mText.setValue("");
+    public LiveData<String> getBluetoothStatusLiveData() {
+        return bluetoothStatusLiveData;
     }
 
-    public LiveData<String> getText() {
-        return mText;
+    public LiveData<String> getAlertStatusLiveData(){
+        return alertStatusLiveData;
+    }
+
+    public LiveData<String> getHomeTextLiveData() {
+        return homeTextLiveData;
+    }
+
+    public LiveData<String> getRssiLiveData() {
+        return rssiLiveData;
+    }
+
+    public void setBluetoothStatus(String status) {
+        bluetoothStatusLiveData.setValue(status);
+    }
+
+    public void setAlertStatus(String alert){
+        alertStatusLiveData.setValue(alert);
+    }
+
+    public void setHomeText(String text) {
+        homeTextLiveData.setValue(text);
+    }
+
+    public void setRssi(String rssi) {
+        rssiLiveData.setValue(rssi);
     }
 }

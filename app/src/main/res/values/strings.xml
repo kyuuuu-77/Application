@@ -14,4 +14,13 @@
 
     <string name="splash_name">Suitcase Genie</string>
     <string name="weight_popup">Notification</string>
+    <string name="BT_on">블루투스 ON</string>
+    <string name="BT_off">블루투스 OFF</string>
+    <string name="BT_connect">연결</string>
+    <string name="BT_send">전송</string>
+    <string name="BT_status">Bluetooth Status</string>
+    <string name="Security_on">도난방지 ON</string>
+    <string name="Security_off">도난방지 OFF</string>
+    <string name="rssi">RSSI</string>
+    <string name="Alert_status">도난방지 Disabled</string>
 </resources>
