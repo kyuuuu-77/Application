@@ -62,7 +62,6 @@ public class HomeFragment extends Fragment {
         final TextView textView = binding.textHome;
         homeViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
 
-        //Edited-Start
         mBtnBT_on = root.findViewById(R.id.btnBT_On);    //블루투스를 켜는 버튼 ID
         mBtnBT_off = root.findViewById(R.id.btnBT_Off);  //블루투스를 끄는 버튼 ID
         mBtnBT_Connect = root.findViewById(R.id.btnBT_Connect);  //연결 버튼
@@ -76,7 +75,7 @@ public class HomeFragment extends Fragment {
 
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
-        //버튼 이벤트 리스너들 (람다 함수로 수정됨)
+        //버튼 이벤트 리스너들
         //블루투스 ON 버튼
         mBtnBT_on.setOnClickListener(view -> {
             Log.d("Button Click", "Button clicked!");
@@ -126,17 +125,14 @@ public class HomeFragment extends Fragment {
             public void run() {
                 Bundle args = getArguments();
                 if (args != null) {
-                    requireActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            String BT_Status = args.getString("BT_Status");
-                            String Home = args.getString("homeText");
-                            String Rssi = args.getString("Rssi");
+                    requireActivity().runOnUiThread(() -> {
+                        String BT_Status = args.getString("BT_Status");
+                        String Home = args.getString("homeText");
+                        String Rssi = args.getString("Rssi");
 
-                            mTvBT_Status.setText(BT_Status);
-                            homeText.setText(Home);
-                            rssiTextView.setText(Rssi);
-                        }
+                        mTvBT_Status.setText(BT_Status);
+                        homeText.setText(Home);
+                        rssiTextView.setText(Rssi);
                     });
                 }
                 handler.postDelayed(this, 1000);
@@ -238,9 +234,9 @@ public class HomeFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        Log.d("Home Fragment", "Home Fragment-onDestroyView()");
+
         binding = null;
         handler.removeCallbacks(runnable);
-
-        Log.d("Home Fragment", "Home Fragment-onDestroyView()");
     }
 }
