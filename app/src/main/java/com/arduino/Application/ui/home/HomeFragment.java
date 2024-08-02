@@ -48,6 +48,7 @@ public class HomeFragment extends Fragment {
 
     private FragmentHomeBinding binding;
 
+    private int menuNum;
     private int security = 0;
 
     @SuppressLint("SetTextI18n")
@@ -170,6 +171,9 @@ public class HomeFragment extends Fragment {
         super.onResume();
         Log.d("Home Fragment", "Home Fragment-onResume()");
 
+        menuNum = 1;
+        setMenuNum(menuNum);
+
         if (mBluetoothAdapter == null) {
             mTvBT_Status.setText("블루투스 지원하지 않음");
             window.setStatusBarColor(Color.parseColor("#D32F2F"));
@@ -205,6 +209,13 @@ public class HomeFragment extends Fragment {
         }
 
         Auto_startBluetoothDiscovery();
+    }
+
+    private void setMenuNum(int num){
+        MainActivity mainActivity = (MainActivity) getActivity();
+        if (mainActivity != null) {
+            mainActivity.setMenuNum(num);
+        }
     }
 
     @SuppressLint("NewApi")

@@ -78,29 +78,34 @@ public class MainActivity extends AppCompatActivity {
     BluetoothDevice mBluetoothDevice;
     BluetoothGatt bluetoothGatt;
     BluetoothSocket mBluetoothSocket;
-
-    Handler mBluetoothHandler;
     ConnectedBluetoothThread mThreadConnectedBluetooth;
 
+    //Handler 변수
+    Handler mBluetoothHandler;
+
+    //블루투스 통신에 사용되는 final 변수들
     final int BT_REQUEST_ENABLE = 1;
     final int BT_REQUEST_DISABLE = 3;
     final int BT_MESSAGE_READ = 2;
     final int BT_CONNECTING_STATUS = 3;
     final int REQUEST_LOCATION_PERMISSION = 123;
     final UUID BT_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
+    private static final int SINGLE_PERMISSION = 1004;
 
-    private Boolean isDialogShowing = false;
-    private int security = 0;
-
+    //viewModel 사용을 위한 변수
     private HomeViewModel viewModel_home;
     private WeightViewModel viewModel_weight;
     private FindViewModel viewModel_find;
     private InfoViewModel viewModel_info;
 
+    //프로그램 동작을 위한 전역 변수
+    protected int menuNum_Global = 0;
+    private Boolean isDialogShowing = false;
+    private int security = 0;
+
+    //윈도우 및 툴바 관련 변수
     Window window;
     Toolbar toolbar;
-
-    private static final int SINGLE_PERMISSION = 1004;
 
     @RequiresApi(api = Build.VERSION_CODES.S)
     @SuppressLint({"HandlerLeak", "ResourceAsColor"})
@@ -144,17 +149,17 @@ public class MainActivity extends AppCompatActivity {
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         mBluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
 
-        //viewModel 초기화 및 정의
+        //각 Fragment의 viewModel 정의
         viewModel_home = new ViewModelProvider(this).get(HomeViewModel.class);
         viewModel_weight = new ViewModelProvider(this).get(WeightViewModel.class);
         viewModel_find = new ViewModelProvider(this).get(FindViewModel.class);
         viewModel_info = new ViewModelProvider(this).get(InfoViewModel.class);
 
-        //윈도우 생성하는 함수
+        //윈도우를 생성하는 함수
         window = getWindow();
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
 
-        //데이터 수신
+        //데이터 수신 (아두이노->앱) Handler 사용
         mBluetoothHandler = new Handler() {
             public void handleMessage(@NonNull Message msg) {
                 if (msg.what == BT_MESSAGE_READ) {
@@ -316,20 +321,23 @@ public class MainActivity extends AppCompatActivity {
             checkPermission();
         }
         // BluetoothSocket 생성 및 연결 시도
-        BluetoothSocket socket = null;
+        //BluetoothSocket socket = null;
         try {
             // BluetoothSocket 생성
-            socket = device.createRfcommSocketToServiceRecord(UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"));
+            //socket = device.createRfcommSocketToServiceRecord(UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"));
+            mBluetoothSocket = device.createRfcommSocketToServiceRecord(BT_UUID);
 
             // 연결 시도 전에 블루투스 검색 취소
-            BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-            if (bluetoothAdapter.isDiscovering()) {
-                bluetoothAdapter.cancelDiscovery();
+            mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+            //BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+            if (mBluetoothAdapter.isDiscovering()) {
+                mBluetoothAdapter.cancelDiscovery();
             }
 
             // Bluetooth 연결 시도
-            socket.connect();
-
+            mBluetoothSocket.connect();
+            mThreadConnectedBluetooth = new ConnectedBluetoothThread(mBluetoothSocket);
+            mThreadConnectedBluetooth.start();
             mBluetoothDevice = device;
 
             // 연결이 성공적으로 이루어졌을 때 추가 작업 수행
@@ -339,8 +347,8 @@ public class MainActivity extends AppCompatActivity {
         } catch (IOException e) {
             Toast.makeText(getApplicationContext(), "디바이스 연결 실패: " + e.getMessage(), Toast.LENGTH_SHORT).show();
             try {
-                if (socket != null) {
-                    socket.close();
+                if (mBluetoothSocket != null) {
+                    mBluetoothSocket.close();
                 }
             } catch (IOException closeException) {
                 // 소켓 닫기 실패 처리
@@ -436,7 +444,7 @@ public class MainActivity extends AppCompatActivity {
             checkPermission();
         }
 
-        // Bluetooth가 켜져 있는지 확인하고, 켜져 있지 않으면 토스트 표시
+        // Bluetooth가 켜져 있는지 확인하고, 켜져 있지 않으면 Toast 표시
         if (bluetoothAdapter == null || !bluetoothAdapter.isEnabled()) {
             Toast.makeText(getApplicationContext(), "블루투스가 꺼져 있습니다.", Toast.LENGTH_SHORT).show();
         }
@@ -472,7 +480,7 @@ public class MainActivity extends AppCompatActivity {
                 .show();
     }
     
-    //데이터 수신 클래스(스레드 생성)
+    //데이터 송수신 클래스 (스레드 사용)
     private class ConnectedBluetoothThread extends Thread {
         //소켓을 통해 전송 처리
         private final BluetoothSocket mmSocket;
@@ -495,7 +503,7 @@ public class MainActivity extends AppCompatActivity {
             mmOutStream = tmpOut;
         }
         
-        //받은 데이터가 존재한다면 데이터를 읽어옴
+        // 데이터 수신
         public void run() {
             byte[] buffer = new byte[1024];
             int bytes;
@@ -514,6 +522,8 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         }
+
+        // 데이터 송신
         public void write(String str) {
             byte[] bytes = str.getBytes();
             try {
@@ -521,6 +531,19 @@ public class MainActivity extends AppCompatActivity {
             } catch (IOException e) {
                 Toast.makeText(getApplicationContext(), "데이터 전송 중 오류 발생!", Toast.LENGTH_SHORT).show();
             }
+        }
+    }
+
+    //메뉴 번호를 지정하는 메서드
+    public void setMenuNum(int num){
+        menuNum_Global = num;
+
+        if (mThreadConnectedBluetooth != null) {
+            String cmdText = String.valueOf(menuNum_Global);
+            for (int i = 0; i < cmdText.length(); i++){
+                mThreadConnectedBluetooth.write(cmdText.substring(i,i+1));
+            }
+            Log.d("sendData", "데이터 전송 성공!");
         }
     }
 

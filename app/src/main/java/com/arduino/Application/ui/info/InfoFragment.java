@@ -1,7 +1,5 @@
 package com.arduino.Application.ui.info;
 
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -13,11 +11,14 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.arduino.Application.R;
+import com.arduino.Application.MainActivity;
 import com.arduino.Application.databinding.FragmentInfoBinding;
 
 public class InfoFragment extends Fragment {
+
     private FragmentInfoBinding binding;
+
+    private int menuNum;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -32,6 +33,21 @@ public class InfoFragment extends Fragment {
         final TextView textView = binding.textInfo;
         infoViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
         return root;
+    }
+
+    public void onResume(){
+        super.onResume();
+        Log.d("Info Fragment", "Info Fragment-onResume()");
+
+        menuNum = 4;
+        setMenuNum(menuNum);
+    }
+
+    private void setMenuNum(int num){
+        MainActivity mainActivity = (MainActivity) getActivity();
+        if (mainActivity != null) {
+            mainActivity.setMenuNum(num);
+        }
     }
 
     @Override

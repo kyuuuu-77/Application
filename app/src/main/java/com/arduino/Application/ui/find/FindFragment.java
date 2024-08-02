@@ -11,11 +11,14 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.arduino.Application.MainActivity;
 import com.arduino.Application.databinding.FragmentFindBinding;
 
 public class FindFragment extends Fragment {
 
     private FragmentFindBinding binding;
+
+    private int menuNum;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -30,6 +33,21 @@ public class FindFragment extends Fragment {
         final TextView textView = binding.textFind;
         findViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
         return root;
+    }
+
+    public void onResume(){
+        super.onResume();
+        Log.d("Find Fragment", "Find Fragment-onResume()");
+
+        menuNum = 2;
+        setMenuNum(menuNum);
+    }
+
+    private void setMenuNum(int num){
+        MainActivity mainActivity = (MainActivity) getActivity();
+        if (mainActivity != null) {
+            mainActivity.setMenuNum(num);
+        }
     }
 
     @Override

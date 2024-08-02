@@ -23,6 +23,7 @@ import androidx.core.app.NotificationManagerCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.arduino.Application.MainActivity;
 import com.arduino.Application.NotificationActivity;
 import com.arduino.Application.R;
 import com.arduino.Application.databinding.FragmentWeightBinding;
@@ -32,6 +33,8 @@ import java.util.Objects;
 public class WeightFragment extends Fragment {
 
     private FragmentWeightBinding binding;
+
+    private int menuNum;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -86,6 +89,21 @@ public class WeightFragment extends Fragment {
         }
 
         m.notify(1, builder.build());
+    }
+
+    public void onResume() {
+        super.onResume();
+        Log.d("Weight Fragment", "Weight Fragment-onResume()");
+
+        menuNum = 3;
+        setMenuNum(menuNum);
+    }
+
+    private void setMenuNum(int num){
+        MainActivity mainActivity = (MainActivity) getActivity();
+        if (mainActivity != null) {
+            mainActivity.setMenuNum(num);
+        }
     }
 
     @Override
