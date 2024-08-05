@@ -29,7 +29,7 @@ public class HomeFragment extends Fragment {
      * onStart()->onResume()->onPause()->onStop()->onDestoryView->onDestroy->onDetach()
      * */
 
-    //버튼 및 텍스트뷰 변수 초기화
+    // 버튼 및 텍스트뷰 변수 초기화
     Button mBtnBT_on;
     Button mBtnBT_off;
     Button mBtnBT_Connect;
@@ -61,7 +61,7 @@ public class HomeFragment extends Fragment {
 
         Log.d("Home Fragment", "Home Fragment-onCreatedView()");
 
-        //버튼 및 텍스트뷰 선언
+        // 버튼 및 텍스트뷰 선언
         mBtnBT_on = root.findViewById(R.id.btnBT_On);           //블루투스를 켜는 버튼 ID
         mBtnBT_off = root.findViewById(R.id.btnBT_Off);         //블루투스를 끄는 버튼 ID
         mBtnBT_Connect = root.findViewById(R.id.btnBT_Connect); //연결 버튼

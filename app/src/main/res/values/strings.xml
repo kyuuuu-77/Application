@@ -23,4 +23,5 @@
     <string name="Security_off">도난방지 OFF</string>
     <string name="rssi">RSSI</string>
     <string name="Alert_status">도난방지 Disabled</string>
+    <string name="find_bag">내 캐리어 찾기</string>
 </resources>

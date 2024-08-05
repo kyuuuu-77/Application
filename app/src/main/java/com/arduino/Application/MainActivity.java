@@ -81,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
     ConnectedBluetoothThread mThreadConnectedBluetooth;
 
     //Handler 변수
-    Handler mBluetoothHandler;
+    private Handler mBluetoothHandler;
 
     //블루투스 통신에 사용되는 final 변수들
     final int BT_REQUEST_ENABLE = 1;
@@ -165,13 +165,11 @@ public class MainActivity extends AppCompatActivity {
                 if (msg.what == BT_MESSAGE_READ) {
                     String readMessage;
                     readMessage = new String((byte[]) msg.obj, StandardCharsets.UTF_8);
-
-                    //String[] array = readMessage.split(",", 3);
-                    //mTvBT_Receive0.setText(array[0]);
-                    //mTvBT_Receive1.setText(array[1]);
+                    Log.d("handleMessage", readMessage);
                 }
             }
         };
+        
         startBluetoothDiscovery();
     }
 
@@ -188,6 +186,7 @@ public class MainActivity extends AppCompatActivity {
                 || super.onSupportNavigateUp();
     }
 
+    // 퍼미션(권한)을 체크하는 메서드
     @RequiresApi(api = Build.VERSION_CODES.S)
     public void checkPermission() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
@@ -321,15 +320,13 @@ public class MainActivity extends AppCompatActivity {
             checkPermission();
         }
         // BluetoothSocket 생성 및 연결 시도
-        //BluetoothSocket socket = null;
+        // BluetoothSocket socket = null;
         try {
             // BluetoothSocket 생성
-            //socket = device.createRfcommSocketToServiceRecord(UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"));
             mBluetoothSocket = device.createRfcommSocketToServiceRecord(BT_UUID);
 
             // 연결 시도 전에 블루투스 검색 취소
             mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-            //BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
             if (mBluetoothAdapter.isDiscovering()) {
                 mBluetoothAdapter.cancelDiscovery();
             }
@@ -386,6 +383,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    // 브로드캐스트 리시버 클래스
     private final BroadcastReceiver receiver = new BroadcastReceiver(){
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -459,7 +457,7 @@ public class MainActivity extends AppCompatActivity {
         bluetoothAdapter.startDiscovery();
     }
 
-    // 스마트 캐리어를 발견했을때 연결을 시도하는 메세지를 띄우는 메서드
+    // 스마트 캐리어를 자동으로 발견했을때 연결 시도 알림창을 띄우는 메서드
     private void showConnectionDialog(final BluetoothDevice device) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
@@ -503,7 +501,7 @@ public class MainActivity extends AppCompatActivity {
             mmOutStream = tmpOut;
         }
         
-        // 데이터 수신
+        // 데이터 수신 (아두이노 -> 앱)
         public void run() {
             byte[] buffer = new byte[1024];
             int bytes;
@@ -523,7 +521,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        // 데이터 송신
+        // 데이터 송신 (앱 -> 아두이노)
         public void write(String str) {
             byte[] bytes = str.getBytes();
             try {
@@ -534,7 +532,27 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    //메뉴 번호를 지정하는 메서드
+    // 데이터를 송신하는 메서드
+    public int sendData(int data){
+        //데이터 송신 코드 작성
+        switch (data){
+            case 201:   // 알람이 동작하게 설정
+                break;
+            case 202:   // 알람이 멈추게 설정
+                break;
+            default:    // 잘못된 값 전달 된 경우
+                break;
+        }
+        return -1;
+    }
+
+    // 데이터를 수신하는 메서드
+    public int receiveData(){
+        //데이터 수신 코드 작성
+        return -1;
+    }
+
+    //메뉴 번호를 저장하고 메뉴값을 아두이노에 송신하는 메서드
     public void setMenuNum(int num){
         menuNum_Global = num;
 
@@ -564,6 +582,8 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onReadRemoteRssi(BluetoothGatt gatt, int rssi, int status) {
             super.onReadRemoteRssi(gatt, rssi, status);
+
+            //handler를 통해서 RSSI 값을 viewModel에 전달
             handler_RSSI.post(() -> viewModel_home.setRssi("RSSI: " + rssi + " dBm"));
         }
     };

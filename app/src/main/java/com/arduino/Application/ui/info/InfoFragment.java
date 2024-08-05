@@ -43,6 +43,23 @@ public class InfoFragment extends Fragment {
         setMenuNum(menuNum);
     }
 
+    // 송신 메서드
+    private void sendData_local(){
+        MainActivity mainActivity = (MainActivity) getActivity();
+        if (mainActivity != null) {
+            int data;
+            data = mainActivity.sendData(401);
+        }
+    }
+
+    // 수신 메서드
+    private void receiveData_local(){
+        MainActivity mainActivity = (MainActivity) getActivity();
+        if (mainActivity != null) {
+            mainActivity.receiveData();
+        }
+    }
+
     private void setMenuNum(int num){
         MainActivity mainActivity = (MainActivity) getActivity();
         if (mainActivity != null) {
