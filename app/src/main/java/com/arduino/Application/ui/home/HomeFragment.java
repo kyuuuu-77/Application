@@ -13,6 +13,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toolbar;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -43,6 +44,7 @@ public class HomeFragment extends Fragment {
     TextView rssiTextView;
 
     Window window;
+    Toolbar toolbar;
 
     private BluetoothAdapter mBluetoothAdapter;
 
@@ -75,6 +77,7 @@ public class HomeFragment extends Fragment {
         rssiTextView = root.findViewById(R.id.rssi);            //RSSI 상태 텍스트 뷰
         
         window = requireActivity().getWindow();
+        toolbar = root.findViewById(R.id.toolbar);   //툴바
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
 
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -93,6 +96,10 @@ public class HomeFragment extends Fragment {
                 Fragment_BT_on();
             } else {
                 Fragment_BT_on_Legacy();
+                mBtnBT_on.setEnabled(false);
+                mBtnBT_off.setEnabled(true);
+                window.setStatusBarColor(Color.parseColor("#1976D2"));
+                //toolbar.setBackgroundColor(Color.parseColor("#2196F3"));
             }
 
             if (mBluetoothAdapter.isEnabled()){
@@ -114,12 +121,16 @@ public class HomeFragment extends Fragment {
                 Fragment_BT_off();
             } else {
                 Fragment_BT_off_Legacy();
+                mBtnBT_on.setEnabled(true);
+                mBtnBT_off.setEnabled(false);
+                mBtnAlert_on.setEnabled(false);
+                mBtnAlert_off.setEnabled(false);
+                window.setStatusBarColor(Color.parseColor("#F57C00"));
+                //toolbar.setBackgroundColor(Color.parseColor("#FF9800"));
             }
 
             if (!mBluetoothAdapter.isEnabled()){
                 Fragment_security_OFF();
-                mBtnAlert_on.setEnabled(false);
-                mBtnAlert_off.setEnabled(false);
             }
         });
 
