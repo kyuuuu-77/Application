@@ -196,7 +196,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    //블루투스를 켜는 함수 -> SDK 31 이상 (안드로이드 12 이상)
+    // 블루투스를 켜는 함수 -> SDK 31 이상 (안드로이드 12 이상)
     @RequiresApi(api = Build.VERSION_CODES.S)
     public void BT_on() {
         if (mBluetoothAdapter == null) {
@@ -216,7 +216,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    //블루투스를 켜는 함수 -> (레거시용)
+    // 블루투스를 켜는 함수 -> (레거시용)
     @SuppressLint("MissingPermission")
     public void BT_on_Legacy() {
         if (mBluetoothAdapter == null) {
@@ -234,14 +234,14 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    //블루투스를 끄는 함수 -> SDK 31 이상 (안드로이드 12 이상)
+    // 블루투스를 끄는 함수 -> SDK 31 이상 (안드로이드 12 이상)
     @RequiresApi(api = Build.VERSION_CODES.S)
     public void BT_off() {
         if (mBluetoothAdapter.isEnabled()) {
             checkPermission();
-            //안드로이드 정책 관리 변경으로 API 33이상부터 사용자의 퍼미션 없이 블루투스를 끄는 것이 불가능해짐
-            //즉, 이전처럼 BluetoothAdapter.disable()을 사용할 수 없다는 것
-            //Intent를 통한 새로운 방식을 사용
+            // 안드로이드 정책 관리 변경으로 API 33이상부터 사용자의 퍼미션 없이 블루투스를 끄는 것이 불가능해짐
+            // 즉, 이전처럼 BluetoothAdapter.disable()을 사용할 수 없다는 것
+            // Intent를 통한 새로운 방식을 사용
             Intent intentBluetoothDisable = new Intent("android.bluetooth.adapter.action.REQUEST_DISABLE");
             startActivityForResult(intentBluetoothDisable, BT_REQUEST_DISABLE);
             stopRSSIMeasurement();          //RSSI 측정 중지
@@ -252,7 +252,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    //블루투스를 끄는 함수 -> (레거시용)
+    // 블루투스를 끄는 함수 -> (레거시용)
     @SuppressLint("MissingPermission")
     public void BT_off_Legacy() {
         if (mBluetoothAdapter.isEnabled()) {
@@ -277,7 +277,7 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-    //블루투스 디바이스 목록을 보여주는 메서드
+    // 블루투스 디바이스 목록을 보여주는 메서드
     @RequiresApi(api = Build.VERSION_CODES.S)
     public void listPairedDevices() {
         if (mBluetoothAdapter.isEnabled()) {
@@ -299,9 +299,7 @@ public class MainActivity extends AppCompatActivity {
                 mListPairedDevices.toArray(new CharSequence[0]);
 
                 //선택된 블루투스 디바이스를 연결하는 메서드
-                builder.setItems(items, (dialog, item) -> {
-                    connectSelectedDevice(items[item].toString());
-                });
+                builder.setItems(items, (dialog, item) -> connectSelectedDevice(items[item].toString()));
                 Toast.makeText(getApplicationContext(), "스마트 캐리어와 연결하려면 FB301(73F06C)를 선택하세요.", Toast.LENGTH_SHORT).show();
                 AlertDialog alert = builder.create();
                 alert.show();
@@ -314,13 +312,12 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    //자동으로 검색후 디바이스에 연결하는 메서드
+    // 자동으로 검색후 디바이스에 연결하는 메서드
     private void Auto_onnectSelectedDevice(BluetoothDevice device) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             checkPermission();
         }
         // BluetoothSocket 생성 및 연결 시도
-        // BluetoothSocket socket = null;
         try {
             // BluetoothSocket 생성
             mBluetoothSocket = device.createRfcommSocketToServiceRecord(BT_UUID);
@@ -353,7 +350,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    //블루투스 디바이스에 연결하는 메서드
+    // 블루투스 디바이스에 연결하는 메서드
     @RequiresApi(api = Build.VERSION_CODES.S)
     public void connectSelectedDevice(String selectedDeviceName) {
         for (BluetoothDevice tempDevice : mPairedDevices) {
@@ -390,7 +387,7 @@ public class MainActivity extends AppCompatActivity {
             String action = intent.getAction();
             BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
-            //스마트 캐리어가 주변에 있으면
+            // 스마트 캐리어가 주변에 있으면
             if (BluetoothDevice.ACTION_FOUND.equals(action)) {
                 Log.d("BroadcastReceiver", "Action Detected!");
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
@@ -410,7 +407,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
 
-            //블루투스 장치와 연결된 경우
+            // 블루투스 장치와 연결된 경우
             if (BluetoothDevice.ACTION_ACL_CONNECTED.equals(action)) {
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -421,7 +418,7 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(context, deviceName + "와 연결 되었습니다.", Toast.LENGTH_LONG).show();
             }
 
-            //블루투스 연결이 끊긴 경우
+            // 블루투스 연결이 끊긴 경우
             if (BluetoothDevice.ACTION_ACL_DISCONNECTED.equals(action)) {
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -434,7 +431,7 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-    //상시 스마트 캐리어를 검색하는 메서드
+    // 상시 스마트 캐리어를 검색하는 메서드
     public void startBluetoothDiscovery() {
         // BluetoothAdapter 가져오기
         BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -478,7 +475,7 @@ public class MainActivity extends AppCompatActivity {
                 .show();
     }
     
-    //데이터 송수신 클래스 (스레드 사용)
+    // 데이터 송수신 클래스 (스레드 사용)
     private class ConnectedBluetoothThread extends Thread {
         //소켓을 통해 전송 처리
         private final BluetoothSocket mmSocket;
@@ -608,7 +605,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    // 도난방기 동작 메서드
+    // 도난방지 ON 메서드
     public int security_ON(){
         security = 1;
         Toast.makeText(getApplicationContext(), "도난방지가 켜졌습니다.", Toast.LENGTH_SHORT).show();
@@ -616,6 +613,7 @@ public class MainActivity extends AppCompatActivity {
         return security;
     }
 
+    // 도난방지 OFF 메서드
     public int security_OFF(){
         security = 0;
         Toast.makeText(getApplicationContext(), "도난방지가 꺼졌습니다.", Toast.LENGTH_SHORT).show();

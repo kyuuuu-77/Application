@@ -6,112 +6,109 @@
     android:layout_height="match_parent"
     tools:context=".ui.weight.WeightFragment">
 
-
-    <!--    스위치 버튼
-    <Switch
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:checked="true"
-        tools:ignore="MissingConstraints,UseSwitchCompatOrMaterialXml"
-        tools:layout_editor_absoluteX="44dp"
-        tools:layout_editor_absoluteY="129dp" />
-        -->
-
     <TextView
         android:id="@+id/text_weightnow"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="250dp"
         android:layout_marginEnd="8dp"
-        android:text="AX Kg"
+        android:text="@string/weight"
         android:textAlignment="center"
         android:textColor="@color/blue_500"
         android:textSize="60sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.26999998" />
+        app:layout_constraintVertical_bias="0.566" />
 
     <TextView
         android:id="@+id/text_weightps"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="350dp"
         android:layout_marginEnd="8dp"
-        android:text="허용무게:20Kg"
+        android:text="@string/weight_restricted"
         android:textAlignment="center"
-        android:textStyle="bold"
-        android:textSize="20sp"
         android:textColor="@android:color/background_dark"
+        android:textSize="20sp"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.301" />
-
+        app:layout_constraintVertical_bias="0.304" />
 
     <TextView
         android:id="@+id/text_looseweight"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="500dp"
-        android:text="20kg-XXkg=aa 초과합니다."
+        android:text="@string/weight_info"
         android:textAlignment="center"
         android:textColor="@android:color/background_dark"
         android:textSize="20sp"
         android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:layout_editor_absoluteX="8dp" />
+        app:layout_constraintVertical_bias="0.713" />
 
     <Button
         android:id="@+id/weight_btn"
         android:layout_width="300dp"
         android:layout_height="75dp"
-        android:layout_marginTop="600dp"
         android:backgroundTint="#319EF2"
-        android:text="press to marge the weigh"
+        android:text="@string/measure_weight"
+        android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.535"
+        app:layout_constraintHorizontal_bias="0.495"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0"
-        tools:ignore="MissingConstraints" />
+        app:layout_constraintVertical_bias="0.893" />
 
     <ImageView
         android:id="@+id/jang"
         android:layout_width="0dp"
         android:layout_height="300dp"
-        android:layout_marginTop="70dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/jang" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintVertical_bias="0.134"
+        app:srcCompat="@drawable/jang"
+        tools:layout_editor_absoluteX="0dp"
+        tools:ignore="ContentDescription" />
 
     <ImageView
         android:id="@+id/home"
-        android:layout_marginStart="16dp"
         android:layout_width="wrap_content"
         android:layout_height="30dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_menu_home"
-        app:layout_constraintStart_toStartOf="parent"/>
+        tools:ignore="ContentDescription" />
 
     <ImageView
         android:id="@+id/menu"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="8dp"
         android:layout_width="wrap_content"
         android:layout_height="30dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/baseline_menu_24"
-        tools:layout_editor_absoluteX="371dp" />
+        tools:ignore="ContentDescription" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

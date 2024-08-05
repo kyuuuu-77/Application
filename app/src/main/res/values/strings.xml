@@ -24,4 +24,10 @@
     <string name="rssi">RSSI</string>
     <string name="Alert_status">도난방지 Disabled</string>
     <string name="find_bag">내 캐리어 찾기</string>
+    <string name="weight_restricted">허용무게 : 20Kg</string>
+    <string name="weight">AX Kg</string>
+    <string name="weight_info">20kg-XXkg=aa 초과합니다.</string>
+    <string name="measure_weight">무게측정 시작!</string>
+    <string name="rssi_value">RSSI 센서값 표시</string>
+    <string name="check_battery">배터리 잔량</string>
 </resources>
