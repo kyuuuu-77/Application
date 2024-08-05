@@ -69,6 +69,7 @@
         android:textAlignment="center"
         android:textColor="@android:color/background_dark"
         android:textSize="20sp"
+        android:text="무게측정 메뉴"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"

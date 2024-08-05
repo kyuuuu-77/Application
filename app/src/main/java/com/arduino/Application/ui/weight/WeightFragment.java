@@ -23,13 +23,18 @@ import androidx.core.app.NotificationManagerCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.arduino.Application.MainActivity;
 import com.arduino.Application.NotificationActivity;
 import com.arduino.Application.R;
 import com.arduino.Application.databinding.FragmentWeightBinding;
 
+import java.util.Objects;
+
 public class WeightFragment extends Fragment {
 
     private FragmentWeightBinding binding;
+
+    private int menuNum;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -79,16 +84,50 @@ public class WeightFragment extends Fragment {
 
         if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
             // 권한 요청
-            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.POST_NOTIFICATIONS}, 1);
+            ActivityCompat.requestPermissions(requireActivity(), new String[]{Manifest.permission.POST_NOTIFICATIONS}, 1);
             return;
         }
 
         m.notify(1, builder.build());
     }
 
+    public void onResume() {
+        super.onResume();
+        Log.d("Weight Fragment", "Weight Fragment-onResume()");
+
+        menuNum = 3;
+        setMenuNum(menuNum);
+    }
+
+    // 송신 메서드
+    private void sendData_local(){
+        MainActivity mainActivity = (MainActivity) getActivity();
+        if (mainActivity != null) {
+            int data;
+            data = mainActivity.sendData(301);
+        }
+    }
+
+    // 수신 메서드
+    private void receiveData_local(){
+        MainActivity mainActivity = (MainActivity) getActivity();
+        if (mainActivity != null) {
+            mainActivity.receiveData();
+        }
+    }
+
+    private void setMenuNum(int num){
+        MainActivity mainActivity = (MainActivity) getActivity();
+        if (mainActivity != null) {
+            mainActivity.setMenuNum(num);
+        }
+    }
+
     @Override
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
+
+        Log.d("Weight Fragment", "Weight Fragment-onDestroyView()");
     }
 }

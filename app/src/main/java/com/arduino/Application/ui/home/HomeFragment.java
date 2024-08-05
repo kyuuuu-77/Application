@@ -2,11 +2,9 @@ package com.arduino.Application.ui.home;
 
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothManager;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,52 +29,62 @@ public class HomeFragment extends Fragment {
      * onStart()->onResume()->onPause()->onStop()->onDestoryView->onDestroy->onDetach()
      * */
 
-    //버튼 변수 초기화
+    // 버튼 및 텍스트뷰 변수 초기화
     Button mBtnBT_on;
     Button mBtnBT_off;
     Button mBtnBT_Connect;
     Button mBtnSendData;
+    Button mBtnAlert_on;
+    Button mBtnAlert_off;
+    
     TextView mTvBT_Status;
+    TextView Alert_Status;
     TextView homeText;
     TextView rssiTextView;
 
     Window window;
-    private Handler handler;
-    private Runnable runnable;
 
     private BluetoothAdapter mBluetoothAdapter;
-    private BluetoothManager mBluetoothManager;
 
     private FragmentHomeBinding binding;
 
+    private int menuNum;
+    private int security = 0;
+
+    @SuppressLint("SetTextI18n")
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        HomeViewModel homeViewModel =
-                new ViewModelProvider(this).get(HomeViewModel.class);
+        HomeViewModel homeViewModel = new ViewModelProvider(requireActivity()).get(HomeViewModel.class);
 
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
         Log.d("Home Fragment", "Home Fragment-onCreatedView()");
 
-        final TextView textView = binding.textHome;
-        homeViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
-
-        //Edited-Start
-        mBtnBT_on = root.findViewById(R.id.btnBT_On);    //블루투스를 켜는 버튼 ID
-        mBtnBT_off = root.findViewById(R.id.btnBT_Off);  //블루투스를 끄는 버튼 ID
-        mBtnBT_Connect = root.findViewById(R.id.btnBT_Connect);  //연결 버튼
-        mBtnSendData = root.findViewById(R.id.btnSendData);  //전송 버튼
-        mTvBT_Status = root.findViewById(R.id.BT_Status);    //블루투스 상태 텍스트 뷰
-        homeText = root.findViewById(R.id.text_home);        //홈 텍스트 표시 (나중에 제거 예정)
-        rssiTextView = root.findViewById(R.id.rssi); //RSSI 상태 텍스트 뷰
-
+        // 버튼 및 텍스트뷰 선언
+        mBtnBT_on = root.findViewById(R.id.btnBT_On);           //블루투스를 켜는 버튼 ID
+        mBtnBT_off = root.findViewById(R.id.btnBT_Off);         //블루투스를 끄는 버튼 ID
+        mBtnBT_Connect = root.findViewById(R.id.btnBT_Connect); //연결 버튼
+        mBtnSendData = root.findViewById(R.id.btnSendData);     //전송 버튼
+        mBtnAlert_on = root.findViewById(R.id.btnAlert_On);     //도난방지 켜는 버튼
+        mBtnAlert_off = root.findViewById(R.id.btnAlert_Off);   //도난방지 끄는 버튼
+        
+        mTvBT_Status = root.findViewById(R.id.BT_Status);       //블루투스 상태 텍스트 뷰
+        Alert_Status = root.findViewById(R.id.Alert_Status);    //도난방지 상태 텍스트 뷰
+        homeText = root.findViewById(R.id.text_home);           //홈 텍스트 뷰
+        rssiTextView = root.findViewById(R.id.rssi);            //RSSI 상태 텍스트 뷰
+        
         window = requireActivity().getWindow();
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
 
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
-        //버튼 이벤트 리스너들 (람다 함수로 수정됨)
+        homeViewModel.getBluetoothStatusLiveData().observe(getViewLifecycleOwner(), bluetoothStatus -> mTvBT_Status.setText(bluetoothStatus));
+        homeViewModel.getAlertStatusLiveData().observe(getViewLifecycleOwner(), alert -> Alert_Status.setText(alert));
+        homeViewModel.getHomeTextLiveData().observe(getViewLifecycleOwner(), text -> homeText.setText(text));
+        homeViewModel.getRssiLiveData().observe(getViewLifecycleOwner(), rssi -> rssiTextView.setText(rssi));
+
+        //버튼 이벤트 리스너들
         //블루투스 ON 버튼
         mBtnBT_on.setOnClickListener(view -> {
             Log.d("Button Click", "Button clicked!");
@@ -85,6 +93,16 @@ public class HomeFragment extends Fragment {
                 Fragment_BT_on();
             } else {
                 Fragment_BT_on_Legacy();
+            }
+
+            if (mBluetoothAdapter.isEnabled()){
+                if (security == 1){
+                    mBtnAlert_on.setEnabled(false);
+                    mBtnAlert_off.setEnabled(true);
+                } else if (security == 0){
+                    mBtnAlert_on.setEnabled(true);
+                    mBtnAlert_off.setEnabled(false);
+                }
             }
         });
 
@@ -96,6 +114,12 @@ public class HomeFragment extends Fragment {
                 Fragment_BT_off();
             } else {
                 Fragment_BT_off_Legacy();
+            }
+
+            if (!mBluetoothAdapter.isEnabled()){
+                Fragment_security_OFF();
+                mBtnAlert_on.setEnabled(false);
+                mBtnAlert_off.setEnabled(false);
             }
         });
 
@@ -120,29 +144,18 @@ public class HomeFragment extends Fragment {
         });
         */
 
-        handler = new Handler();
-        runnable = new Runnable() {
-            @Override
-            public void run() {
-                Bundle args = getArguments();
-                if (args != null) {
-                    requireActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            String BT_Status = args.getString("BT_Status");
-                            String Home = args.getString("homeText");
-                            String Rssi = args.getString("Rssi");
+        // 도난방지 버튼
+        mBtnAlert_on.setOnClickListener(view -> {
+            Log.d("Button Click", "Button clicked!");
 
-                            mTvBT_Status.setText(BT_Status);
-                            homeText.setText(Home);
-                            rssiTextView.setText(Rssi);
-                        }
-                    });
-                }
-                handler.postDelayed(this, 1000);
-            }
-        };
-        handler.post(runnable);
+            Fragment_security_ON();
+        });
+
+        mBtnAlert_off.setOnClickListener(view -> {
+            Log.d("Button Click", "Button clicked!");
+
+            Fragment_security_OFF();
+        });
 
         return root;
     }
@@ -158,7 +171,8 @@ public class HomeFragment extends Fragment {
         super.onResume();
         Log.d("Home Fragment", "Home Fragment-onResume()");
 
-        handler.postDelayed(runnable, 1000);
+        menuNum = 1;
+        setMenuNum(menuNum);
 
         if (mBluetoothAdapter == null) {
             mTvBT_Status.setText("블루투스 지원하지 않음");
@@ -166,6 +180,8 @@ public class HomeFragment extends Fragment {
             mBtnBT_on.setEnabled(false);
             mBtnBT_off.setEnabled(false);
             mBtnBT_Connect.setEnabled(false);
+            mBtnAlert_on.setEnabled(false);
+            mBtnAlert_off.setEnabled(false);
         } else {
             if (mBluetoothAdapter.isEnabled()) {
                 mTvBT_Status.setText("블루투스 활성화");
@@ -173,21 +189,33 @@ public class HomeFragment extends Fragment {
                 mBtnBT_on.setEnabled(false);
                 mBtnBT_off.setEnabled(true);
                 mBtnBT_Connect.setEnabled(true);
+
+                if (security == 1){
+                    mBtnAlert_on.setEnabled(false);
+                    mBtnAlert_off.setEnabled(true);
+                } else if (security == 0){
+                    mBtnAlert_on.setEnabled(true);
+                    mBtnAlert_off.setEnabled(false);
+                }
             } else {
                 mTvBT_Status.setText("블루투스 비활성화");
                 window.setStatusBarColor(Color.parseColor("#F57C00"));
                 mBtnBT_on.setEnabled(true);
                 mBtnBT_off.setEnabled(false);
                 mBtnBT_Connect.setEnabled(false);
+                mBtnAlert_on.setEnabled(false);
+                mBtnAlert_off.setEnabled(false);
             }
         }
 
         Auto_startBluetoothDiscovery();
     }
 
-    public void setBluetoothComponent(BluetoothAdapter bluetoothAdapter, BluetoothManager bluetoothManager){
-        mBluetoothAdapter = bluetoothAdapter;
-        mBluetoothManager = bluetoothManager;
+    private void setMenuNum(int num){
+        MainActivity mainActivity = (MainActivity) getActivity();
+        if (mainActivity != null) {
+            mainActivity.setMenuNum(num);
+        }
     }
 
     @SuppressLint("NewApi")
@@ -235,12 +263,28 @@ public class HomeFragment extends Fragment {
         }
     }
 
+    public void Fragment_security_ON(){
+        MainActivity mainActivity = (MainActivity) getActivity();
+        if (mainActivity != null) {
+            security = mainActivity.security_ON();
+            mBtnAlert_on.setEnabled(false);
+            mBtnAlert_off.setEnabled(true);
+        }
+    }
+    public void Fragment_security_OFF(){
+        MainActivity mainActivity = (MainActivity) getActivity();
+        if (mainActivity != null) {
+            security = mainActivity.security_OFF();
+            mBtnAlert_on.setEnabled(true);
+            mBtnAlert_off.setEnabled(false);
+        }
+    }
+
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        binding = null;
-        handler.removeCallbacks(runnable);
-
         Log.d("Home Fragment", "Home Fragment-onDestroyView()");
+
+        binding = null;
     }
 }
