@@ -99,6 +99,23 @@ public class WeightFragment extends Fragment {
         setMenuNum(menuNum);
     }
 
+    // 송신 메서드
+    private void sendData_local(){
+        MainActivity mainActivity = (MainActivity) getActivity();
+        if (mainActivity != null) {
+            int data;
+            data = mainActivity.sendData(301);
+        }
+    }
+
+    // 수신 메서드
+    private void receiveData_local(){
+        MainActivity mainActivity = (MainActivity) getActivity();
+        if (mainActivity != null) {
+            mainActivity.receiveData();
+        }
+    }
+
     private void setMenuNum(int num){
         MainActivity mainActivity = (MainActivity) getActivity();
         if (mainActivity != null) {
