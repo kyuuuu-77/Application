@@ -56,7 +56,8 @@ public class HomeFragment extends Fragment {
     @SuppressLint("SetTextI18n")
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        HomeViewModel homeViewModel = new ViewModelProvider(requireActivity()).get(HomeViewModel.class);
+        HomeViewModel homeViewModel =
+                new ViewModelProvider(requireActivity()).get(HomeViewModel.class);
 
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
@@ -64,31 +65,32 @@ public class HomeFragment extends Fragment {
         Log.d("Home Fragment", "Home Fragment-onCreatedView()");
 
         // 버튼 및 텍스트뷰 선언
-        mBtnBT_on = root.findViewById(R.id.btnBT_On);           //블루투스를 켜는 버튼 ID
-        mBtnBT_off = root.findViewById(R.id.btnBT_Off);         //블루투스를 끄는 버튼 ID
-        mBtnBT_Connect = root.findViewById(R.id.btnBT_Connect); //연결 버튼
-        mBtnSendData = root.findViewById(R.id.btnSendData);     //전송 버튼
-        mBtnAlert_on = root.findViewById(R.id.btnAlert_On);     //도난방지 켜는 버튼
-        mBtnAlert_off = root.findViewById(R.id.btnAlert_Off);   //도난방지 끄는 버튼
+        mBtnBT_on = root.findViewById(R.id.btnBT_On);           // 블루투스를 켜는 버튼 ID
+        mBtnBT_off = root.findViewById(R.id.btnBT_Off);         // 블루투스를 끄는 버튼 ID
+        mBtnBT_Connect = root.findViewById(R.id.btnBT_Connect); // 연결 버튼
+        mBtnSendData = root.findViewById(R.id.btnSendData);     // 전송 버튼
+        mBtnAlert_on = root.findViewById(R.id.btnAlert_On);     // 도난방지 켜는 버튼
+        mBtnAlert_off = root.findViewById(R.id.btnAlert_Off);   // 도난방지 끄는 버튼
         
-        mTvBT_Status = root.findViewById(R.id.BT_Status);       //블루투스 상태 텍스트 뷰
-        Alert_Status = root.findViewById(R.id.Alert_Status);    //도난방지 상태 텍스트 뷰
-        homeText = root.findViewById(R.id.text_home);           //홈 텍스트 뷰
-        rssiTextView = root.findViewById(R.id.rssi);            //RSSI 상태 텍스트 뷰
+        mTvBT_Status = root.findViewById(R.id.BT_Status);       // 블루투스 상태 텍스트 뷰
+        Alert_Status = root.findViewById(R.id.Alert_Status);    // 도난방지 상태 텍스트 뷰
+        homeText = root.findViewById(R.id.text_home);           // 홈 텍스트 뷰
+        rssiTextView = root.findViewById(R.id.rssi);            // RSSI 상태 텍스트 뷰
         
         window = requireActivity().getWindow();
-        toolbar = root.findViewById(R.id.toolbar);   //툴바
+        toolbar = root.findViewById(R.id.toolbar);   // 툴바
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
 
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
+        // ViewModel 선언
         homeViewModel.getBluetoothStatusLiveData().observe(getViewLifecycleOwner(), bluetoothStatus -> mTvBT_Status.setText(bluetoothStatus));
         homeViewModel.getAlertStatusLiveData().observe(getViewLifecycleOwner(), alert -> Alert_Status.setText(alert));
         homeViewModel.getHomeTextLiveData().observe(getViewLifecycleOwner(), text -> homeText.setText(text));
         homeViewModel.getRssiLiveData().observe(getViewLifecycleOwner(), rssi -> rssiTextView.setText(rssi));
 
-        //버튼 이벤트 리스너들
-        //블루투스 ON 버튼
+        // 버튼 이벤트 리스너들
+        // 블루투스 ON 버튼
         mBtnBT_on.setOnClickListener(view -> {
             Log.d("Button Click", "Button clicked!");
 
@@ -113,7 +115,7 @@ public class HomeFragment extends Fragment {
             }
         });
 
-        //블루투스 OFF 버튼
+        // 블루투스 OFF 버튼
         mBtnBT_off.setOnClickListener(view -> {
             Log.d("Button Click", "Button clicked!");
 
@@ -134,14 +136,14 @@ public class HomeFragment extends Fragment {
             }
         });
 
-        //연결 버튼
+        // 연결 버튼
         mBtnBT_Connect.setOnClickListener(view -> {
             Log.d("Button Click", "Button clicked!");
 
             Fragment_listPairedDevices();
         });
 
-        //전송 버튼
+        // 전송 버튼
         mBtnSendData.setEnabled(false); //전송 버튼 필요 없으므로 임시 비활성화 -> 나중에 삭제 예정
         /*
         mBtnSendData.setOnClickListener(view -> {

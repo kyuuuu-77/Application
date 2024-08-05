@@ -8,8 +8,6 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
-
-
     <!--Material 디자인 색상 https://m2.material.io/design/color/the-color-system.html#tools-for-picking-colors -->
     <color name="red_700">#D32F2F</color>
     <color name="red_500">#F44336</color>
