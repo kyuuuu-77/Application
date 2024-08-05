@@ -47,8 +47,8 @@ public class WeightFragment extends Fragment {
 
         Log.d("Weight Fragment", "Weight Fragment-onCreatedView()");
 
-        final TextView textView = binding.textWeight;
-        weightViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
+        //final TextView textView = binding.textWeight;
+        //weightViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
 
         // 알림 버튼 설정
         root.findViewById(R.id.weight_btn).setOnClickListener(v -> createNotif());

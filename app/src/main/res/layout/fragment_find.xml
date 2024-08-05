@@ -36,7 +36,7 @@
         tools:ignore="MissingConstraints" />
 
     <Button
-        android:id="@+id/call"
+        android:id="@+id/find_bag"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="516dp"
