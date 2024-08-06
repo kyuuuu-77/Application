@@ -6,14 +6,40 @@ import androidx.lifecycle.ViewModel;
 
 public class WeightViewModel extends ViewModel {
 
-    private final MutableLiveData<String> mText;
+    private final MutableLiveData<String> weightNowLiveData = new MutableLiveData<>();
+    private final MutableLiveData<String> weightTpsLiveData = new MutableLiveData<>();
+    private final MutableLiveData<String> looseWeightLiveData = new MutableLiveData<>();
+    private final MutableLiveData<String> weightBtnLiveData = new MutableLiveData<>();
 
-    public WeightViewModel() {
-        mText = new MutableLiveData<>();
-        mText.setValue("여기에 무게 정보를 표시합니다.");
+    public LiveData<String> getWeightNowLiveData() {
+        return weightNowLiveData;
     }
 
-    public LiveData<String> getText() {
-        return mText;
+    public LiveData<String> getWeightTpsLiveData(){
+        return weightTpsLiveData;
+    }
+
+    public LiveData<String> getLooseWeightLiveData() {
+        return looseWeightLiveData;
+    }
+
+    public LiveData<String> getWeightBtnLiveData() {
+        return weightBtnLiveData;
+    }
+
+    public void setWeightNow(String weight) {
+        weightNowLiveData.setValue(weight);
+    }
+
+    public void setWeightTps(String tps){
+        weightTpsLiveData.setValue(tps);
+    }
+
+    public void setLooseWeight(String loose) {
+        looseWeightLiveData.setValue(loose);
+    }
+
+    public void setWeightBtn(String btn) {
+        weightBtnLiveData.setValue(btn);
     }
 }

@@ -8,9 +8,10 @@
     <string name="action_settings">설정</string>
 
     <string name="menu_home">메인 화면</string>
-    <string name="menu_find">내 캐리어 찾기</string>
-    <string name="menu_weight">내 캐리어 무게 측정</string>
+    <string name="menu_find">캐리어 찾기</string>
+    <string name="menu_weight">캐리어 무게 측정</string>
     <string name="menu_info">내 캐리어 정보</string>
+    <string name="menu_alert">캐리어 도난방지</string>
 
     <string name="splash_name">Suitcase Genie</string>
     <string name="weight_popup">Notification</string>
@@ -28,6 +29,7 @@
     <string name="weight">AX Kg</string>
     <string name="weight_info">20kg-XXkg=aa 초과합니다.</string>
     <string name="measure_weight">무게측정 시작!</string>
-    <string name="rssi_value">RSSI 센서값 표시</string>
+    <string name="rssi_value">RSSI 센서값</string>
     <string name="check_battery">배터리 잔량</string>
+
 </resources>

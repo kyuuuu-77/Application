@@ -25,6 +25,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.widget.Toolbar;
 
+import com.arduino.Application.ui.alert.AlertViewModel;
 import com.arduino.Application.ui.find.FindViewModel;
 import com.arduino.Application.ui.home.HomeViewModel;
 import com.arduino.Application.ui.info.InfoViewModel;
@@ -94,14 +95,18 @@ public class MainActivity extends AppCompatActivity {
 
     //viewModel 사용을 위한 변수
     private HomeViewModel viewModel_home;
-    private WeightViewModel viewModel_weight;
     private FindViewModel viewModel_find;
+    private WeightViewModel viewModel_weight;
+    private AlertViewModel viewModel_alert;
     private InfoViewModel viewModel_info;
 
     //프로그램 동작을 위한 전역 변수
     protected int menuNum_Global = 0;
     private Boolean isDialogShowing = false;
     private int security = 0;
+
+    // 무게측정 변수
+    private double[] weight = {0.0, 0.0};   //weight, tps
 
     //윈도우 및 툴바 관련 변수
     Window window;
@@ -129,7 +134,7 @@ public class MainActivity extends AppCompatActivity {
         NavigationView navigationView = binding.navView;
 
         mAppBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.nav_home, R.id.nav_find, R.id.nav_weight, R.id.nav_info)
+                R.id.nav_home, R.id.nav_find, R.id.nav_weight, R.id.nav_info, R.id.nav_alert)
                 .setOpenableLayout(drawer)
                 .build();
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
@@ -153,6 +158,7 @@ public class MainActivity extends AppCompatActivity {
         viewModel_home = new ViewModelProvider(this).get(HomeViewModel.class);
         viewModel_weight = new ViewModelProvider(this).get(WeightViewModel.class);
         viewModel_find = new ViewModelProvider(this).get(FindViewModel.class);
+        viewModel_alert = new ViewModelProvider(this).get(AlertViewModel.class);
         viewModel_info = new ViewModelProvider(this).get(InfoViewModel.class);
 
         //윈도우를 생성하는 함수
@@ -619,6 +625,19 @@ public class MainActivity extends AppCompatActivity {
         Toast.makeText(getApplicationContext(), "도난방지가 꺼졌습니다.", Toast.LENGTH_SHORT).show();
         viewModel_home.setAlertStatus("도난방지 Disabled");
         return security;
+    }
+
+    @SuppressLint("DefaultLocale")
+    public double measureWeight(double maxTps){
+        weight[0] += 1.1;
+        weight[1] = maxTps;
+        viewModel_weight.setWeightNow(String.format("%.1f", weight[0]) +" Kg");
+        viewModel_weight.setWeightBtn("무게측정 완료!");
+        return weight[0];
+    }
+
+    public double[] checkWeightSetting(){
+        return weight;  //weight, tps
     }
 
     protected void onResume() {

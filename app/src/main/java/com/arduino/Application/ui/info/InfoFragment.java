@@ -39,7 +39,7 @@ public class InfoFragment extends Fragment {
         super.onResume();
         Log.d("Info Fragment", "Info Fragment-onResume()");
 
-        menuNum = 4;
+        menuNum = 5;
         setMenuNum(menuNum);
     }
 
