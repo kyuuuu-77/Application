@@ -101,9 +101,9 @@ public class MainActivity extends AppCompatActivity {
     private InfoViewModel viewModel_info;
 
     //프로그램 동작을 위한 전역 변수
-    protected int menuNum_Global = 0;
     private Boolean isDialogShowing = false;
     private int security = 0;
+    private int menuNum_Global = 1;    // 1->home, 2->find, 3->weight, 4->alert, 5->info
 
     // 무게측정 변수
     private double[] weight = {0.0, 0.0};   //weight, tps
@@ -202,7 +202,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    // 블루투스를 켜는 함수 -> SDK 31 이상 (안드로이드 12 이상)
+    // 블루투스를 켜는 메서드 -> SDK 31 이상 (안드로이드 12 이상)
     @RequiresApi(api = Build.VERSION_CODES.S)
     public void BT_on() {
         if (mBluetoothAdapter == null) {
@@ -222,7 +222,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    // 블루투스를 켜는 함수 -> (레거시용)
+    // 블루투스를 켜는 메서드 -> (레거시용)
     @SuppressLint("MissingPermission")
     public void BT_on_Legacy() {
         if (mBluetoothAdapter == null) {
@@ -240,7 +240,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    // 블루투스를 끄는 함수 -> SDK 31 이상 (안드로이드 12 이상)
+    // 블루투스를 끄는 메서드 -> SDK 31 이상 (안드로이드 12 이상)
     @RequiresApi(api = Build.VERSION_CODES.S)
     public void BT_off() {
         if (mBluetoothAdapter.isEnabled()) {
@@ -258,7 +258,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    // 블루투스를 끄는 함수 -> (레거시용)
+    // 블루투스를 끄는 메서드 -> (레거시용)
     @SuppressLint("MissingPermission")
     public void BT_off_Legacy() {
         if (mBluetoothAdapter.isEnabled()) {
@@ -343,6 +343,7 @@ public class MainActivity extends AppCompatActivity {
             // 연결이 성공적으로 이루어졌을 때 추가 작업 수행
             Toast.makeText(getApplicationContext(), "디바이스와 연결되었습니다.", Toast.LENGTH_SHORT).show();
             viewModel_home.setHomeText("스마트 캐리어에 연결 되었습니다!");
+            viewModel_info.setInfoText("캐리어와 연결됨");
             startRSSIMeasurement();
         } catch (IOException e) {
             Toast.makeText(getApplicationContext(), "디바이스 연결 실패: " + e.getMessage(), Toast.LENGTH_SHORT).show();
@@ -375,10 +376,12 @@ public class MainActivity extends AppCompatActivity {
             if (Objects.equals(selectedDeviceName, "FB301(73F06C)")){
                 Toast.makeText(getApplicationContext(), "연결 성공!", Toast.LENGTH_SHORT).show();
                 viewModel_home.setHomeText("스마트 캐리어에 연결 되었습니다!");
+                viewModel_info.setInfoText("캐리어와 연결됨");
                 startRSSIMeasurement();
             }
             else{
                 viewModel_home.setHomeText("페어링 된 디바이스는 스마트 캐리어가 아닙니다!");
+                viewModel_info.setInfoText("잘못된 디바이스와 연결");
             }
         } catch (IOException e) {   //연결에 실패하면 에러 표시
             Toast.makeText(getApplicationContext(), "디바이스 연결 중 오류 발생!", Toast.LENGTH_SHORT).show();
@@ -478,7 +481,7 @@ public class MainActivity extends AppCompatActivity {
                     dialog.dismiss();
                     Toast.makeText(getApplicationContext(), "취소 되었습니다.", Toast.LENGTH_SHORT).show();
                 })
-                .show();
+                .setCancelable(false).show();
     }
     
     // 데이터 송수신 클래스 (스레드 사용)
@@ -536,16 +539,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // 데이터를 송신하는 메서드
-    public int sendData(int data){
+    public int sendData(){
         //데이터 송신 코드 작성
-        switch (data){
-            case 201:   // 알람이 동작하게 설정
-                break;
-            case 202:   // 알람이 멈추게 설정
-                break;
-            default:    // 잘못된 값 전달 된 경우
-                break;
-        }
         return -1;
     }
 
@@ -555,16 +550,18 @@ public class MainActivity extends AppCompatActivity {
         return -1;
     }
 
-    //메뉴 번호를 저장하고 메뉴값을 아두이노에 송신하는 메서드
+    // 메뉴 번호를 저장하고 아두이노에 송신하는 메서드
     public void setMenuNum(int num){
         menuNum_Global = num;
 
         if (mThreadConnectedBluetooth != null) {
-            String cmdText = String.valueOf(menuNum_Global);
+            String cmdText = String.valueOf(menuNum_Global);    // String형으로 메뉴값 전달
             for (int i = 0; i < cmdText.length(); i++){
                 mThreadConnectedBluetooth.write(cmdText.substring(i,i+1));
             }
-            Log.d("sendData", "데이터 전송 성공!");
+            Log.d("setMenuNum", "메뉴값 전송 완료");
+        } else {
+            Log.d("setMenuNum", "메뉴값 전송 실패");
         }
     }
 
@@ -587,7 +584,7 @@ public class MainActivity extends AppCompatActivity {
             super.onReadRemoteRssi(gatt, rssi, status);
 
             //handler를 통해서 RSSI 값을 viewModel에 전달
-            handler_RSSI.post(() -> viewModel_home.setRssi("RSSI: " + rssi + " dBm"));
+            handler_RSSI.post(() -> viewModel_info.setRssi("RSSI: " + rssi + " dBm"));
         }
     };
 
@@ -607,7 +604,6 @@ public class MainActivity extends AppCompatActivity {
             bluetoothGatt.disconnect();
             bluetoothGatt.close();
             handler_RSSI.removeCallbacks(runnable_RSSI);
-            viewModel_home.setRssi("RSSI");
         }
     }
 
@@ -629,11 +625,19 @@ public class MainActivity extends AppCompatActivity {
 
     @SuppressLint("DefaultLocale")
     public double measureWeight(double maxTps){
-        weight[0] += 1.1;
-        weight[1] = maxTps;
-        viewModel_weight.setWeightNow(String.format("%.1f", weight[0]) +" Kg");
-        viewModel_weight.setWeightBtn("무게측정 완료!");
-        return weight[0];
+        if (mThreadConnectedBluetooth != null){
+            // 여기에 블루투스 통신으로 무게값을 불러오는 코드 작성 예정
+            //
+            //
+            weight[0] += 1.1;
+            weight[1] = maxTps;
+            viewModel_weight.setWeightNow(String.format("%.1f", weight[0]) +" Kg");
+            viewModel_weight.setWeightBtn("무게 다시 측정");
+            return weight[0];
+        } else{
+            viewModel_weight.setWeightBtn("무게 측정 실패");
+            return -1;
+        }
     }
 
     public double[] checkWeightSetting(){

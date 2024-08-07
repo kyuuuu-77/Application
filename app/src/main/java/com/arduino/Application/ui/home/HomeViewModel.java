@@ -23,10 +23,6 @@ public class HomeViewModel extends ViewModel {
         return homeTextLiveData;
     }
 
-    public LiveData<String> getRssiLiveData() {
-        return rssiLiveData;
-    }
-
     public void setBluetoothStatus(String status) {
         bluetoothStatusLiveData.setValue(status);
     }
@@ -37,9 +33,5 @@ public class HomeViewModel extends ViewModel {
 
     public void setHomeText(String text) {
         homeTextLiveData.setValue(text);
-    }
-
-    public void setRssi(String rssi) {
-        rssiLiveData.setValue(rssi);
     }
 }

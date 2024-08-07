@@ -6,14 +6,22 @@ import androidx.lifecycle.ViewModel;
 
 public class InfoViewModel extends ViewModel {
 
-    private final MutableLiveData<String> mText;
+    private final MutableLiveData<String> rssiLiveData = new MutableLiveData<>();
+    private final MutableLiveData<String> infoTextLiveData = new MutableLiveData<>();
 
-    public InfoViewModel() {
-        mText = new MutableLiveData<>();
-        mText.setValue("여기에 정보를 표시합니다.");
+    public LiveData<String> getRssiLiveData() {
+        return rssiLiveData;
     }
 
-    public LiveData<String> getText() {
-        return mText;
+    public LiveData<String> getInfoTextLiveData() {
+        return infoTextLiveData;
+    }
+
+    public void setRssi(String rssi) {
+        rssiLiveData.setValue(rssi);
+    }
+
+    public void setInfoText(String text) {
+        infoTextLiveData.setValue(text);
     }
 }

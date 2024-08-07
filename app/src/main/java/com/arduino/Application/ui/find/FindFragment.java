@@ -75,7 +75,7 @@ public class FindFragment extends Fragment {
 
             if (findDevice == 1){
                 // 알람이 울리게 동작
-                data = mainActivity.sendData(201);  //201 = 알람 ON, 202 = 알림 OFF
+                data = mainActivity.sendData();
                 if (data == 1){
                     Log.d("Alert-ON", "알람 컨트롤 성공!");
                 }else{
@@ -83,7 +83,7 @@ public class FindFragment extends Fragment {
                 }
             } else{
                 // 알람이 멈추게 동작
-                data = mainActivity.sendData(202);  //201 = 알람 ON, 202 = 알림 OFF
+                data = mainActivity.sendData();
                 if (data == 1){
                     Log.d("Alert-ON", "알람 컨트롤 성공!");
                 }else{

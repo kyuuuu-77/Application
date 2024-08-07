@@ -7,6 +7,7 @@ import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -41,6 +42,7 @@ public class WeightFragment extends Fragment {
     Button mBtnWeight;
 
     private FragmentWeightBinding binding;
+    private BluetoothAdapter mBluetoothAdapter;
 
     private int menuNum;
     private double[] weight = {0, 0};   // weight, tps
@@ -68,6 +70,8 @@ public class WeightFragment extends Fragment {
         weightViewModel.getLooseWeightLiveData().observe(getViewLifecycleOwner(), loose -> looseWeight.setText(loose));
         weightViewModel.getWeightBtnLiveData().observe(getViewLifecycleOwner(), btn -> mBtnWeight.setText(btn));
 
+        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+
         // 버튼 이벤트 리스너
         // 무게 측정 버튼
         mBtnWeight.setOnClickListener(view -> {
@@ -80,7 +84,8 @@ public class WeightFragment extends Fragment {
 
         return root;
     }
-
+    
+    // 무게 측정 메서드
     @SuppressLint("SetTextI18n")
     private void measureWeight(){
         MainActivity mainActivity = (MainActivity) getActivity();
@@ -88,22 +93,28 @@ public class WeightFragment extends Fragment {
         weight[1] = maxTps;
         if (mainActivity != null) {
             weight[0] = mainActivity.measureWeight(maxTps);
-            if (weight[0] > 32.0) {
-                showWarningDialog();
-                looseWeight.setText("32Kg을 초과했습니다.");
-                weightNow.setTextColor(Color.parseColor("#FF3700B3"));
-            } else if (weight[0] > maxTps) {
-                looseWeight.setText(maxTps+"Kg을 초과했습니다.");
-                weightNow.setTextColor(Color.parseColor("#D32F2F"));
-            } else if (weight[0] > maxTps - 2) {
-                looseWeight.setText("허용 무게를 초과하지 않았습니다.");
-                weightNow.setTextColor(Color.parseColor("#F57C00"));
-            } else {
-                looseWeight.setText("허용 무게를 초과하지 않았습니다.");
+            mBtnWeight.setBackgroundColor(Color.parseColor("#2196F3"));
+            if (weight[0] == -1){               // 측정에 실패한 경우
+                measureFailDialog();
+                mBtnWeight.setBackgroundColor(Color.parseColor("#D32F2F"));
+                looseWeight.setText("무게 측정에 실패하였습니다.");
+            }
+            else{
+                if (weight[0] > 32.0) {             // 32kg을 초과한 경우
+                    showWarningDialog();
+                    looseWeight.setText("32Kg을 초과했습니다.");
+                    weightNow.setTextColor(Color.parseColor("#D32F2F"));
+                } else if (weight[0] > maxTps) {    // 허용 무게를 초과한 경우
+                    looseWeight.setText(maxTps+"Kg을 초과했습니다.");
+                    weightNow.setTextColor(Color.parseColor("#F57C00"));
+                } else {                            // 무게를 초과하지 않은 경우
+                    looseWeight.setText("허용 무게를 초과하지 않았습니다.");
+                }
             }
         }
     }
-
+    
+    // 측정한 무게와 허용 무게 세팅값을 불러오는 메서드
     private double[] checkWeightSetting(){
         MainActivity mainActivity = (MainActivity) getActivity();
         if (mainActivity != null) {
@@ -112,10 +123,28 @@ public class WeightFragment extends Fragment {
         return null;
     }
 
+    // 무게가 32kg을 초과할 경우 경고 다이얼로그를 표시하는 메서드
     private void showWarningDialog(){
         new AlertDialog.Builder(getContext())
                 .setTitle("경고!").setMessage("무게가 32Kg을 초과하였습니다.\nIATA 규정으로 인하여 32Kg 이상의 수화물은 항공기에 위탁 수화물로 맡길 수 없습니다.")
+                .setPositiveButton("확인", (dialog, which) -> dialog.dismiss()).setCancelable(false)
+                .create().show();
+    }
+
+    // 블루투스가 꺼져 있을때 다이얼로그를 표시하는 메서드
+    private void bluetoothNotWorkDialog(){
+        new AlertDialog.Builder(getContext())
+                .setTitle("무게 측정 비활성화 됨").setMessage("블루투스가 꺼져 있어 무게 측정을 할 수 없습니다.")
                 .setPositiveButton("확인", (dialog, which) -> dialog.dismiss())
+                .create().show();
+    }
+
+    // 측정에 실패 했을때 다이얼로그를 표시하는 메서
+    private void measureFailDialog(){
+        new AlertDialog.Builder(getContext())
+                .setTitle("무게 측정 실패").setMessage("무게 측정에 실패했습니다.\n스마트 캐리어와 연결되어 있는지 확인 후 다시 시도하세요.")
+                    .setPositiveButton("다시 시도", (dialog, which) -> measureWeight())
+                .setNegativeButton("취소", (dialog, which) -> dialog.dismiss()).setCancelable(false)
                 .create().show();
     }
 
@@ -129,21 +158,27 @@ public class WeightFragment extends Fragment {
 
         weight = checkWeightSetting();
 
-        if (weight != null && weight[0] != 0) {
+        if (!mBluetoothAdapter.isEnabled()){
+            bluetoothNotWorkDialog();
+            mBtnWeight.setEnabled(false);
+        }
+
+        if (weight != null && weight[0] != 0 && weight[0] != -1) {
             double maxTps = weight[1];
-            if (weight[0] > 32.0) {
+            mBtnWeight.setBackgroundColor(Color.parseColor("#2196F3"));
+            if (weight[0] > 32.0) {             // 32kg을 초과한 경우
                 showWarningDialog();
                 looseWeight.setText("32Kg을 초과했습니다.");
-                weightNow.setTextColor(Color.parseColor("#FF3700B3"));
-            } else if (weight[0] > maxTps) {
-                looseWeight.setText(maxTps+"Kg을 초과했습니다.");
                 weightNow.setTextColor(Color.parseColor("#D32F2F"));
-            } else if (weight[0] > maxTps - 2) {
-                looseWeight.setText("허용 무게를 초과하지 않았습니다.");
+            } else if (weight[0] > maxTps) {    // 허용 무게를 초과한 경우
+                looseWeight.setText(maxTps+"Kg을 초과했습니다.");
                 weightNow.setTextColor(Color.parseColor("#F57C00"));
-            } else {
+            } else {                            // 무게를 초과하지 않은 경우
                 looseWeight.setText("허용 무게를 초과하지 않았습니다.");
             }
+        } else if (weight != null && weight[0] == -1){
+            mBtnWeight.setBackgroundColor(Color.parseColor("#D32F2F"));
+            looseWeight.setText("무게 측정에 실패하였습니다.");
         }
     }
 
@@ -152,7 +187,7 @@ public class WeightFragment extends Fragment {
         MainActivity mainActivity = (MainActivity) getActivity();
         if (mainActivity != null) {
             int data;
-            data = mainActivity.sendData(301);
+            data = mainActivity.sendData();
         }
     }
 

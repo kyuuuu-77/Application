@@ -16,7 +16,6 @@ import android.widget.TextView;
 import android.widget.Toolbar;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -34,14 +33,12 @@ public class HomeFragment extends Fragment {
     Button mBtnBT_on;
     Button mBtnBT_off;
     Button mBtnBT_Connect;
-    Button mBtnSendData;
     Button mBtnAlert_on;
     Button mBtnAlert_off;
     
     TextView mTvBT_Status;
     TextView Alert_Status;
     TextView homeText;
-    TextView rssiTextView;
 
     Window window;
     Toolbar toolbar;
@@ -68,14 +65,12 @@ public class HomeFragment extends Fragment {
         mBtnBT_on = root.findViewById(R.id.btnBT_On);           // 블루투스를 켜는 버튼 ID
         mBtnBT_off = root.findViewById(R.id.btnBT_Off);         // 블루투스를 끄는 버튼 ID
         mBtnBT_Connect = root.findViewById(R.id.btnBT_Connect); // 연결 버튼
-        mBtnSendData = root.findViewById(R.id.btnSendData);     // 전송 버튼
         mBtnAlert_on = root.findViewById(R.id.btnAlert_On);     // 도난방지 켜는 버튼
         mBtnAlert_off = root.findViewById(R.id.btnAlert_Off);   // 도난방지 끄는 버튼
         
         mTvBT_Status = root.findViewById(R.id.BT_Status);       // 블루투스 상태 텍스트 뷰
         Alert_Status = root.findViewById(R.id.Alert_Status);    // 도난방지 상태 텍스트 뷰
         homeText = root.findViewById(R.id.text_home);           // 홈 텍스트 뷰
-        rssiTextView = root.findViewById(R.id.rssi);            // RSSI 상태 텍스트 뷰
         
         window = requireActivity().getWindow();
         toolbar = root.findViewById(R.id.toolbar);   // 툴바
@@ -87,7 +82,6 @@ public class HomeFragment extends Fragment {
         homeViewModel.getBluetoothStatusLiveData().observe(getViewLifecycleOwner(), bluetoothStatus -> mTvBT_Status.setText(bluetoothStatus));
         homeViewModel.getAlertStatusLiveData().observe(getViewLifecycleOwner(), alert -> Alert_Status.setText(alert));
         homeViewModel.getHomeTextLiveData().observe(getViewLifecycleOwner(), text -> homeText.setText(text));
-        homeViewModel.getRssiLiveData().observe(getViewLifecycleOwner(), rssi -> rssiTextView.setText(rssi));
 
         // 버튼 이벤트 리스너들
         // 블루투스 ON 버튼
@@ -143,27 +137,14 @@ public class HomeFragment extends Fragment {
             Fragment_listPairedDevices();
         });
 
-        // 전송 버튼
-        mBtnSendData.setEnabled(false); //전송 버튼 필요 없으므로 임시 비활성화 -> 나중에 삭제 예정
-        /*
-        mBtnSendData.setOnClickListener(view -> {
-            if (mThreadConnectedBluetooth != null) {
-                String cmdText = mTv_SendData.getText().toString();
-                for (int i = 0; i < cmdText.length(); i++) {
-                    mThreadConnectedBluetooth.write(cmdText.substring(i, i + 1));
-                }
-                mTv_SendData.setText("");
-            }
-        });
-        */
-
-        // 도난방지 버튼
+        // 도난방지 ON 버튼
         mBtnAlert_on.setOnClickListener(view -> {
             Log.d("Button Click", "Button clicked!");
 
             Fragment_security_ON();
         });
 
+        // 도난방지 OFF 버튼
         mBtnAlert_off.setOnClickListener(view -> {
             Log.d("Button Click", "Button clicked!");
 
@@ -171,13 +152,6 @@ public class HomeFragment extends Fragment {
         });
 
         return root;
-    }
-
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        Log.d("Home Fragment", "Home Fragment-onViewCreated()");
     }
 
     public void onResume(){
@@ -221,6 +195,7 @@ public class HomeFragment extends Fragment {
             }
         }
 
+        // MainActivity를 통해 캐리어 자동 검색
         Auto_startBluetoothDiscovery();
     }
 
