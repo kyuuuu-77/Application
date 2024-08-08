@@ -2,6 +2,7 @@ package com.arduino.Application;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
@@ -642,7 +643,9 @@ public class MainActivity extends AppCompatActivity {
             // 무게값 초기화
             data = null;
 
+            // 동작값을 먼저 전송 -> 캐리어에서 값 인식 후 무게값 전달
             mThreadConnectedBluetooth.write("menu 3");
+
             int cnt = 0;
             while (true) {
                 cnt ++;
@@ -659,6 +662,7 @@ public class MainActivity extends AppCompatActivity {
             if (data == null) {
                 return -1;
             }
+
             double tmp_weight = Double.parseDouble(data);
             weight[0] = tmp_weight;
             weight[1] = maxTps;

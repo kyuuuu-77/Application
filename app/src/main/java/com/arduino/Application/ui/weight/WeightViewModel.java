@@ -15,7 +15,7 @@ public class WeightViewModel extends ViewModel {
         return weightNowLiveData;
     }
 
-    public LiveData<String> getWeightTpsLiveData(){
+    public LiveData<String> getWeightTpsLiveData() {
         return weightTpsLiveData;
     }
 
@@ -31,7 +31,7 @@ public class WeightViewModel extends ViewModel {
         weightNowLiveData.setValue(weight);
     }
 
-    public void setWeightTps(String tps){
+    public void setWeightTps(String tps) {
         weightTpsLiveData.setValue(tps);
     }
 

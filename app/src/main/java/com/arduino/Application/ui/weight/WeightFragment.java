@@ -123,7 +123,6 @@ public class WeightFragment extends Fragment {
         return null;
     }
 
-
     // 무게가 32kg을 초과할 경우 경고 다이얼로그를 표시하는 메서드
     private void showWarningDialog(){
         new AlertDialog.Builder(getContext())
@@ -180,23 +179,6 @@ public class WeightFragment extends Fragment {
         } else if (weight != null && weight[0] == -1){
             mBtnWeight.setBackgroundColor(Color.parseColor("#D32F2F"));
             looseWeight.setText("무게 측정에 실패하였습니다.");
-        }
-    }
-
-    // 송신 메서드
-    private void sendData_local(){
-        MainActivity mainActivity = (MainActivity) getActivity();
-        if (mainActivity != null) {
-            int data;
-            data = mainActivity.sendData();
-        }
-    }
-
-    // 수신 메서드
-    private void receiveData_local(){
-        MainActivity mainActivity = (MainActivity) getActivity();
-        if (mainActivity != null) {
-            mainActivity.receiveData();
         }
     }
 
