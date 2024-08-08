@@ -97,18 +97,15 @@ public class WeightFragment extends Fragment {
             if (weight[0] == -1){               // 측정에 실패한 경우
                 measureFailDialog();
                 mBtnWeight.setBackgroundColor(Color.parseColor("#D32F2F"));
-                looseWeight.setText("무게 측정에 실패하였습니다.");
             }
             else{
                 if (weight[0] > 32.0) {             // 32kg을 초과한 경우
                     showWarningDialog();
-                    looseWeight.setText("32Kg을 초과했습니다.");
                     weightNow.setTextColor(Color.parseColor("#D32F2F"));
                 } else if (weight[0] > maxTps) {    // 허용 무게를 초과한 경우
-                    looseWeight.setText(maxTps+"Kg을 초과했습니다.");
                     weightNow.setTextColor(Color.parseColor("#F57C00"));
                 } else {                            // 무게를 초과하지 않은 경우
-                    looseWeight.setText("허용 무게를 초과하지 않았습니다.");
+                    weightNow.setTextColor(Color.parseColor("#319EF2"));
                 }
             }
         }
@@ -161,6 +158,8 @@ public class WeightFragment extends Fragment {
         if (!mBluetoothAdapter.isEnabled()){
             bluetoothNotWorkDialog();
             mBtnWeight.setEnabled(false);
+        } else {
+            mBtnWeight.setEnabled(true);
         }
 
         if (weight != null && weight[0] != 0 && weight[0] != -1) {
@@ -168,17 +167,14 @@ public class WeightFragment extends Fragment {
             mBtnWeight.setBackgroundColor(Color.parseColor("#2196F3"));
             if (weight[0] > 32.0) {             // 32kg을 초과한 경우
                 showWarningDialog();
-                looseWeight.setText("32Kg을 초과했습니다.");
                 weightNow.setTextColor(Color.parseColor("#D32F2F"));
             } else if (weight[0] > maxTps) {    // 허용 무게를 초과한 경우
-                looseWeight.setText(maxTps+"Kg을 초과했습니다.");
                 weightNow.setTextColor(Color.parseColor("#F57C00"));
             } else {                            // 무게를 초과하지 않은 경우
-                looseWeight.setText("허용 무게를 초과하지 않았습니다.");
+                weightNow.setTextColor(Color.parseColor("#319EF2"));
             }
-        } else if (weight != null && weight[0] == -1){
+        } else if (weight != null && weight[0] == -1){  // 무게 측정 실패한 경우
             mBtnWeight.setBackgroundColor(Color.parseColor("#D32F2F"));
-            looseWeight.setText("무게 측정에 실패하였습니다.");
         }
     }
 

@@ -667,9 +667,19 @@ public class MainActivity extends AppCompatActivity {
             weight[0] = tmp_weight;
             weight[1] = maxTps;
             viewModel_weight.setWeightNow(String.format("%.1f", weight[0]) +" Kg");
+
+            if (weight[0] > 32){                    // 32kg 초과시
+                viewModel_weight.setLooseWeight("32Kg을 초과했습니다.");
+            } else if (weight[0] > weight[1]){      // 허용무게 초과시
+                viewModel_weight.setLooseWeight(String.format("%.1f", weight[0]-weight[1]) + " Kg  초과했습니다.");
+            } else {                                // 무게 초과하지 않은 경우
+                viewModel_weight.setLooseWeight("허용 무게를 초과하지 않았습니다.");
+            }
+
             viewModel_weight.setWeightBtn("무게 다시 측정");
             return weight[0];
         } else {
+            viewModel_weight.setLooseWeight("무게 측정에 실패하였습니다.");
             viewModel_weight.setWeightBtn("무게 측정 실패");
             return -1;
         }
