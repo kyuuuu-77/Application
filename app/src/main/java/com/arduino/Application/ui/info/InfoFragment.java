@@ -27,6 +27,7 @@ public class InfoFragment extends Fragment {
     private FragmentInfoBinding binding;
 
     private int menuNum;
+    private int status;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -58,14 +59,17 @@ public class InfoFragment extends Fragment {
         return root;
     }
 
-    public void onResume(){
-        super.onResume();
-        Log.d("Info Fragment", "Info Fragment-onResume()");
-
-        menuNum = 5;
-        setMenuNum(menuNum);
+    // 연결 상태를 확인하는 메서드
+    private int checkConnection() {
+        MainActivity mainActivity = (MainActivity) getActivity();
+        if (mainActivity != null) {
+            return mainActivity.checkConnection();
+        } else {
+            return 0;
+        }
     }
 
+    // 메뉴를 설정하는 메서드
     private void setMenuNum(int num){
         MainActivity mainActivity = (MainActivity) getActivity();
         if (mainActivity != null) {
@@ -73,10 +77,38 @@ public class InfoFragment extends Fragment {
         }
     }
 
+    // RSSI 값을 측정하는 메서드
+    private void rssiMeasureStart(){
+        MainActivity mainActivity = (MainActivity) getActivity();
+        if (mainActivity != null) {
+            mainActivity.startRSSIMeasurement();
+        }
+    }
+
+    public void onResume(){
+        super.onResume();
+        Log.d("Info Fragment", "Info Fragment-onResume()");
+
+        menuNum = 5;
+        setMenuNum(menuNum);
+
+        status = checkConnection();
+        if (status == 1){
+            rssiMeasureStart();
+        }
+    }
+
     @Override
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
+
+        MainActivity mainActivity = (MainActivity) getActivity();
+
+        // RSSI 값 측정 중지
+        if (mainActivity != null) {
+            mainActivity.stopRSSIMeasurement();
+        }
 
         Log.d("Info Fragment", "Info Fragment-onDestroyView()");
     }

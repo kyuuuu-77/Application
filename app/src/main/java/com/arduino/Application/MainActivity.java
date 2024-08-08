@@ -15,6 +15,7 @@ import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.os.SystemClock;
 import android.util.Log;
@@ -104,6 +105,7 @@ public class MainActivity extends AppCompatActivity {
     private Boolean isDialogShowing = false;
     private int security = 0;
     private int menuNum_Global = 1;    // 1->home, 2->find, 3->weight, 4->alert, 5->info
+    private String data;
 
     // 무게측정 변수
     private double[] weight = {0.0, 0.0};   //weight, tps
@@ -166,12 +168,12 @@ public class MainActivity extends AppCompatActivity {
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
 
         //데이터 수신 (아두이노->앱) Handler 사용
-        mBluetoothHandler = new Handler() {
+        mBluetoothHandler = new Handler(Looper.getMainLooper()) {
             public void handleMessage(@NonNull Message msg) {
                 if (msg.what == BT_MESSAGE_READ) {
-                    String readMessage;
-                    readMessage = new String((byte[]) msg.obj, StandardCharsets.UTF_8);
+                    String readMessage = new String((byte[]) msg.obj, StandardCharsets.UTF_8);
                     Log.d("handleMessage", readMessage);
+                    // data = readMessage;
                 }
             }
         };
@@ -211,7 +213,7 @@ public class MainActivity extends AppCompatActivity {
         } else {
             if (mBluetoothAdapter.isEnabled()) {
                 Toast.makeText(getApplicationContext(), "블루투스가 이미 활성화 되어 있습니다", Toast.LENGTH_SHORT).show();
-                viewModel_home.setBluetoothStatus("블룰투스 활성화");
+                viewModel_home.setBluetoothStatus("블루투스 활성화");
             } else {
                 Toast.makeText(getApplicationContext(), "블루투스가 활성화 되어 있지 않습니다.", Toast.LENGTH_SHORT).show();
                 viewModel_home.setBluetoothStatus("블루투스 활성화중");
@@ -344,7 +346,7 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(getApplicationContext(), "디바이스와 연결되었습니다.", Toast.LENGTH_SHORT).show();
             viewModel_home.setHomeText("스마트 캐리어에 연결 되었습니다!");
             viewModel_info.setInfoText("캐리어와 연결됨");
-            startRSSIMeasurement();
+            // startRSSIMeasurement();
         } catch (IOException e) {
             Toast.makeText(getApplicationContext(), "디바이스 연결 실패: " + e.getMessage(), Toast.LENGTH_SHORT).show();
             try {
@@ -352,7 +354,7 @@ public class MainActivity extends AppCompatActivity {
                     mBluetoothSocket.close();
                 }
             } catch (IOException closeException) {
-                // 소켓 닫기 실패 처리
+                Log.d("Auto_onnectSelectedDevice", "디바이스 소켓 해제중 에러 발생");
             }
         }
     }
@@ -377,7 +379,7 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), "연결 성공!", Toast.LENGTH_SHORT).show();
                 viewModel_home.setHomeText("스마트 캐리어에 연결 되었습니다!");
                 viewModel_info.setInfoText("캐리어와 연결됨");
-                startRSSIMeasurement();
+                // startRSSIMeasurement();
             }
             else{
                 viewModel_home.setHomeText("페어링 된 디바이스는 스마트 캐리어가 아닙니다!");
@@ -506,7 +508,7 @@ public class MainActivity extends AppCompatActivity {
             mmInStream = tmpIn;
             mmOutStream = tmpOut;
         }
-        
+
         // 데이터 수신 (아두이노 -> 앱)
         public void run() {
             byte[] buffer = new byte[1024];
@@ -514,11 +516,12 @@ public class MainActivity extends AppCompatActivity {
 
             while (true) {
                 try {
-                    bytes = mmInStream.available();
-                    if (bytes != 0) {
-                        SystemClock.sleep(100);
-                        bytes = mmInStream.available();
-                        bytes = mmInStream.read(buffer, 0, bytes);
+                    // 데이터가 도착할 때까지 블록킹
+                    bytes = mmInStream.read(buffer);
+
+                    // 읽은 데이터가 있다면 값 저장 -> 수정 필요
+                    if (bytes > 0) {
+                        data = new String(buffer, 0, bytes, StandardCharsets.UTF_8);
                         mBluetoothHandler.obtainMessage(BT_MESSAGE_READ, bytes, -1, buffer).sendToTarget();
                     }
                 } catch (IOException e) {
@@ -534,6 +537,15 @@ public class MainActivity extends AppCompatActivity {
                 mmOutStream.write(bytes);
             } catch (IOException e) {
                 Toast.makeText(getApplicationContext(), "데이터 전송 중 오류 발생!", Toast.LENGTH_SHORT).show();
+            }
+        }
+
+        // 소켓 닫는 메서드
+        public void cancel() {
+            try {
+                mmSocket.close();
+            } catch (IOException e) {
+                Toast.makeText(getApplicationContext(), "소켓 해제 중 오류 발생!", Toast.LENGTH_LONG).show();
             }
         }
     }
@@ -588,7 +600,7 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-    private void startRSSIMeasurement(){
+    public void startRSSIMeasurement(){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             checkPermission();
         }
@@ -596,7 +608,7 @@ public class MainActivity extends AppCompatActivity {
         handler_RSSI.post(runnable_RSSI);
     }
 
-    private void stopRSSIMeasurement(){
+    public void stopRSSIMeasurement(){
         if(bluetoothGatt != null){
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 checkPermission();
@@ -623,23 +635,54 @@ public class MainActivity extends AppCompatActivity {
         return security;
     }
 
-    @SuppressLint("DefaultLocale")
-    public double measureWeight(double maxTps){
-        if (mThreadConnectedBluetooth != null){
-            // 여기에 블루투스 통신으로 무게값을 불러오는 코드 작성 예정
-            //
-            //
-            weight[0] += 1.1;
+    // 무게를 측정하는 메서드
+    @SuppressLint({"DefaultLocale", "HandlerLeak"})
+    public double measureWeight(double maxTps) {
+        if (mThreadConnectedBluetooth != null) {
+            // 무게값 초기화
+            data = null;
+
+            mThreadConnectedBluetooth.write("menu 3");
+            int cnt = 0;
+            while (true) {
+                cnt ++;
+                SystemClock.sleep(10);
+                if (data != null) {
+                    Log.d("받은 데이터", data);
+                    break;
+                } else if (cnt >= 500){
+                    Log.d("받은 데이터", "수신 실패");
+                    break;
+                }
+            }
+            // 무게값을 받지 못했으면
+            if (data == null) {
+                return -1;
+            }
+            double tmp_weight = Double.parseDouble(data);
+            weight[0] = tmp_weight;
             weight[1] = maxTps;
             viewModel_weight.setWeightNow(String.format("%.1f", weight[0]) +" Kg");
             viewModel_weight.setWeightBtn("무게 다시 측정");
             return weight[0];
-        } else{
+        } else {
             viewModel_weight.setWeightBtn("무게 측정 실패");
             return -1;
         }
     }
+    
+    // 연결 상태를 전달하는 메서드
+    public int checkConnection() {
+        if (!mBluetoothAdapter.isEnabled()){                // 블루투스가 꺼져 있으면
+            return -1;
+        } else if (mThreadConnectedBluetooth == null) {     // 캐리어에 연결되어 있지 않으면
+            return -2;
+        } else {    // 캐리어에 연결되어 있으면
+            return 1;
+        }
+    }
 
+    // 무게 설정을 전달하는 메서드
     public double[] checkWeightSetting(){
         return weight;  //weight, tps
     }
@@ -671,7 +714,8 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
         Log.d("MainActivity", "MainActivity-onDestroy()");
 
-        stopRSSIMeasurement();          //RSSI 측정 중지
-        unregisterReceiver(receiver);   //브로드캐스트 리시버 해제
+        stopRSSIMeasurement();          // RSSI 측정 중지
+        unregisterReceiver(receiver);   // 브로드캐스트 리시버 해제
+        mThreadConnectedBluetooth.cancel();     // 소켓을 해제
     }
 }

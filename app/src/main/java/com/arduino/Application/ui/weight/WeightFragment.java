@@ -123,6 +123,7 @@ public class WeightFragment extends Fragment {
         return null;
     }
 
+
     // 무게가 32kg을 초과할 경우 경고 다이얼로그를 표시하는 메서드
     private void showWarningDialog(){
         new AlertDialog.Builder(getContext())

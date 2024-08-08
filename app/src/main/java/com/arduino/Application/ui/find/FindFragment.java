@@ -1,6 +1,5 @@
 package com.arduino.Application.ui.find;
 
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
