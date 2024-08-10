@@ -5,7 +5,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ui.home.HomeFragment"
-    android:id="@+id/container_home">
+    android:id="@+id/container_home"
+    >
+
+
 
     <TextView
         android:id="@+id/text_home"
@@ -28,8 +31,9 @@
         android:id="@+id/btnBT_On"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="40dp"
-        android:layout_marginTop="56dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="500dp"
+        android:textSize="20sp"
         android:backgroundTint="#319EF2"
         android:text="@string/BT_on"
         app:layout_constraintStart_toStartOf="parent"
@@ -39,21 +43,23 @@
         android:id="@+id/btnBT_Off"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="56dp"
-        android:layout_marginEnd="40dp"
+        android:layout_marginStart="228dp"
+        android:layout_marginTop="500dp"
         android:backgroundTint="@color/red_500"
         android:text="@string/BT_off"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:textSize="20sp"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
+    <ImageButton
         android:id="@+id/btnBT_Connect"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="40dp"
-        android:layout_marginTop="132dp"
-        android:backgroundTint="#319EF2"
-        android:text="@string/BT_connect"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="10dp"
+        android:background="@drawable/connect"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.956"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -70,7 +76,7 @@
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.428" />
+        app:layout_constraintVertical_bias="0.603" />
 
     <TextView
         android:id="@+id/Alert_Status"
@@ -85,14 +91,15 @@
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.486" />
+        app:layout_constraintVertical_bias="0.57" />
 
     <Button
         android:id="@+id/btnAlert_On"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="40dp"
-        android:layout_marginBottom="108dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginBottom="50dp"
+        android:textSize="20sp"
         android:backgroundTint="#319EF2"
         android:text="@string/Security_on"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -102,11 +109,24 @@
         android:id="@+id/btnAlert_Off"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="40dp"
-        android:layout_marginBottom="108dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="50dp"
+        android:textSize="20sp"
         android:backgroundTint="@color/red_500"
         android:text="@string/Security_off"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
+    <ImageView
+        android:id="@+id/jang"
+        android:layout_width="0dp"
+        android:layout_height="300dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.126"
+        app:srcCompat="@drawable/knu_gom"
+        tools:ignore="ContentDescription" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
