@@ -66,6 +66,7 @@
         android:id="@+id/chrge"
         android:layout_width="284dp"
         android:layout_height="59dp"
+        android:layout_marginTop="70dp"
         android:background="@drawable/button_round"
         android:backgroundTint="#3144F2"
         android:text="@string/check_battery"

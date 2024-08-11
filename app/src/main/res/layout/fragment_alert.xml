@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#DDF0F4"
     tools:context=".ui.alert.AlertFragment">
 
     <TextView
@@ -23,8 +24,8 @@
 
     <ImageView
         android:id="@+id/imageView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="198dp"
+        android:layout_height="198dp"
         android:contentDescription="@string/nav_header_desc"
         android:paddingTop="@dimen/nav_header_vertical_spacing"
         app:layout_constraintBottom_toTopOf="@+id/text_alert"
@@ -32,16 +33,36 @@
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.681"
-        app:srcCompat="@drawable/precise_map"
+        app:layout_constraintVertical_bias="0.455"
+        app:srcCompat="@drawable/alert"
         tools:ignore="MissingConstraints" />
+
+    <ImageView
+        android:id="@+id/imageViewl"
+        android:layout_width="match_parent"
+        android:layout_height="185dp"
+        android:contentDescription="@string/nav_header_desc"
+        android:paddingTop="@dimen/nav_header_vertical_spacing"
+        android:scaleX="1.4"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.565"
+        app:srcCompat="@drawable/rectangle" />
+
+
 
     <Button
         android:id="@+id/find_bag"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="516dp"
+        android:layout_width="284dp"
+        android:layout_height="59dp"
+        android:layout_marginTop="588dp"
+        android:background="@drawable/button_round"
         android:backgroundTint="#319EF2"
+        android:textSize="20sp"
+        android:textStyle="bold"
         android:text="Alert Test"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
