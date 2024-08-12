@@ -2,7 +2,6 @@ package com.arduino.Application;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
@@ -326,7 +325,6 @@ public class MainActivity extends AppCompatActivity {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             checkPermission();
         }
-        // BluetoothSocket 생성 및 연결 시도
         try {
             // BluetoothSocket 생성
             mBluetoothSocket = device.createRfcommSocketToServiceRecord(BT_UUID);
