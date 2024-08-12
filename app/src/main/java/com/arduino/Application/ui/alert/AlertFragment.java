@@ -21,7 +21,6 @@ public class AlertFragment extends Fragment {
     private FragmentFindBinding binding;
 
     private int menuNum;
-    private int findDevice = 0;
 
     Button findBtn;
     TextView textFind;
@@ -44,12 +43,6 @@ public class AlertFragment extends Fragment {
         findBtn.setOnClickListener(view -> {
             Log.d("Button Click", "Button clicked!");
             textFind.setText("버튼이 눌렸습니다!");
-            if (findDevice == 1){
-                findDevice = 0;
-            } else{
-                findDevice = 1;
-            }
-            sendData_local(findDevice);
         });
 
         final TextView textView = binding.textFind;
@@ -63,25 +56,6 @@ public class AlertFragment extends Fragment {
 
         menuNum = 4;
         setMenuNum(menuNum);
-    }
-
-    //MainActivity를 통해서 블루투스 데이터 송수신
-    // 송신 메서드
-    private void sendData_local(int findDevice){
-        MainActivity mainActivity = (MainActivity) getActivity();
-        if (mainActivity != null) {
-            double data;
-        }
-    }
-    
-    // 수신 메서드
-    private void receiveData_local(){
-        MainActivity mainActivity = (MainActivity) getActivity();
-        if (mainActivity != null) {
-            double data;
-            Log.d("receiveData", "데이터 수신 성공");
-            data = mainActivity.receiveData();
-        }
     }
 
     // 메뉴 설정 메서드
