@@ -7,13 +7,17 @@
     <string name="nav_header_desc">네비게이션 해더</string>
     <string name="action_settings">설정</string>
 
-    <string name="menu_home">메인 화면</string>
-    <string name="menu_find">내 캐리어 찾기</string>
-    <string name="menu_weight">내 캐리어 무게 측정</string>
-    <string name="menu_info">내 캐리어 정보</string>
-
     <string name="splash_name">Suitcase Genie</string>
     <string name="weight_popup">Notification</string>
+
+    <!-- 네비게이션 바 -->
+    <string name="menu_home">메인 화면</string>
+    <string name="menu_find">캐리어 찾기</string>
+    <string name="menu_weight">캐리어 무게 측정</string>
+    <string name="menu_info">캐리어 정보</string>
+    <string name="menu_alert">캐리어 도난방지</string>
+
+    <!-- 메인 화면 -->
     <string name="BT_on">블루투스 ON</string>
     <string name="BT_off">블루투스 OFF</string>
     <string name="BT_connect">연결</string>
@@ -21,7 +25,18 @@
     <string name="BT_status">Bluetooth Status</string>
     <string name="Security_on">도난방지 ON</string>
     <string name="Security_off">도난방지 OFF</string>
-    <string name="rssi">RSSI</string>
     <string name="Alert_status">도난방지 Disabled</string>
+
+    <!-- 캐리어 찾기 화면 -->
     <string name="find_bag">내 캐리어 찾기</string>
+
+    <!-- 캐리어 무게 측정 화면 -->
+    <string name="weight_restricted">허용무게 : 20 Kg</string>
+    <string name="weight">-- Kg</string>
+    <string name="weight_info">무게 초과 여부 표시</string>
+    <string name="measure_weight">무게측정 시작!</string>
+
+    <!-- 캐리어 정보 화면 -->
+    <string name="rssi_value">RSSI 센서값</string>
+    <string name="check_battery">배터리 잔량</string>
 </resources>
