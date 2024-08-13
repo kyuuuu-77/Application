@@ -103,12 +103,10 @@ public class InfoFragment extends Fragment {
         super.onDestroyView();
         binding = null;
 
-        MainActivity mainActivity = (MainActivity) getActivity();
-
-        // RSSI 값 측정 중지
-        if (mainActivity != null) {
-            mainActivity.stopRSSIMeasurement();
-        }
+//        MainActivity mainActivity = (MainActivity) getActivity();
+//        if (mainActivity != null) {
+//            mainActivity.stopRSSIMeasurement();
+//        }
 
         Log.d("Info Fragment", "Info Fragment-onDestroyView()");
     }
