@@ -1,22 +1,25 @@
 package com.arduino.Application;
 
+import static android.content.ContentValues.TAG;
+
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothGattCharacteristic;
+import android.bluetooth.BluetoothGattDescriptor;
+import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothManager;
-import android.bluetooth.BluetoothSocket;
-import android.content.BroadcastReceiver;
+import android.bluetooth.le.BluetoothLeScanner;
+import android.bluetooth.le.ScanCallback;
+import android.bluetooth.le.ScanResult;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Looper;
-import android.os.Message;
 import android.os.SystemClock;
 import android.util.Log;
 import android.view.Menu;
@@ -33,7 +36,6 @@ import com.arduino.Application.ui.info.InfoViewModel;
 import com.arduino.Application.ui.weight.WeightViewModel;
 import com.google.android.material.navigation.NavigationView;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
@@ -47,10 +49,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.arduino.Application.databinding.ActivityMainBinding;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.nio.charset.StandardCharsets;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -75,22 +74,22 @@ public class MainActivity extends AppCompatActivity {
     BluetoothManager mBluetoothManager;
     Set<BluetoothDevice> mPairedDevices;
     List<String> mListPairedDevices;
-
     BluetoothDevice mBluetoothDevice;
-    BluetoothGatt bluetoothGatt;
-    BluetoothSocket mBluetoothSocket;
-    ConnectedBluetoothThread mThreadConnectedBluetooth;
 
-    // Handler 변수
-    private Handler mBluetoothHandler;
+    // 블루투스 BLE 관련 변수
+    BluetoothGatt bluetoothGatt;
+    private static final UUID SERVICE_UUID = UUID.fromString("0000FFF0-0000-1000-8000-00805F9B34FB");
+    private static final UUID WRITE_CHAR_UUID = UUID.fromString("0000FFF1-0000-1000-8000-00805F9B34FB");
+    private static final UUID READ_CHAR_UUID = UUID.fromString("0000FFF2-0000-1000-8000-00805F9B34FB");
+    private BluetoothGattCharacteristic writeCharacteristic;
+    private BluetoothGattCharacteristic readCharacteristic;
+    private BluetoothLeScanner bluetoothLeScanner;
+    private ScanCallback scanCallback;
 
     // 블루투스 통신에 사용되는 final 변수들
     final int BT_REQUEST_ENABLE = 1;
     final int BT_REQUEST_DISABLE = 3;
-    final int BT_MESSAGE_READ = 2;
-    final int BT_CONNECTING_STATUS = 3;
     final int REQUEST_LOCATION_PERMISSION = 123;
-    final UUID BT_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
     private static final int SINGLE_PERMISSION = 1004;
 
     // viewModel 사용을 위한 변수
@@ -102,12 +101,14 @@ public class MainActivity extends AppCompatActivity {
 
     // 프로그램 동작을 위한 전역 변수
     private Boolean isDialogShowing = false;
+    private boolean isSuitcase = false;
+    private boolean onAutoSearch = true;
     private int security = 0;
     private int menuNum_Global = 1;    // 1->home, 2->find, 3->weight, 4->alert, 5->info
-    private String data;
     private double[] weight = {0.0, 0.0};   //weight, tps
+    private String data;
 
-    //윈도우 및 툴바 관련 변수
+    // 윈도우 및 툴바 관련 변수
     Window window;
     Toolbar toolbar;
 
@@ -123,7 +124,7 @@ public class MainActivity extends AppCompatActivity {
 
         toolbar = findViewById(R.id.toolbar);   //툴바
 
-        setSupportActionBar(toolbar);  //액티비티의 App Bar로 지정
+        setSupportActionBar(toolbar);  // 액티비티의 App Bar로 지정
         setSupportActionBar(binding.appBarMain.toolbar);
         DrawerLayout drawer = binding.drawerLayout;
         NavigationView navigationView = binding.navView;
@@ -138,15 +139,17 @@ public class MainActivity extends AppCompatActivity {
 
         // 퍼미션 리스트 배열
         String[] permission_list = {
-                Manifest.permission.BLUETOOTH_CONNECT,      //블루투스 연결 권한
-                Manifest.permission.BLUETOOTH_SCAN,         //블루투스 검색 권한
-                Manifest.permission.BLUETOOTH_ADMIN,        //블루투스 어드민 권한
-                Manifest.permission.ACCESS_COARSE_LOCATION  //위치 검색 권한
+                Manifest.permission.BLUETOOTH_CONNECT,      // 블루투스 연결 권한
+                Manifest.permission.BLUETOOTH_SCAN,         // 블루투스 검색 권한
+                Manifest.permission.BLUETOOTH_ADMIN,        // 블루투스 어드민 권한
+                Manifest.permission.ACCESS_COARSE_LOCATION  // 위치 검색 권한
         };
         ActivityCompat.requestPermissions(MainActivity.this, permission_list, 1);
 
+        // 블루투스 어댑터, 매니저 초기화
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         mBluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
+        bluetoothLeScanner = mBluetoothAdapter.getBluetoothLeScanner();
 
         // 각 Fragment의 viewModel 정의
         viewModel_home = new ViewModelProvider(this).get(HomeViewModel.class);
@@ -155,21 +158,9 @@ public class MainActivity extends AppCompatActivity {
         viewModel_alert = new ViewModelProvider(this).get(AlertViewModel.class);
         viewModel_info = new ViewModelProvider(this).get(InfoViewModel.class);
 
-        // 윈도우를 생성하는 함수
+        // 윈도우 생성
         window = getWindow();
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-
-        // 데이터 수신 (아두이노->앱) Handler 사용
-        mBluetoothHandler = new Handler(Looper.getMainLooper()) {
-            public void handleMessage(@NonNull Message msg) {
-                if (msg.what == BT_MESSAGE_READ) {
-                    String readMessage = new String((byte[]) msg.obj, StandardCharsets.UTF_8);
-                    Log.d("handleMessage", readMessage);
-                }
-            }
-        };
-        
-        startBluetoothDiscovery();
     }
 
     @Override
@@ -264,6 +255,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    // 블루투스 활성화 시 동작 수행 메서드
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == BT_REQUEST_ENABLE) {
@@ -302,8 +294,7 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), "스마트 캐리어와 연결하려면 FB301(73F06C)를 선택하세요.", Toast.LENGTH_SHORT).show();
                 AlertDialog alert = builder.create();
                 alert.show();
-            }
-            else{
+            } else {
                 Toast.makeText(getApplicationContext(),"페어링 된 장치가 없습니다.", Toast.LENGTH_SHORT).show();
             }
         } else{
@@ -316,140 +307,80 @@ public class MainActivity extends AppCompatActivity {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             checkPermission();
         }
-        try {
-            mBluetoothSocket = device.createRfcommSocketToServiceRecord(BT_UUID);
-
-            // 연결 시도 전에 블루투스 검색 취소
-            mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-            if (mBluetoothAdapter.isDiscovering()) {
-                mBluetoothAdapter.cancelDiscovery();
-            }
-
-            // Bluetooth 연결 시도
-            mBluetoothSocket.connect();
-            mThreadConnectedBluetooth = new ConnectedBluetoothThread(mBluetoothSocket);
-            mThreadConnectedBluetooth.start();
-            mBluetoothDevice = device;
-
-            // 연결이 성공적으로 이루어졌을 때 추가 작업 수행
-            Toast.makeText(getApplicationContext(), "디바이스와 연결되었습니다.", Toast.LENGTH_SHORT).show();
-            viewModel_home.setHomeText("스마트 캐리어에 연결되었습니다!");
-            viewModel_info.setInfoText("캐리어와 연결됨");
-        } catch (IOException e) {
-            Toast.makeText(getApplicationContext(), "디바이스 연결 실패: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-            try {
-                if (mBluetoothSocket != null) {
-                    mBluetoothSocket.close();
-                }
-            } catch (IOException closeException) {
-                Log.d("Auto_onnectSelectedDevice", "디바이스 소켓 해제 중 에러 발생");
-            }
-        }
+        bluetoothGatt = device.connectGatt(this, false, bluetoothGattCallback);
+        runOnUiThread(() -> Toast.makeText(getApplicationContext(), "디바이스에 연결 시도 중...", Toast.LENGTH_SHORT).show());
+        isSuitcase = true;
     }
 
     // 블루투스 디바이스에 연결하는 메서드
     public void connectSelectedDevice(String selectedDeviceName) {
-        for (BluetoothDevice tempDevice : mPairedDevices) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                checkPermission();
-            }
-            if (selectedDeviceName.equals(tempDevice.getName())) {
-                mBluetoothDevice = tempDevice;
-                break;
-            }
-        }
-        try {
-            mBluetoothSocket = mBluetoothDevice.createRfcommSocketToServiceRecord(BT_UUID);
-            mBluetoothSocket.connect();
-            mThreadConnectedBluetooth = new ConnectedBluetoothThread(mBluetoothSocket);
-            mThreadConnectedBluetooth.start();
-            mBluetoothHandler.obtainMessage(BT_CONNECTING_STATUS, 1, -1).sendToTarget();
-            if (Objects.equals(selectedDeviceName, "FB301(73F06C)")){
-                Toast.makeText(getApplicationContext(), "연결 성공!", Toast.LENGTH_SHORT).show();
-                viewModel_home.setHomeText("스마트 캐리어에 연결되었습니다!");
-                viewModel_info.setInfoText("캐리어와 연결됨");
-            }
-            else{
-                viewModel_home.setHomeText("페어링 된 디바이스는 스마트 캐리어가 아닙니다!");
-                viewModel_info.setInfoText("잘못된 디바이스와 연결");
-            }
-        } catch (IOException e) {   //연결에 실패하면 에러 표시
-            Toast.makeText(getApplicationContext(), "디바이스 연결 중 오류 발생!", Toast.LENGTH_SHORT).show();
-            viewModel_home.setHomeText("연결에 실패하였습니다");
-        }
-    }
-
-    // 브로드캐스트 리시버 클래스
-    private final BroadcastReceiver receiver = new BroadcastReceiver(){
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-            BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-
-            // 스마트 캐리어가 주변에 있으면
-            if (BluetoothDevice.ACTION_FOUND.equals(action)) {
-                Log.d("BroadcastReceiver", "Action Detected!");
-                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                    checkPermission();
-                }
-                assert device != null;
-
-                if (device.getName() != null && device.getName().equals("FB301(73F06C)")) {
-                    if (!isDialogShowing) {     // 다이얼로그가 표시 중인지를 나타내는 변수
-                        if (bluetoothAdapter.isDiscovering()) {
-                            bluetoothAdapter.cancelDiscovery();
-                        }
-                        showConnectionDialog(device);
-                        isDialogShowing = true;
-                    }
-                }
-            }
-
-            // 블루투스 장치와 연결된 경우
-            if (BluetoothDevice.ACTION_ACL_CONNECTED.equals(action)) {
-                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                    checkPermission();
-                }
-                assert device != null;
-                String deviceName = device.getName();
-                Toast.makeText(context, deviceName + "와 연결되었습니다.", Toast.LENGTH_LONG).show();
-            }
-
-            // 블루투스 연결이 끊긴 경우
-            if (BluetoothDevice.ACTION_ACL_DISCONNECTED.equals(action)) {
-                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                    checkPermission();
-                }
-                assert device != null;
-                String deviceName = device.getName();
-                Toast.makeText(context, deviceName + "와의 연결이 끊겼습니다.", Toast.LENGTH_LONG).show();
-            }
-        }
-    };
-
-    // 상시 스마트 캐리어를 검색하는 메서드
-    public void startBluetoothDiscovery() {
-        // BluetoothAdapter 가져오기
-        BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             checkPermission();
         }
+        for (BluetoothDevice device : mPairedDevices) {
+            if (selectedDeviceName.equals(device.getName())) {
+                mBluetoothDevice = device;
+                break;
+            }
+        }
+        // 연결한 디바이스가 스마트 캐리어인지 확인
+        if (Objects.equals(selectedDeviceName, "FB301(73F06C)")){
+            isSuitcase = true;
+        }
+        bluetoothGatt = mBluetoothDevice.connectGatt(this, false, bluetoothGattCallback);
+    }
 
-        // Bluetooth가 켜져 있는지 확인하고, 켜져 있지 않으면 Toast 표시
-        if (bluetoothAdapter == null || !bluetoothAdapter.isEnabled()) {
-            Toast.makeText(getApplicationContext(), "블루투스가 꺼져 있습니다.", Toast.LENGTH_SHORT).show();
+    // 주변의 BLE 디바이스를 스캔
+    public void startLeScan() {
+        if (mBluetoothAdapter == null || !mBluetoothAdapter.isEnabled()){
+            Toast.makeText(this, "블루투스가 꺼져 있어 자동 검색을 수행할 수 없습니다.", Toast.LENGTH_LONG).show();
+            return;
         }
 
-        // 기존에 진행 중인 디바이스 검색 취소
-        assert bluetoothAdapter != null;
-        if (bluetoothAdapter.isDiscovering()) {
-            bluetoothAdapter.cancelDiscovery();
+        bluetoothLeScanner = mBluetoothAdapter.getBluetoothLeScanner();
+        if (bluetoothLeScanner == null) {
+            Toast.makeText(this, "BluetoothLeScanner 초기화 오류.", Toast.LENGTH_LONG).show();
+            return;
         }
 
-        bluetoothAdapter.startDiscovery();
+        scanCallback = new ScanCallback() {
+            @Override
+            public void onScanResult(int callbackType, ScanResult result) {
+                super.onScanResult(callbackType, result);
+                mBluetoothDevice = result.getDevice();
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                    checkPermission();
+                }
+
+                if (!isDialogShowing){
+                    if (onAutoSearch && mBluetoothDevice.getName() != null && mBluetoothDevice.getName().equals("FB301(73F06C)")) {     // 스마트 캐리어를 발견 했으면
+                        bluetoothLeScanner.stopScan(scanCallback);
+                        showConnectionDialog(mBluetoothDevice);
+                        isDialogShowing = true;
+                    }
+                }
+
+            }
+
+            @Override
+            public void onScanFailed(int errorCode) {
+                super.onScanFailed(errorCode);
+                Log.e("ScanFailed", "스캔 실패, 에러코드 : " + errorCode);
+            }
+        };
+
+        // BLE 스캔 시작
+        bluetoothLeScanner.startScan(scanCallback);
+    }
+
+    private void stopLeScan() {
+        if (bluetoothLeScanner != null && scanCallback != null) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                checkPermission();
+            }
+            bluetoothLeScanner.stopScan(scanCallback);
+        }
     }
 
     // 스마트 캐리어를 자동으로 발견했을때 연결 시도 다이얼로그를 띄우는 메서드
@@ -459,93 +390,28 @@ public class MainActivity extends AppCompatActivity {
         builder.setTitle("스마트 캐리어 발견")
                 .setMessage("스마트 캐리어를 자동으로 발견했습니다. 연결하시겠습니까?")
                 .setPositiveButton("연결", (dialog, which) -> {
-                    // Bluetooth 연결 로직 수행
                     isDialogShowing = false;
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                         Auto_onnectSelectedDevice(device);
+                        stopLeScan();
                     }
                 })
                 .setNegativeButton("취소", (dialog, which) -> {
                     isDialogShowing = false;
                     dialog.dismiss();
                     Toast.makeText(getApplicationContext(), "취소되었습니다.", Toast.LENGTH_SHORT).show();
+                    stopLeScan();
+                    onAutoSearch = false;
                 })
                 .setCancelable(false).show();
-    }
-    
-    // 데이터 송수신 클래스 (스레드 사용)
-    private class ConnectedBluetoothThread extends Thread {
-        //소켓을 통해 전송 처리
-        private final BluetoothSocket mmSocket;
-        private final InputStream mmInStream;
-        private final OutputStream mmOutStream;
-
-        public ConnectedBluetoothThread(BluetoothSocket socket) {
-            mmSocket = socket;
-            InputStream tmpIn = null;
-            OutputStream tmpOut = null;
-
-            try {
-                tmpIn = socket.getInputStream();
-                tmpOut = socket.getOutputStream();
-            } catch (IOException e) {
-                Toast.makeText(getApplicationContext(), "소켓 연결 중 오류 발생!", Toast.LENGTH_SHORT).show();
-            }
-
-            mmInStream = tmpIn;
-            mmOutStream = tmpOut;
-        }
-
-        // 데이터 수신 (아두이노 -> 앱)
-        public void run() {
-            byte[] buffer = new byte[1024];
-            int bytes;
-
-            while (true) {
-                try {
-                    // 데이터가 도착할 때까지 블록킹
-                    bytes = mmInStream.read(buffer);
-
-                    // 읽은 데이터가 있다면 값 저장 -> 수정 필요
-                    if (bytes > 0) {
-                        data = new String(buffer, 0, bytes, StandardCharsets.UTF_8);
-                        mBluetoothHandler.obtainMessage(BT_MESSAGE_READ, bytes, -1, buffer).sendToTarget();
-                    }
-                } catch (IOException e) {
-                    break;
-                }
-            }
-        }
-
-        // 데이터 송신 (앱 -> 아두이노)
-        public void write(String str) {
-            byte[] bytes = str.getBytes();
-            try {
-                mmOutStream.write(bytes);
-            } catch (IOException e) {
-                Toast.makeText(getApplicationContext(), "데이터 전송 중 오류 발생!", Toast.LENGTH_SHORT).show();
-            }
-        }
-
-        // 소켓 닫는 메서드
-        public void cancel() {
-            try {
-                mmSocket.close();
-            } catch (IOException e) {
-                Toast.makeText(getApplicationContext(), "소켓 해제 중 오류 발생!", Toast.LENGTH_LONG).show();
-            }
-        }
     }
 
     // 메뉴 번호를 저장하고 아두이노에 송신하는 메서드
     public void setMenuNum(int num){
         menuNum_Global = num;
 
-        if (mThreadConnectedBluetooth != null) {
-            String cmdText = String.valueOf(menuNum_Global);    // String형으로 메뉴값 전달
-            for (int i = 0; i < cmdText.length(); i++){
-                mThreadConnectedBluetooth.write(cmdText.substring(i,i+1));
-            }
+        if (writeCharacteristic != null){
+            sendData(String.valueOf(num));
             Log.d("setMenuNum", "메뉴 값 전송 완료");
         } else {
             Log.d("setMenuNum", "메뉴 값 전송 실패");
@@ -565,21 +431,13 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-    private final BluetoothGattCallback bluetoothGattCallback = new BluetoothGattCallback() {
-        @Override
-        public void onReadRemoteRssi(BluetoothGatt gatt, int rssi, int status) {
-            super.onReadRemoteRssi(gatt, rssi, status);
-
-            //handler를 통해서 RSSI 값을 viewModel에 전달
-            handler_RSSI.post(() -> viewModel_info.setRssi("RSSI: " + rssi + " dBm"));
-        }
-    };
-
     public void startRSSIMeasurement(){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             checkPermission();
         }
-        bluetoothGatt = mBluetoothDevice.connectGatt(this,false,bluetoothGattCallback);
+        if (bluetoothGatt == null) {
+            bluetoothGatt = mBluetoothDevice.connectGatt(this, false, bluetoothGattCallback);
+        }
         handler_RSSI.post(runnable_RSSI);
     }
 
@@ -590,7 +448,100 @@ public class MainActivity extends AppCompatActivity {
             }
             bluetoothGatt.disconnect();
             bluetoothGatt.close();
+            bluetoothGatt = null;
             handler_RSSI.removeCallbacks(runnable_RSSI);
+        }
+    }
+
+    // BLE 통신을 위한 BluetoothGatt 객체 생성
+    private final BluetoothGattCallback bluetoothGattCallback = new BluetoothGattCallback() {
+        @Override
+        public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
+            super.onConnectionStateChange(gatt, status, newState);
+            if (newState == BluetoothGatt.STATE_CONNECTED) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                    checkPermission();
+                }
+                runOnUiThread(() -> {
+                    if (isSuitcase){
+                        viewModel_home.setHomeText("스마트 캐리어에 연결됨");
+                        Toast.makeText(getApplicationContext(), "스마트 캐리어에 연결됨", Toast.LENGTH_SHORT).show();
+                    } else {
+                        viewModel_home.setHomeText("잘못된 디바이스에 연결됨");
+                        Toast.makeText(getApplicationContext(), "연결된 디바이스는 스마트 캐리어가 아닙니다.", Toast.LENGTH_SHORT).show();
+                    }
+                });
+                bluetoothGatt.discoverServices();
+            } else if (newState == BluetoothGatt.STATE_DISCONNECTED) {
+                runOnUiThread(() -> {
+                    viewModel_home.setHomeText("디바이스와의 연결이 끊어졌습니다");
+                    Toast.makeText(getApplicationContext(), "디바이스와의 연결이 끊어졌습니다", Toast.LENGTH_SHORT).show();
+                });
+            }
+        }
+
+        @Override
+        public void onServicesDiscovered(BluetoothGatt gatt, int status) {
+            super.onServicesDiscovered(gatt, status);
+            if (status == BluetoothGatt.GATT_SUCCESS) {
+                BluetoothGattService service = gatt.getService(SERVICE_UUID);
+                if (service != null) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                        checkPermission();
+                    }
+                    writeCharacteristic = service.getCharacteristic(WRITE_CHAR_UUID);
+                    readCharacteristic = service.getCharacteristic(READ_CHAR_UUID);
+                    gatt.setCharacteristicNotification(readCharacteristic, true);
+                    BluetoothGattDescriptor descriptor = readCharacteristic.getDescriptor(
+                            UUID.fromString("00002902-0000-1000-8000-00805F9B34FB"));
+                    startRSSIMeasurement();
+                    if (descriptor != null) {
+                        descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+                        gatt.writeDescriptor(descriptor);
+                    } else {
+                        Log.e(TAG, "Service not found");
+                    }
+                } else {
+                    Log.w(TAG, "onServicesDiscovered received: " + status);
+                }
+            }
+        }
+
+        @Override
+        public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
+            if (characteristic.getUuid().equals(READ_CHAR_UUID)) {
+                byte[] value = characteristic.getValue();
+                String receivedData = new String(value);
+                data = receivedData;
+                runOnUiThread(() -> Toast.makeText(MainActivity.this, "Received data: " + receivedData, Toast.LENGTH_SHORT).show());
+            }
+        }
+
+        @Override
+        public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
+            super.onCharacteristicWrite(gatt, characteristic, status);
+            if (status == BluetoothGatt.GATT_SUCCESS) {
+                runOnUiThread(() -> Toast.makeText(MainActivity.this, "Data written successfully.", Toast.LENGTH_SHORT).show());
+            }
+        }
+
+        @Override
+        public void onReadRemoteRssi(BluetoothGatt gatt, int rssi, int status) {
+            super.onReadRemoteRssi(gatt, rssi, status);
+            handler_RSSI.post(() -> viewModel_info.setRssi("RSSI: " + rssi + " dBm"));
+        }
+    };
+
+    private void sendData(String data) {
+        if (writeCharacteristic != null) {
+            byte[] bytes = data.getBytes();
+            writeCharacteristic.setValue(bytes);
+            if (bluetoothGatt != null) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                    checkPermission();
+                }
+                bluetoothGatt.writeCharacteristic(writeCharacteristic);
+            }
         }
     }
 
@@ -613,12 +564,12 @@ public class MainActivity extends AppCompatActivity {
     // 무게를 측정하는 메서드
     @SuppressLint({"DefaultLocale", "HandlerLeak"})
     public double measureWeight(double maxTps) {
-        if (mThreadConnectedBluetooth != null) {
+        if (writeCharacteristic != null) {
             // 무게값 초기화
             data = null;
 
             // 동작값을 먼저 전송 -> 캐리어에서 값 인식 후 무게값 전달
-            mThreadConnectedBluetooth.write("menu 3");
+            sendData("menu 3");
 
             int cnt = 0;
             while (true) {
@@ -658,15 +609,19 @@ public class MainActivity extends AppCompatActivity {
             return -1;
         }
     }
-    
+
     // 연결 상태를 전달하는 메서드
-    public int checkConnection() {
-        if (!mBluetoothAdapter.isEnabled()){                // 블루투스가 꺼져 있으면
-            return -1;
-        } else if (mThreadConnectedBluetooth == null) {     // 캐리어에 연결되어 있지 않으면
-            return -2;
-        } else {    // 캐리어에 연결되어 있으면
-            return 1;
+    public void checkConnection() {
+        if (mBluetoothAdapter == null){
+            viewModel_info.setInfoText("블루투스를 지원하지 않음");
+        } else if (!mBluetoothAdapter.isEnabled()){                // 블루투스가 꺼져 있음
+            viewModel_info.setInfoText("블루투스가 꺼져 있음");
+        } else if (bluetoothGatt == null) {     // 캐리어에 연결되어 있지 않음
+            viewModel_info.setInfoText("통신 불가능");
+        } else if (writeCharacteristic == null || readCharacteristic == null){      // 연결이 되어 있으나 송수신 불가
+            viewModel_info.setInfoText("송수신 불가능");
+        } else {    // 캐리어에 연결되어 있음
+            viewModel_info.setInfoText("정상적으로 연결됨");
         }
     }
 
@@ -681,13 +636,6 @@ public class MainActivity extends AppCompatActivity {
 
         Log.d("MainActivity", "MainActivity-onResume()");
 
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(BluetoothDevice.ACTION_ACL_DISCONNECTED);
-        filter.addAction(BluetoothDevice.ACTION_ACL_CONNECTED);
-        filter.addAction(BluetoothDevice.ACTION_FOUND);
-        
-        registerReceiver(receiver, filter);     // 브로드 캐스트 리시버 등록
-
         if (mBluetoothAdapter.isEnabled()) {
             window.setStatusBarColor(Color.parseColor("#1976D2"));
             toolbar.setBackgroundColor(Color.parseColor("#2196F3"));
@@ -696,6 +644,7 @@ public class MainActivity extends AppCompatActivity {
             window.setStatusBarColor(Color.parseColor("#F57C00"));
             toolbar.setBackgroundColor(Color.parseColor("#FF9800"));
         }
+        startLeScan();
     }
 
     protected void onDestroy(){
@@ -703,7 +652,6 @@ public class MainActivity extends AppCompatActivity {
         Log.d("MainActivity", "MainActivity-onDestroy()");
 
         stopRSSIMeasurement();          // RSSI 측정 중지
-        unregisterReceiver(receiver);   // 브로드캐스트 리시버 해제
-        mThreadConnectedBluetooth.cancel();     // 소켓을 해제
+        stopLeScan();
     }
 }

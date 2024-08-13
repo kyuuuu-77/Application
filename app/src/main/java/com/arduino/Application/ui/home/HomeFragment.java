@@ -196,7 +196,7 @@ public class HomeFragment extends Fragment {
         }
 
         // MainActivity를 통해 캐리어 자동 검색
-        Auto_startBluetoothDiscovery();
+        //Auto_startBluetoothDiscovery();
     }
 
     private void setMenuNum(int num){
@@ -247,7 +247,7 @@ public class HomeFragment extends Fragment {
     public void Auto_startBluetoothDiscovery(){
         MainActivity mainActivity = (MainActivity) getActivity();
         if (mainActivity != null) {
-            mainActivity.startBluetoothDiscovery();
+            mainActivity.startLeScan();
         }
     }
 
