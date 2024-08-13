@@ -277,16 +277,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // 블루투스 디바이스 목록을 보여주는 메서드
-    @RequiresApi(api = Build.VERSION_CODES.S)
     public void listPairedDevices() {
         if (mBluetoothAdapter.isEnabled()) {
-            checkPermission();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                checkPermission();
+            }
             mPairedDevices = mBluetoothAdapter.getBondedDevices();
             if (!mPairedDevices.isEmpty()) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder.setTitle("장치 선택");
                 mListPairedDevices = new ArrayList<>();
-                checkPermission();
 
                 for (BluetoothDevice device : mPairedDevices) {
                     if (device.getName()==null)
@@ -348,10 +348,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // 블루투스 디바이스에 연결하는 메서드
-    @RequiresApi(api = Build.VERSION_CODES.S)
     public void connectSelectedDevice(String selectedDeviceName) {
         for (BluetoothDevice tempDevice : mPairedDevices) {
-            checkPermission();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                checkPermission();
+            }
             if (selectedDeviceName.equals(tempDevice.getName())) {
                 mBluetoothDevice = tempDevice;
                 break;
