@@ -37,7 +37,6 @@ public class HomeFragment extends Fragment {
     Button mBtnAlert_off;
     
     TextView mTvBT_Status;
-    TextView Alert_Status;
     TextView homeText;
 
     Window window;
@@ -47,8 +46,7 @@ public class HomeFragment extends Fragment {
 
     private FragmentHomeBinding binding;
 
-    private int menuNum;
-    private int security = 0;
+    private boolean security = false;
 
     @SuppressLint("SetTextI18n")
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -69,7 +67,6 @@ public class HomeFragment extends Fragment {
         mBtnAlert_off = root.findViewById(R.id.btnAlert_Off);   // 도난방지 끄는 버튼
         
         mTvBT_Status = root.findViewById(R.id.BT_Status);       // 블루투스 상태 텍스트 뷰
-        Alert_Status = root.findViewById(R.id.Alert_Status);    // 도난방지 상태 텍스트 뷰
         homeText = root.findViewById(R.id.text_home);           // 홈 텍스트 뷰
         
         window = requireActivity().getWindow();
@@ -80,7 +77,6 @@ public class HomeFragment extends Fragment {
 
         // ViewModel 선언
         homeViewModel.getBluetoothStatusLiveData().observe(getViewLifecycleOwner(), bluetoothStatus -> mTvBT_Status.setText(bluetoothStatus));
-        homeViewModel.getAlertStatusLiveData().observe(getViewLifecycleOwner(), alert -> Alert_Status.setText(alert));
         homeViewModel.getHomeTextLiveData().observe(getViewLifecycleOwner(), text -> homeText.setText(text));
 
         // 버튼 이벤트 리스너들
@@ -99,13 +95,7 @@ public class HomeFragment extends Fragment {
             }
 
             if (mBluetoothAdapter.isEnabled()){
-                if (security == 1){
-                    mBtnAlert_on.setEnabled(false);
-                    mBtnAlert_off.setEnabled(true);
-                } else if (security == 0){
-                    mBtnAlert_on.setEnabled(true);
-                    mBtnAlert_off.setEnabled(false);
-                }
+                checkSecurity();
             }
         });
 
@@ -154,11 +144,25 @@ public class HomeFragment extends Fragment {
         return root;
     }
 
+    private void checkSecurity() {
+        MainActivity mainActivity = (MainActivity) getActivity();
+        if (mainActivity != null) {
+            security = mainActivity.checkSecurity();
+        }
+        if (security) {
+            mBtnAlert_on.setEnabled(false);
+            mBtnAlert_off.setEnabled(true);
+        } else {
+            mBtnAlert_on.setEnabled(true);
+            mBtnAlert_off.setEnabled(false);
+        }
+    }
+
     public void onResume(){
         super.onResume();
         Log.d("Home Fragment", "Home Fragment-onResume()");
 
-        menuNum = 1;
+        int menuNum = 1;
         setMenuNum(menuNum);
 
         if (mBluetoothAdapter == null) {
@@ -176,14 +180,7 @@ public class HomeFragment extends Fragment {
                 mBtnBT_on.setEnabled(false);
                 mBtnBT_off.setEnabled(true);
                 mBtnBT_Connect.setEnabled(true);
-
-                if (security == 1){
-                    mBtnAlert_on.setEnabled(false);
-                    mBtnAlert_off.setEnabled(true);
-                } else if (security == 0){
-                    mBtnAlert_on.setEnabled(true);
-                    mBtnAlert_off.setEnabled(false);
-                }
+                checkSecurity();
             } else {
                 mTvBT_Status.setText("블루투스 비활성화");
                 window.setStatusBarColor(Color.parseColor("#F57C00"));
@@ -194,9 +191,6 @@ public class HomeFragment extends Fragment {
                 mBtnAlert_off.setEnabled(false);
             }
         }
-
-        // MainActivity를 통해 캐리어 자동 검색
-        //Auto_startBluetoothDiscovery();
     }
 
     private void setMenuNum(int num){
@@ -241,13 +235,6 @@ public class HomeFragment extends Fragment {
         MainActivity mainActivity = (MainActivity) getActivity();
         if (mainActivity != null) {
             mainActivity.listPairedDevices();
-        }
-    }
-
-    public void Auto_startBluetoothDiscovery(){
-        MainActivity mainActivity = (MainActivity) getActivity();
-        if (mainActivity != null) {
-            mainActivity.startLeScan();
         }
     }
 

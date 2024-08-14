@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -28,7 +29,7 @@ public class AlertFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         AlertViewModel findViewModel =
-                new ViewModelProvider(this).get(AlertViewModel.class);
+                new ViewModelProvider(requireActivity()).get(AlertViewModel.class);
 
         binding = FragmentFindBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
@@ -38,6 +39,8 @@ public class AlertFragment extends Fragment {
         // 버튼 및 텍스트 뷰 선언
         findBtn = root.findViewById(R.id.find_bag);
         textFind = root.findViewById(R.id.text_find);
+
+        // ViewModel 설정
 
         // 버튼 이벤트 리스너
         findBtn.setOnClickListener(view -> {

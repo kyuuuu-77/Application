@@ -26,7 +26,6 @@
         android:layout_width="match_parent"
         android:layout_height="185dp"
         android:contentDescription="@string/nav_header_desc"
-        android:paddingTop="@dimen/nav_header_vertical_spacing"
         android:scaleX="1.4"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -36,31 +35,111 @@
         app:layout_constraintVertical_bias="0.582"
         app:srcCompat="@drawable/rectangle" />
 
+    <ImageView
+        android:id="@+id/rssi_icon"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        app:layout_constraintBottom_toBottomOf="@id/imageViewl"
+        app:layout_constraintEnd_toStartOf="@+id/rssi_signal"
+        app:layout_constraintHorizontal_bias="0.95"
+        app:layout_constraintStart_toStartOf="@id/imageViewl"
+        app:layout_constraintTop_toTopOf="@+id/imageViewl"
+        app:layout_constraintVertical_bias="0.046"
+        app:srcCompat="@drawable/info_rssi_off"
+        tools:ignore="ContentDescription" />
+
     <TextView
         android:id="@+id/rssi_signal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/rssi_value"
-        android:textSize="30sp"
+        android:textSize="25sp"
         app:layout_constraintBottom_toBottomOf="@+id/imageViewl"
         app:layout_constraintEnd_toEndOf="@+id/imageViewl"
-        app:layout_constraintHorizontal_bias="0.502"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="@+id/imageViewl"
         app:layout_constraintTop_toTopOf="@+id/imageViewl"
-        app:layout_constraintVertical_bias="0.21" />
+        app:layout_constraintVertical_bias="0.05" />
+
+    <ImageView
+        android:id="@+id/search_icon"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        app:layout_constraintBottom_toBottomOf="@id/imageViewl"
+        app:layout_constraintEnd_toStartOf="@+id/auto_search"
+        app:layout_constraintHorizontal_bias="0.95"
+        app:layout_constraintStart_toStartOf="@id/imageViewl"
+        app:layout_constraintTop_toTopOf="@+id/imageViewl"
+        app:layout_constraintVertical_bias="0.346"
+        app:srcCompat="@drawable/info_search_off"
+        tools:ignore="ContentDescription" />
+
+    <TextView
+        android:id="@+id/auto_search"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/auto_search_text"
+        android:textSize="25sp"
+        app:layout_constraintBottom_toBottomOf="@+id/imageViewl"
+        app:layout_constraintEnd_toEndOf="@+id/imageViewl"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="@+id/imageViewl"
+        app:layout_constraintTop_toTopOf="@+id/imageViewl"
+        app:layout_constraintVertical_bias="0.351" />
+
+    <ImageView
+        android:id="@+id/security_icon"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        app:layout_constraintBottom_toBottomOf="@id/imageViewl"
+        app:layout_constraintEnd_toStartOf="@+id/security"
+        app:layout_constraintHorizontal_bias="0.95"
+        app:layout_constraintStart_toStartOf="@id/imageViewl"
+        app:layout_constraintTop_toTopOf="@+id/imageViewl"
+        app:layout_constraintVertical_bias="0.657"
+        app:srcCompat="@drawable/info_security_off"
+        tools:ignore="ContentDescription" />
+
+    <TextView
+        android:id="@+id/security"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/security_status"
+        android:textSize="25sp"
+        app:layout_constraintBottom_toBottomOf="@+id/imageViewl"
+        app:layout_constraintEnd_toEndOf="@+id/imageViewl"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="@+id/imageViewl"
+        app:layout_constraintTop_toTopOf="@+id/imageViewl"
+        app:layout_constraintVertical_bias="0.65" />
+
+    <ImageView
+        android:id="@+id/bt_icon"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toBottomOf="@id/imageViewl"
+        app:layout_constraintEnd_toStartOf="@+id/text_info"
+        app:layout_constraintHorizontal_bias="0.95"
+        app:layout_constraintStart_toStartOf="@id/imageViewl"
+        app:layout_constraintTop_toTopOf="@+id/imageViewl"
+        app:layout_constraintVertical_bias="1.0"
+        app:srcCompat="@drawable/info_bt_off"
+        tools:ignore="ContentDescription" />
 
     <TextView
         android:id="@+id/text_info"
-        android:layout_width="267dp"
-        android:layout_height="72dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/info_text"
         android:textAlignment="center"
-        android:textSize="20sp"
+        android:textSize="25sp"
         app:layout_constraintBottom_toBottomOf="@+id/imageViewl"
         app:layout_constraintEnd_toEndOf="@+id/imageViewl"
-        app:layout_constraintHorizontal_bias="0.503"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="@+id/imageViewl"
         app:layout_constraintTop_toTopOf="@+id/imageViewl"
-        app:layout_constraintVertical_bias="0.838" />
+        app:layout_constraintVertical_bias="0.959" />
 
     <Button
         android:id="@+id/chrge"

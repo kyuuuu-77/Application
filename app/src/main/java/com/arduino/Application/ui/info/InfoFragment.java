@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -19,14 +20,26 @@ import com.arduino.Application.databinding.FragmentInfoBinding;
 
 public class InfoFragment extends Fragment {
 
-    // 버튼 및 텍스트뷰 변수 초기화
+    // 버튼, 텍스트뷰 및 아이콘 변수 초기화
     Button mBtn_charge;
+
     TextView rssiTextView;
+    TextView auto_search_status;
+    TextView security_status;
     TextView infoText;
+
+    ImageView RSSI_icon;
+    ImageView Search_icon;
+    ImageView Security_icon;
+    ImageView BT_icon;
 
     private FragmentInfoBinding binding;
 
-    private int menuNum;
+    // Info 변수
+    private boolean rssiSignal = false;     // rssiSignal
+    private boolean autoSearch = false;     // onAutoSearch
+    private boolean security = false;       // security
+    private int connection = -2;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -38,14 +51,24 @@ public class InfoFragment extends Fragment {
 
         Log.d("Info Fragment", "Info Fragment-onCreatedView()");
 
-        // 버튼 및 텍스트뷰 선언
+        // 버튼, 텍스트뷰 및 아이콘 선언
         mBtn_charge = root.findViewById(R.id.chrge);
+
         rssiTextView = root.findViewById(R.id.rssi_signal);
+        auto_search_status = root.findViewById(R.id.auto_search);
+        security_status = root.findViewById(R.id.security);
         infoText = root.findViewById(R.id.text_info);
 
+        RSSI_icon = root.findViewById(R.id.rssi_icon);
+        Search_icon = root.findViewById(R.id.search_icon);
+        Security_icon = root.findViewById(R.id.security_icon);
+        BT_icon = root.findViewById(R.id.bt_icon);
+
         // ViewModel 선언
-        infoViewModel.getRssiLiveData().observe(getViewLifecycleOwner(), rssi -> rssiTextView.setText(rssi));
-        infoViewModel.getInfoTextLiveData().observe(getViewLifecycleOwner(), text -> infoText.setText(text));
+        infoViewModel.getRssiLiveData().observe(getViewLifecycleOwner(), rssiLD -> rssiTextView.setText(rssiLD));
+        infoViewModel.getAutoSearchLiveData().observe(getViewLifecycleOwner(), searchLD -> auto_search_status.setText(searchLD));
+        infoViewModel.getSecurityLiveData().observe(getViewLifecycleOwner(), securityLD -> security_status.setText(securityLD));
+        infoViewModel.getInfoTextLiveData().observe(getViewLifecycleOwner(), textLD -> infoText.setText(textLD));
 
         // 버튼 이벤트 리스너
         // 충전 상태 확인 버튼
@@ -58,11 +81,67 @@ public class InfoFragment extends Fragment {
         return root;
     }
 
+    // RSSI 측정여부를 표시
+    private void checkRssi() {
+        MainActivity mainActivity = (MainActivity) getActivity();
+        if (mainActivity != null) {
+            rssiSignal = mainActivity.checkRssi();
+        }
+
+        if (rssiSignal) {
+            RSSI_icon.setImageResource(R.drawable.info_rssi_on);
+        } else {
+            RSSI_icon.setImageResource(R.drawable.info_rssi_off);
+        }
+    }
+
+    // 자동 검색 사용여부 표시
+    private void checkAutoSearch() {
+        MainActivity mainActivity = (MainActivity) getActivity();
+        if (mainActivity != null) {
+            autoSearch = mainActivity.checkAutoSearch();
+        }
+
+        if (autoSearch) {
+            Search_icon.setImageResource(R.drawable.info_search_on);
+        } else {
+            Search_icon.setImageResource(R.drawable.info_search_off);
+        }
+    }
+
+    // 도난방지 여부를 표시
+    private void checkSecurity() {
+        MainActivity mainActivity = (MainActivity) getActivity();
+        if (mainActivity != null) {
+            security = mainActivity.checkSecurity();
+        }
+
+        if (security) {
+            Security_icon.setImageResource(R.drawable.info_security_on);
+        } else {
+            Security_icon.setImageResource(R.drawable.info_security_off);
+        }
+    }
+
     // 연결 상태를 확인하는 메서드
     private void checkConnection() {
         MainActivity mainActivity = (MainActivity) getActivity();
         if (mainActivity != null) {
-            mainActivity.checkConnection();
+            connection = mainActivity.checkConnection();
+        }
+
+        switch (connection) {
+            case -2:
+            case -1:
+                BT_icon.setImageResource(R.drawable.info_bt_off);
+                break;
+            case 0:
+            case 1:
+                BT_icon.setImageResource(R.drawable.info_bt_on);
+                break;
+            case 9:
+                BT_icon.setImageResource(R.drawable.info_bt_connect);
+                break;
         }
     }
 
@@ -78,9 +157,12 @@ public class InfoFragment extends Fragment {
         super.onResume();
         Log.d("Info Fragment", "Info Fragment-onResume()");
 
-        menuNum = 5;
+        int menuNum = 5;
         setMenuNum(menuNum);
 
+        checkRssi();
+        checkAutoSearch();
+        checkSecurity();
         checkConnection();
     }
 

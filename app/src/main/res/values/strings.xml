@@ -39,4 +39,7 @@
     <!-- 캐리어 정보 화면 -->
     <string name="rssi_value">RSSI 센서값</string>
     <string name="check_battery">배터리 잔량</string>
+    <string name="info_text">Info 데이터 표시</string>
+    <string name="auto_search_text">캐리어 자동 검색</string>
+    <string name="security_status">도난방지 상태</string>
 </resources>
