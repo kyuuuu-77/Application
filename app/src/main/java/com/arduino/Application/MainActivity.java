@@ -363,8 +363,8 @@ public class MainActivity extends AppCompatActivity {
             public void onScanResult(int callbackType, ScanResult result) {
                 super.onScanResult(callbackType, result);
                 mBluetoothDevice = result.getDevice();
-                int rssi = result.getRssi();
-                Log.d("rssi", String.valueOf(rssi));
+//                int rssi = result.getRssi();
+//                Log.d("rssi", String.valueOf(rssi));
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                     checkPermission();
@@ -458,9 +458,9 @@ public class MainActivity extends AppCompatActivity {
             checkPermission();
         }
         if (bluetoothGatt == null) {
-            bluetoothGatt = mBluetoothDevice.connectGatt(this, false, bluetoothGattCallback);
+            bluetoothGatt = mBluetoothDevice.connectGatt(this, true, bluetoothGattCallback);
         }
-        handler_RSSI.post(runnable_RSSI);
+        handler_RSSI.postDelayed(runnable_RSSI, 1000);
         rssiSignal = true;
     }
 
@@ -471,8 +471,8 @@ public class MainActivity extends AppCompatActivity {
                 checkPermission();
             }
             bluetoothGatt.disconnect();
-            //bluetoothGatt.close();
-            //bluetoothGatt = null;
+            bluetoothGatt.close();
+            bluetoothGatt = null;
             handler_RSSI.removeCallbacks(runnable_RSSI);
             rssiSignal = false;
         }
@@ -486,6 +486,7 @@ public class MainActivity extends AppCompatActivity {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                     checkPermission();
                 }
+                Log.d("연결 재시도", "블루투스 연결 재시도 중...");
                 bluetoothGatt.connect();
             }
             reconnectHandler.postDelayed(this, 5000);
@@ -516,15 +517,16 @@ public class MainActivity extends AppCompatActivity {
                 });
                 bluetoothGatt.discoverServices();
             } else if (newState == BluetoothGatt.STATE_DISCONNECTED) {      // 블루투스 디바이스와 연결이 끊긴 경우
-                stopRSSIMeasurement();
-                runOnUiThread(() -> {
-                    viewModel_home.setHomeText("디바이스와의 연결이 끊어졌습니다");
-                    Toast.makeText(getApplicationContext(), "디바이스와의 연결이 끊어졌습니다", Toast.LENGTH_SHORT).show();
-                    createNotif("disconnect", "캐리어와 연결 끊김", "스마트 캐리어와 연결이 끊겼습니다...");
-                });
                 if (mBluetoothAdapter.isEnabled() && alreadyConnected){
+                    handler_RSSI.removeCallbacks(runnable_RSSI);
+                    bluetoothGatt.disconnect();
+                    runOnUiThread(() -> {
+                        viewModel_home.setHomeText("디바이스와의 연결이 끊어졌습니다");
+                        Toast.makeText(getApplicationContext(), "디바이스와의 연결이 끊어졌습니다", Toast.LENGTH_SHORT).show();
+                        createNotif("disconnect", "캐리어와 연결 끊김", "스마트 캐리어와 연결이 끊겼습니다.");
+                    });
                     reconnectHandler.postDelayed(reconnectRunnable, 5000);
-                    Log.d("연결 재시도", "블루투스 연결 재시도 중...");
+                    alreadyConnected = false;
                 }
             }
         }
@@ -709,7 +711,7 @@ public class MainActivity extends AppCompatActivity {
         } else if (writeCharacteristic == null || readCharacteristic == null){      // 연결이 되어 있으나 송수신 불가
             viewModel_info.setInfoText("송수신 불가능");
             return 1;
-        } else {    // 캐리어에 연결되어 있음
+        } else {    // 캐리어에 연결되어 있음 <- 수정 필요
             viewModel_info.setInfoText("정상적으로 연결됨");
             return 9;
         }
