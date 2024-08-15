@@ -6,7 +6,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -20,8 +19,6 @@ import com.arduino.Application.databinding.FragmentFindBinding;
 public class AlertFragment extends Fragment {
 
     private FragmentFindBinding binding;
-
-    private int menuNum;
 
     Button findBtn;
     TextView textFind;
@@ -57,7 +54,7 @@ public class AlertFragment extends Fragment {
         super.onResume();
         Log.d("Alert Fragment", "Alert Fragment-onResume()");
 
-        menuNum = 4;
+        int menuNum = 4;
         setMenuNum(menuNum);
     }
 

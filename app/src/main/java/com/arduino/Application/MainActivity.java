@@ -2,6 +2,10 @@ package com.arduino.Application;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGattCharacteristic;
@@ -14,6 +18,7 @@ import android.bluetooth.le.ScanResult;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
@@ -37,6 +42,8 @@ import com.google.android.material.navigation.NavigationView;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -46,7 +53,6 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.arduino.Application.databinding.ActivityMainBinding;
-
 
 import java.util.ArrayList;
 import java.util.List;
@@ -78,11 +84,12 @@ public class MainActivity extends AppCompatActivity {
     private static final UUID SERVICE_UUID = UUID.fromString("0000FFF0-0000-1000-8000-00805F9B34FB");
     private static final UUID WRITE_CHAR_UUID = UUID.fromString("0000FFF1-0000-1000-8000-00805F9B34FB");
     private static final UUID READ_CHAR_UUID = UUID.fromString("0000FFF2-0000-1000-8000-00805F9B34FB");
-    private BluetoothGatt bluetoothGatt;
+    private BluetoothGatt bluetoothGatt;        //Gatt = Generic Attribute Profile
     private BluetoothGattCharacteristic writeCharacteristic;
     private BluetoothGattCharacteristic readCharacteristic;
     private BluetoothLeScanner bluetoothLeScanner;
     private ScanCallback scanCallback;
+    private long writeStartTime;
 
     // 블루투스 통신에 사용되는 final 변수들
     final int BT_REQUEST_ENABLE = 1;
@@ -103,8 +110,10 @@ public class MainActivity extends AppCompatActivity {
     private boolean onAutoSearch = true;
     private boolean rssiSignal = false;
     private boolean security = false;
+    private boolean alreadyConnected = false;
+    private boolean checkDialog = false;
     private int menuNum_Global = 1;    // 1->home, 2->find, 3->weight, 4->alert, 5->info
-    private double[] weight = {0.0, 0.0};   //weight, tps
+    private double[] weight = {0.0, 0.0};   // weight, tps
     private String data;
 
     // 윈도우 및 툴바 관련 변수
@@ -354,16 +363,19 @@ public class MainActivity extends AppCompatActivity {
             public void onScanResult(int callbackType, ScanResult result) {
                 super.onScanResult(callbackType, result);
                 mBluetoothDevice = result.getDevice();
+                int rssi = result.getRssi();
+                Log.d("rssi", String.valueOf(rssi));
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                     checkPermission();
                 }
 
-                if (!isDialogShowing){
+                if (!isDialogShowing && !checkDialog){
                     if (onAutoSearch && mBluetoothDevice.getName() != null && mBluetoothDevice.getName().equals("FB301(73F06C)")) {     // 스마트 캐리어를 발견 했으면
                         bluetoothLeScanner.stopScan(scanCallback);
                         showConnectionDialog(mBluetoothDevice);
                         isDialogShowing = true;
+                        checkDialog = true;
                     }
                 }
 
@@ -419,6 +431,7 @@ public class MainActivity extends AppCompatActivity {
 
         if (writeCharacteristic != null){
             sendData(String.valueOf(num));
+            writeStartTime = System.currentTimeMillis();
             Log.d("setMenuNum", "메뉴 값 전송 완료");
         } else {
             Log.d("setMenuNum", "메뉴 값 전송 실패");
@@ -458,19 +471,33 @@ public class MainActivity extends AppCompatActivity {
                 checkPermission();
             }
             bluetoothGatt.disconnect();
-            bluetoothGatt.close();
-            bluetoothGatt = null;
+            //bluetoothGatt.close();
+            //bluetoothGatt = null;
             handler_RSSI.removeCallbacks(runnable_RSSI);
             rssiSignal = false;
         }
     }
+
+    private final Handler reconnectHandler = new Handler();
+    private final Runnable reconnectRunnable = new Runnable() {
+        @Override
+        public void run() {
+            if (bluetoothGatt != null) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                    checkPermission();
+                }
+                bluetoothGatt.connect();
+            }
+            reconnectHandler.postDelayed(this, 5000);
+        }
+    };
 
     // BLE 통신을 위한 BluetoothGatt 객체 생성
     private final BluetoothGattCallback bluetoothGattCallback = new BluetoothGattCallback() {
         @Override
         public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
             super.onConnectionStateChange(gatt, status, newState);
-            if (newState == BluetoothGatt.STATE_CONNECTED) {
+            if (newState == BluetoothGatt.STATE_CONNECTED) {        // 블루투스 디바이스와 연결 된 경우
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                     checkPermission();
                 }
@@ -478,17 +505,27 @@ public class MainActivity extends AppCompatActivity {
                     if (isSuitcase){
                         viewModel_home.setHomeText("스마트 캐리어에 연결됨");
                         Toast.makeText(getApplicationContext(), "스마트 캐리어에 연결됨", Toast.LENGTH_SHORT).show();
+                        alreadyConnected = true;
+                        checkDialog = true;
+                        reconnectHandler.removeCallbacks(reconnectRunnable);
+                        createNotif("connect", "캐리어와 연결됨", "스마트 캐리어와 연결되었습니다!");
                     } else {
                         viewModel_home.setHomeText("잘못된 디바이스에 연결됨");
                         Toast.makeText(getApplicationContext(), "연결된 디바이스는 스마트 캐리어가 아닙니다.", Toast.LENGTH_SHORT).show();
                     }
                 });
                 bluetoothGatt.discoverServices();
-            } else if (newState == BluetoothGatt.STATE_DISCONNECTED) {
+            } else if (newState == BluetoothGatt.STATE_DISCONNECTED) {      // 블루투스 디바이스와 연결이 끊긴 경우
+                stopRSSIMeasurement();
                 runOnUiThread(() -> {
                     viewModel_home.setHomeText("디바이스와의 연결이 끊어졌습니다");
                     Toast.makeText(getApplicationContext(), "디바이스와의 연결이 끊어졌습니다", Toast.LENGTH_SHORT).show();
+                    createNotif("disconnect", "캐리어와 연결 끊김", "스마트 캐리어와 연결이 끊겼습니다...");
                 });
+                if (mBluetoothAdapter.isEnabled() && alreadyConnected){
+                    reconnectHandler.postDelayed(reconnectRunnable, 5000);
+                    Log.d("연결 재시도", "블루투스 연결 재시도 중...");
+                }
             }
         }
 
@@ -536,6 +573,11 @@ public class MainActivity extends AppCompatActivity {
         public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
             super.onCharacteristicWrite(gatt, characteristic, status);
             if (status == BluetoothGatt.GATT_SUCCESS) {
+                long writeEndTime = System.currentTimeMillis();
+                long delay = writeEndTime - writeStartTime;
+                runOnUiThread(() -> {
+                    Toast.makeText(getApplicationContext(), "전송 Delay : " + delay + "ms", Toast.LENGTH_SHORT).show();
+                });
                 Log.d("Send data", "Data send success");
             }
         }
@@ -675,7 +717,43 @@ public class MainActivity extends AppCompatActivity {
 
     // 무게 설정을 전달하는 메서드
     public double[] checkWeightSetting(){
-        return weight;  //weight, tps
+        return weight;  // weight, tps
+    }
+
+    // 알람을 띄우는 메서드
+    private void createNotif(String channel_id, String big, String summary) {
+        NotificationManager manager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
+        NotificationChannel channel = manager.getNotificationChannel(channel_id);
+        if (channel == null) {
+            channel = new NotificationChannel(channel_id, "Channel Title", NotificationManager.IMPORTANCE_HIGH);
+            // 채널 설정
+            channel.setDescription("[Channel description]");
+            channel.enableVibration(true);
+            channel.setVibrationPattern(new long[]{100, 1000, 200, 340});
+            channel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
+            manager.createNotificationChannel(channel);
+        }
+
+        Intent notificationIntent = new Intent(getApplicationContext(), NotificationActivity.class);
+        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        PendingIntent contentIntent = PendingIntent.getActivity(getApplicationContext(), 0, notificationIntent, PendingIntent.FLAG_IMMUTABLE);
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), channel_id)
+                .setSmallIcon(R.drawable.splash)
+                .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.splash))
+                .setStyle(new NotificationCompat.BigPictureStyle()
+                        .setBigContentTitle(big)
+                        .setSummaryText(summary));
+        builder.setContentIntent(contentIntent);
+        NotificationManagerCompat m = NotificationManagerCompat.from(getApplicationContext());
+
+        if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.POST_NOTIFICATIONS}, 1);
+            }
+            return;
+        }
+
+        m.notify(1, builder.build());
     }
 
     protected void onResume() {

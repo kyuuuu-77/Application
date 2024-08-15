@@ -20,8 +20,6 @@ public class FindFragment extends Fragment {
 
     private FragmentFindBinding binding;
 
-    private int menuNum;
-
     Button findBtn;
     TextView textFind;
 
@@ -54,7 +52,7 @@ public class FindFragment extends Fragment {
         super.onResume();
         Log.d("Find Fragment", "Find Fragment-onResume()");
 
-        menuNum = 2;
+        int menuNum = 2;
         setMenuNum(menuNum);
     }
 
