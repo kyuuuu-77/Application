@@ -112,7 +112,6 @@ public class MainActivity extends AppCompatActivity {
     private boolean security = false;
     private boolean alreadyConnected = false;
     private boolean checkDialog = false;
-    private int menuNum_Global = 1;    // 1->home, 2->find, 3->weight, 4->alert, 5->info
     private double[] weight = {0.0, 0.0};   // weight, tps
     private String data;
 
@@ -427,8 +426,6 @@ public class MainActivity extends AppCompatActivity {
 
     // 메뉴 번호를 저장하고 아두이노에 송신하는 메서드
     public void setMenuNum(int num){
-        menuNum_Global = num;
-
         if (writeCharacteristic != null){
             sendData(String.valueOf(num));
             writeStartTime = System.currentTimeMillis();
@@ -566,7 +563,7 @@ public class MainActivity extends AppCompatActivity {
                 byte[] value = characteristic.getValue();
                 String receivedData = new String(value);
                 data = receivedData;
-                Log.d("Received data: ", receivedData);
+                Log.d("Received data", "받은 데이터 : "+ receivedData);
             }
         }
 
@@ -577,10 +574,8 @@ public class MainActivity extends AppCompatActivity {
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 long writeEndTime = System.currentTimeMillis();
                 long delay = writeEndTime - writeStartTime;
-                runOnUiThread(() -> {
-                    Toast.makeText(getApplicationContext(), "전송 Delay : " + delay + "ms", Toast.LENGTH_SHORT).show();
-                });
-                Log.d("Send data", "Data send success");
+                runOnUiThread(() -> Toast.makeText(getApplicationContext(), "전송 Delay : " + delay + "ms", Toast.LENGTH_SHORT).show());
+                Log.d("Send data", "데이터 송신 성공");
             }
         }
 
@@ -637,7 +632,7 @@ public class MainActivity extends AppCompatActivity {
                 if (data != null) {
                     Log.d("받은 데이터", data);
                     break;
-                } else if (cnt >= 500){
+                } else if (cnt >= 300){
                     Log.d("받은 데이터", "수신 실패");
                     break;
                 }

@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -66,9 +67,6 @@ public class WeightFragment extends Fragment {
             measureWeight();
         });
 
-        // 알림 버튼 설정
-        //root.findViewById(R.id.weight_btn).setOnClickListener(v -> createNotif());
-
         return root;
     }
     
@@ -82,12 +80,12 @@ public class WeightFragment extends Fragment {
             weight[0] = mainActivity.measureWeight(maxTps);
             mBtnWeight.setBackgroundColor(Color.parseColor("#2196F3"));
             if (weight[0] == -1){               // 측정에 실패한 경우
-                measureFailDialog();
+                showCustomDialog(2);
                 mBtnWeight.setBackgroundColor(Color.parseColor("#D32F2F"));
             }
             else{
                 if (weight[0] > 32.0) {             // 32kg을 초과한 경우
-                    showWarningDialog();
+                    showCustomDialog(3);
                     weightNow.setTextColor(Color.parseColor("#D32F2F"));
                 } else if (weight[0] > maxTps) {    // 허용 무게를 초과한 경우
                     weightNow.setTextColor(Color.parseColor("#F57C00"));
@@ -107,31 +105,6 @@ public class WeightFragment extends Fragment {
         return null;
     }
 
-    // 무게가 32kg을 초과할 경우 경고 다이얼로그를 표시하는 메서드
-    private void showWarningDialog(){
-        new AlertDialog.Builder(getContext())
-                .setTitle("경고!").setMessage("무게가 32Kg을 초과하였습니다.\nIATA 규정으로 인하여 32Kg 이상의 수화물은 항공기에 위탁 수화물로 맡길 수 없습니다.")
-                .setPositiveButton("확인", (dialog, which) -> dialog.dismiss()).setCancelable(false)
-                .create().show();
-    }
-
-    // 블루투스가 꺼져 있을때 다이얼로그를 표시하는 메서드
-    private void bluetoothNotWorkDialog(){
-        new AlertDialog.Builder(getContext())
-                .setTitle("무게 측정 비활성화 됨").setMessage("블루투스가 꺼져 있어 무게 측정을 할 수 없습니다.")
-                .setPositiveButton("확인", (dialog, which) -> dialog.dismiss())
-                .create().show();
-    }
-
-    // 측정에 실패 했을때 다이얼로그를 표시하는 메서
-    private void measureFailDialog(){
-        new AlertDialog.Builder(getContext())
-                .setTitle("무게 측정 실패").setMessage("무게 측정에 실패했습니다.\n스마트 캐리어와 연결되어 있는지 확인 후 다시 시도하세요.")
-                    .setPositiveButton("다시 시도", (dialog, which) -> measureWeight())
-                .setNegativeButton("취소", (dialog, which) -> dialog.dismiss()).setCancelable(false)
-                .create().show();
-    }
-
     @SuppressLint("SetTextI18n")
     public void onResume() {
         super.onResume();
@@ -143,7 +116,7 @@ public class WeightFragment extends Fragment {
         weight = checkWeightSetting();
 
         if (!mBluetoothAdapter.isEnabled()){
-            bluetoothNotWorkDialog();
+            showCustomDialog(1);
             mBtnWeight.setEnabled(false);
         } else {
             mBtnWeight.setEnabled(true);
@@ -153,7 +126,7 @@ public class WeightFragment extends Fragment {
             double maxTps = weight[1];
             mBtnWeight.setBackgroundColor(Color.parseColor("#2196F3"));
             if (weight[0] > 32.0) {             // 32kg을 초과한 경우
-                showWarningDialog();
+                showCustomDialog(3);
                 weightNow.setTextColor(Color.parseColor("#D32F2F"));
             } else if (weight[0] > maxTps) {    // 허용 무게를 초과한 경우
                 weightNow.setTextColor(Color.parseColor("#F57C00"));
@@ -171,6 +144,67 @@ public class WeightFragment extends Fragment {
         if (mainActivity != null) {
             mainActivity.setMenuNum(num);
         }
+    }
+
+    // 커스텀 다이얼로그 설정 메서드
+    private void showCustomDialog(int status) {
+        LayoutInflater inflater = LayoutInflater.from(getContext());
+        View dialogView = inflater.inflate(R.layout.custom_dialog, null);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+        builder.setView(dialogView);
+
+        // 다이얼로그 안에 이미지, 텍스트 뷰, 버튼 초기화 및 선언
+        ImageView iconView = dialogView.findViewById(R.id.dialog_icon);
+        TextView titleView = dialogView.findViewById(R.id.dialog_title);
+        TextView messageTextView = dialogView.findViewById(R.id.dialog_message_text);
+        ImageView messageImageView = dialogView.findViewById(R.id.dialog_message_image);
+
+        Button retryBtn = dialogView.findViewById(R.id.retry);
+        Button checkBtn = dialogView.findViewById(R.id.confirm);
+        Button cancelBtn = dialogView.findViewById(R.id.cancel);
+
+        // 텍스트, 이미지, 버튼 설정
+        switch (status) {       // 1 -> 블루투스 꺼져 있을시 2 -> 무게 측정 실패시 3 -> 32kg 초과시
+            case 3:
+                iconView.setImageResource(R.drawable.dialog_warning);
+                titleView.setText("무게 초과!");
+                messageTextView.setText("무게가 32Kg을 초과하였습니다.\nIATA 규정으로 인하여 32Kg 이상의 수하물은 항공기에 위탁 수하물로 맡길 수 없습니다.");
+                messageImageView.setImageResource(R.drawable.baggage_over32);
+                retryBtn.setVisibility(View.GONE);
+                cancelBtn.setVisibility(View.GONE);
+                break;
+            case 2:
+                iconView.setImageResource(R.drawable.dialog_error);
+                titleView.setText("무게 측정 실패!");
+                messageTextView.setText("무게 측정에 실패했습니다.\n스마트 캐리어와 연결되어 있고 통신 상태가 양호한지 확인 후 다시 시도하세요.");
+                messageImageView.setImageResource(R.drawable.connection_error);
+                checkBtn.setVisibility(View.GONE);
+                break;
+            case 1:
+                iconView.setImageResource(R.drawable.info_bt_off);
+                titleView.setText("무게 측정 비활성화");
+                messageTextView.setText("블루투스가 꺼져 있어 무게 측정을 할 수 없습니다.\n블루투스를 켠 후에 다시 시도하세요.");
+                messageImageView.setImageResource(R.drawable.connection);
+                retryBtn.setVisibility(View.GONE);
+                cancelBtn.setVisibility(View.GONE);
+                break;
+        }
+
+        AlertDialog dialog = builder.create();
+        dialog.setCancelable(false);
+        dialog.show();
+
+        retryBtn.setOnClickListener(v -> {  // 다시시도 버튼
+            measureWeight();
+            dialog.dismiss();
+        });
+        checkBtn.setOnClickListener(v -> {  // 확인 버튼
+            dialog.dismiss();
+        });
+        cancelBtn.setOnClickListener(v -> { // 취소 버튼
+            dialog.dismiss();
+        });
     }
 
     @Override
