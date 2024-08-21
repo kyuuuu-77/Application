@@ -31,6 +31,7 @@
         android:layout_marginStart="20dp"
         android:layout_marginTop="500dp"
         android:textSize="20sp"
+        android:background="@drawable/button_round"
         android:backgroundTint="#319EF2"
         android:text="@string/BT_on"
         app:layout_constraintStart_toStartOf="parent"
@@ -83,6 +84,7 @@
         android:layout_marginStart="20dp"
         android:layout_marginBottom="50dp"
         android:textSize="20sp"
+        android:background="@drawable/button_round"
         android:backgroundTint="#319EF2"
         android:text="@string/Security_on"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -110,7 +112,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.126"
-        app:srcCompat="@drawable/knu_gom"
+        app:srcCompat="@drawable/main"
         tools:ignore="ContentDescription" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
