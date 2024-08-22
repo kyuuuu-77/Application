@@ -52,7 +52,7 @@ public class InfoFragment extends Fragment {
         Log.d("Info Fragment", "Info Fragment-onCreatedView()");
 
         // 버튼, 텍스트뷰 및 아이콘 선언
-        mBtn_charge = root.findViewById(R.id.chrge);
+        mBtn_charge = root.findViewById(R.id.reset);
 
         rssiTextView = root.findViewById(R.id.rssi_signal);
         auto_search_status = root.findViewById(R.id.auto_search);

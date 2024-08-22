@@ -435,8 +435,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    // RSSI 측정 메서드들
-    // Handler로 1초마다 RSSI 측정
+    // Handler로 1초마다 RSSI 측정하는 Handler와 Runnable
     private final Handler handler_RSSI = new Handler();
     private final Runnable runnable_RSSI = new Runnable() {
         @Override
@@ -475,6 +474,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    // 5초마다 블루투스 재접속을 시도하는 Handler와 Runnable
     private final Handler reconnectHandler = new Handler();
     private final Runnable reconnectRunnable = new Runnable() {
         @Override
