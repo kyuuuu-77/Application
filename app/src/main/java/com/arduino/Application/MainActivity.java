@@ -32,7 +32,6 @@ import android.widget.Toast;
 
 import androidx.appcompat.widget.Toolbar;
 
-import com.arduino.Application.ui.alert.AlertViewModel;
 import com.arduino.Application.ui.find.FindViewModel;
 import com.arduino.Application.ui.home.HomeViewModel;
 import com.arduino.Application.ui.info.InfoViewModel;
@@ -100,7 +99,6 @@ public class MainActivity extends AppCompatActivity {
     private HomeViewModel viewModel_home;
     private FindViewModel viewModel_find;
     private WeightViewModel viewModel_weight;
-    private AlertViewModel viewModel_alert;
     private InfoViewModel viewModel_info;
 
     // 프로그램 동작을 위한 전역 변수
@@ -111,7 +109,7 @@ public class MainActivity extends AppCompatActivity {
     private boolean security = false;
     private boolean alreadyConnected = false;
     private boolean checkDialog = false;
-    private double[] weight = {0.0, 0.0};   // weight, tps
+    private double[] weight = {0.0, 0.0};   // weight, set
     private String data;
 
     // 윈도우 및 툴바 관련 변수
@@ -136,7 +134,7 @@ public class MainActivity extends AppCompatActivity {
         NavigationView navigationView = binding.navView;
 
         mAppBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.nav_home, R.id.nav_find, R.id.nav_weight, R.id.nav_info, R.id.nav_alert)
+                R.id.nav_home, R.id.nav_find, R.id.nav_weight, R.id.nav_info)
                 .setOpenableLayout(drawer)
                 .build();
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
@@ -161,7 +159,6 @@ public class MainActivity extends AppCompatActivity {
         viewModel_home = new ViewModelProvider(this).get(HomeViewModel.class);
         viewModel_weight = new ViewModelProvider(this).get(WeightViewModel.class);
         viewModel_find = new ViewModelProvider(this).get(FindViewModel.class);
-        viewModel_alert = new ViewModelProvider(this).get(AlertViewModel.class);
         viewModel_info = new ViewModelProvider(this).get(InfoViewModel.class);
 
         // 윈도우 생성
@@ -423,16 +420,6 @@ public class MainActivity extends AppCompatActivity {
                 .setCancelable(false).show();
     }
 
-    // 메뉴 번호를 저장하고 아두이노에 송신하는 메서드
-    public void setMenuNum(int num){
-        if (writeCharacteristic != null) {
-            sendData(String.valueOf(num));
-            Log.d("setMenuNum", "메뉴 값 전송 완료");
-        } else {
-            Log.d("setMenuNum", "메뉴 값 전송 실패");
-        }
-    }
-
     // Handler로 1초마다 RSSI 측정하는 Handler와 Runnable
     private final Handler handler_RSSI = new Handler();
     private final Runnable runnable_RSSI = new Runnable() {
@@ -649,17 +636,17 @@ public class MainActivity extends AppCompatActivity {
             viewModel_weight.setWeightNow(String.format("%.1f", weight[0]) +" Kg");
 
             if (weight[0] > 32){                    // 32kg 초과시
-                viewModel_weight.setLooseWeight("32Kg을 초과했습니다.");
+                viewModel_weight.setWeightInfo("32Kg을 초과했습니다.");
             } else if (weight[0] > weight[1]){      // 허용무게 초과시
-                viewModel_weight.setLooseWeight(String.format("%.1f", weight[0]-weight[1]) + " Kg  초과했습니다.");
+                viewModel_weight.setWeightInfo(String.format("%.1f", weight[0]-weight[1]) + " Kg  초과했습니다.");
             } else {                                // 무게 초과하지 않은 경우
-                viewModel_weight.setLooseWeight("허용 무게를 초과하지 않았습니다.");
+                viewModel_weight.setWeightInfo("허용 무게를 초과하지 않았습니다.");
             }
 
             viewModel_weight.setWeightBtn("무게 다시 측정");
             return weight[0];
         } else {
-            viewModel_weight.setLooseWeight("무게 측정에 실패하였습니다.");
+            viewModel_weight.setWeightInfo("무게 측정에 실패하였습니다.");
             viewModel_weight.setWeightBtn("무게 측정 실패");
             return -1;
         }
@@ -715,7 +702,7 @@ public class MainActivity extends AppCompatActivity {
 
     // 무게 설정을 전달하는 메서드
     public double[] checkWeightSetting(){
-        return weight;  // weight, tps
+        return weight;  // weight, set
     }
 
     // 알람을 띄우는 메서드

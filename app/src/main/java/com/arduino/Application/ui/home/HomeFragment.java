@@ -26,15 +26,12 @@ import com.arduino.Application.databinding.FragmentHomeBinding;
 public class HomeFragment extends Fragment {
     /* Fragment 생명주기 참고할 것 !!!
      * onAttach()->onCreate()->onCreateView()->onViewCreated()->onViewStateRestored()->
-     * onStart()->onResume()->onPause()->onStop()->onDestoryView->onDestroy->onDetach()
+     * onStart()->onResume()->onPause()->onStop()->onDestoryView->onDestroy()->onDetach()
      * */
 
     // 버튼 및 텍스트뷰 변수 초기화
-    Button mBtnBT_on;
-    Button mBtnBT_off;
+    Button mBtnBT;
     Button mBtnBT_Connect;
-    Button mBtnAlert_on;
-    Button mBtnAlert_off;
     
     TextView mTvBT_Status;
     TextView homeText;
@@ -45,8 +42,6 @@ public class HomeFragment extends Fragment {
     private BluetoothAdapter mBluetoothAdapter;
 
     private FragmentHomeBinding binding;
-
-    private boolean security = false;
 
     @SuppressLint("SetTextI18n")
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -60,11 +55,8 @@ public class HomeFragment extends Fragment {
         Log.d("Home Fragment", "Home Fragment-onCreatedView()");
 
         // 버튼 및 텍스트뷰 선언
-        mBtnBT_on = root.findViewById(R.id.btnBT_On);           // 블루투스를 켜는 버튼 ID
-        mBtnBT_off = root.findViewById(R.id.btnBT_Off);         // 블루투스를 끄는 버튼 ID
+        mBtnBT = root.findViewById(R.id.btnBT);           // 블루투스를 켜는 버튼 ID
         mBtnBT_Connect = root.findViewById(R.id.btnBT_Connect); // 연결 버튼
-        mBtnAlert_on = root.findViewById(R.id.btnAlert_On);     // 도난방지 켜는 버튼
-        mBtnAlert_off = root.findViewById(R.id.btnAlert_Off);   // 도난방지 끄는 버튼
         
         mTvBT_Status = root.findViewById(R.id.BT_Status);       // 블루투스 상태 텍스트 뷰
         homeText = root.findViewById(R.id.text_home);           // 홈 텍스트 뷰
@@ -80,43 +72,20 @@ public class HomeFragment extends Fragment {
         homeViewModel.getHomeTextLiveData().observe(getViewLifecycleOwner(), text -> homeText.setText(text));
 
         // 버튼 이벤트 리스너들
-        // 블루투스 ON 버튼
-        mBtnBT_on.setOnClickListener(view -> {
+        // 블루투스 버튼
+        mBtnBT.setOnClickListener(view -> {
             Log.d("Button Click", "Button clicked!");
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 Fragment_BT_on();
             } else {
                 Fragment_BT_on_Legacy();
-                mBtnBT_on.setEnabled(false);
-                mBtnBT_off.setEnabled(true);
+                mBtnBT.setEnabled(false);
                 window.setStatusBarColor(Color.parseColor("#388E3C"));
-                //toolbar.setBackgroundColor(Color.parseColor("#2196F3"));
+                // window.setStatusBarColor(Color.parseColor("#FF9800"));
             }
 
             if (mBluetoothAdapter.isEnabled()){
-                checkSecurity();
-            }
-        });
-
-        // 블루투스 OFF 버튼
-        mBtnBT_off.setOnClickListener(view -> {
-            Log.d("Button Click", "Button clicked!");
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                Fragment_BT_off();
-            } else {
-                Fragment_BT_off_Legacy();
-                mBtnBT_on.setEnabled(true);
-                mBtnBT_off.setEnabled(false);
-                mBtnAlert_on.setEnabled(false);
-                mBtnAlert_off.setEnabled(false);
-                window.setStatusBarColor(Color.parseColor("#FF9800"));
-                //toolbar.setBackgroundColor(Color.parseColor("#FF9800"));
-            }
-
-            if (!mBluetoothAdapter.isEnabled()){
-                Fragment_security_OFF();
             }
         });
 
@@ -127,76 +96,27 @@ public class HomeFragment extends Fragment {
             Fragment_listPairedDevices();
         });
 
-        // 도난방지 ON 버튼
-        mBtnAlert_on.setOnClickListener(view -> {
-            Log.d("Button Click", "Button clicked!");
-
-            Fragment_security_ON();
-        });
-
-        // 도난방지 OFF 버튼
-        mBtnAlert_off.setOnClickListener(view -> {
-            Log.d("Button Click", "Button clicked!");
-
-            Fragment_security_OFF();
-        });
-
         return root;
-    }
-
-    private void checkSecurity() {
-        MainActivity mainActivity = (MainActivity) getActivity();
-        if (mainActivity != null) {
-            security = mainActivity.checkSecurity();
-        }
-        if (security) {
-            mBtnAlert_on.setEnabled(false);
-            mBtnAlert_off.setEnabled(true);
-        } else {
-            mBtnAlert_on.setEnabled(true);
-            mBtnAlert_off.setEnabled(false);
-        }
     }
 
     public void onResume(){
         super.onResume();
         Log.d("Home Fragment", "Home Fragment-onResume()");
 
-        int menuNum = 1;
-        setMenuNum(menuNum);
-
         if (mBluetoothAdapter == null) {
             mTvBT_Status.setText("블루투스 지원하지 않음");
-//            window.setStatusBarColor(Color.parseColor("#E91E63"));
-            mBtnBT_on.setEnabled(false);
-            mBtnBT_off.setEnabled(false);
+            mBtnBT.setEnabled(false);
             mBtnBT_Connect.setEnabled(false);
-            mBtnAlert_on.setEnabled(false);
-            mBtnAlert_off.setEnabled(false);
         } else {
             if (mBluetoothAdapter.isEnabled()) {
                 mTvBT_Status.setText("블루투스 활성화");
-//                window.setStatusBarColor(Color.parseColor("#4CAF50"));
-                mBtnBT_on.setEnabled(false);
-                mBtnBT_off.setEnabled(true);
+                mBtnBT.setEnabled(false);
                 mBtnBT_Connect.setEnabled(true);
-                checkSecurity();
             } else {
                 mTvBT_Status.setText("블루투스 비활성화");
-//                window.setStatusBarColor(Color.parseColor("#FF9800"));
-                mBtnBT_on.setEnabled(true);
-                mBtnBT_off.setEnabled(false);
+                mBtnBT.setEnabled(true);
                 mBtnBT_Connect.setEnabled(false);
-                mBtnAlert_on.setEnabled(false);
-                mBtnAlert_off.setEnabled(false);
             }
-        }
-    }
-
-    private void setMenuNum(int num){
-        MainActivity mainActivity = (MainActivity) getActivity();
-        if (mainActivity != null) {
-            mainActivity.setMenuNum(num);
         }
     }
 
@@ -235,23 +155,6 @@ public class HomeFragment extends Fragment {
         MainActivity mainActivity = (MainActivity) getActivity();
         if (mainActivity != null) {
             mainActivity.listPairedDevices();
-        }
-    }
-
-    public void Fragment_security_ON(){
-        MainActivity mainActivity = (MainActivity) getActivity();
-        if (mainActivity != null) {
-            security = mainActivity.security_ON();
-            mBtnAlert_on.setEnabled(false);
-            mBtnAlert_off.setEnabled(true);
-        }
-    }
-    public void Fragment_security_OFF(){
-        MainActivity mainActivity = (MainActivity) getActivity();
-        if (mainActivity != null) {
-            security = mainActivity.security_OFF();
-            mBtnAlert_on.setEnabled(true);
-            mBtnAlert_off.setEnabled(false);
         }
     }
 

@@ -13,7 +13,6 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.arduino.Application.MainActivity;
 import com.arduino.Application.R;
 import com.arduino.Application.databinding.FragmentFindBinding;
 
@@ -21,13 +20,15 @@ public class FindFragment extends Fragment {
 
     private FragmentFindBinding binding;
 
-    Button findBtn;
-    TextView textFind;
+    // 버튼 및 텍스트 뷰 초기화
+    TextView textAlert;
+    TextView alertStatus;
+    Button security;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         FindViewModel findViewModel =
-                new ViewModelProvider(this).get(FindViewModel.class);
+                new ViewModelProvider(requireActivity()).get(FindViewModel.class);
 
         binding = FragmentFindBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
@@ -35,13 +36,19 @@ public class FindFragment extends Fragment {
         Log.d("Find Fragment", "Find Fragment-onCreatedView()");
 
         // 버튼 및 텍스트 뷰 선언
-        findBtn = root.findViewById(R.id.find_bag);
-        textFind = root.findViewById(R.id.text_find);
+        textAlert = root.findViewById(R.id.text_alert);
+        alertStatus = root.findViewById(R.id.alert_status);
+        security = root.findViewById(R.id.alertBtn);
+
+        // ViewModel과 UI 요소 바인딩
+        findViewModel.getAlertTextLiveData().observe(getViewLifecycleOwner(), text -> textAlert.setText(text));
+        findViewModel.getAlertStatusLiveData().observe(getViewLifecycleOwner(), status -> security.setText(status));
+        findViewModel.getAlertBtnLiveData().observe(getViewLifecycleOwner(), btn -> security.setText(btn));
 
         // 버튼 이벤트 리스너
-        findBtn.setOnClickListener(view -> {
+        security.setOnClickListener(view -> {
             Log.d("Button Click", "Button clicked!");
-            textFind.setText("찾기 시도중...");
+            textAlert.setText("찾기 시도중...");
             Toast.makeText(getActivity(), "찾기 시도중...", Toast.LENGTH_SHORT).show();
         });
 
@@ -51,17 +58,6 @@ public class FindFragment extends Fragment {
     public void onResume(){
         super.onResume();
         Log.d("Find Fragment", "Find Fragment-onResume()");
-
-        int menuNum = 2;
-        setMenuNum(menuNum);
-    }
-
-    // 메뉴 설정 메서드
-    private void setMenuNum(int num){
-        MainActivity mainActivity = (MainActivity) getActivity();
-        if (mainActivity != null) {
-            mainActivity.setMenuNum(num);
-        }
     }
 
     @Override

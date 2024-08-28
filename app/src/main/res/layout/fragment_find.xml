@@ -7,7 +7,7 @@
     tools:context=".ui.find.FindFragment">
 
     <ImageView
-        android:id="@+id/imageView"
+        android:id="@+id/find_icon"
         android:layout_width="200dp"
         android:layout_height="200dp"
         android:contentDescription="@string/nav_header_desc"
@@ -22,7 +22,7 @@
     <ImageView
         android:id="@+id/imageViewl"
         android:layout_width="350dp"
-        android:layout_height="230dp"
+        android:layout_height="185dp"
         android:contentDescription="@string/nav_header_desc"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -33,10 +33,10 @@
         app:srcCompat="@drawable/rectangle_round" />
 
     <TextView
-        android:id="@+id/text_find"
+        android:id="@+id/text_alert"
         android:layout_width="350dp"
         android:layout_height="wrap_content"
-        android:text="도난방지 기능으로\n캐리어를 안전하게 보관하세요!"
+        android:text="@string/alert_text"
         android:textAlignment="center"
         android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="@+id/imageViewl"
@@ -44,32 +44,45 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/imageViewl"
         app:layout_constraintTop_toTopOf="@+id/imageViewl"
-        app:layout_constraintVertical_bias="0.12" />
+        app:layout_constraintVertical_bias="0.078" />
 
     <TextView
-        android:id="@+id/find_status"
+        android:id="@+id/alert_status"
         android:layout_width="350dp"
         android:layout_height="wrap_content"
-        android:text="도난 방지 기능 동작 여부"
+        android:text="@string/alertStatus"
         android:textAlignment="center"
-        android:textSize="23sp"
         android:textColor="@color/light_black"
+        android:textSize="23sp"
         app:layout_constraintBottom_toBottomOf="@+id/imageViewl"
         app:layout_constraintEnd_toEndOf="@+id/imageViewl"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/imageViewl"
         app:layout_constraintTop_toTopOf="@+id/imageViewl"
-        app:layout_constraintVertical_bias="0.66" />
+        app:layout_constraintVertical_bias="0.536" />
 
     <TextView
         android:id="@+id/find_distance"
         android:layout_width="350dp"
         android:layout_height="wrap_content"
-        android:text="벨소리 울리기"
+        android:text="@string/bag_distance"
         android:textAlignment="center"
         android:textColor="@color/light_black"
         android:textSize="25sp"
         android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/imageViewl"
+        app:layout_constraintEnd_toEndOf="@+id/imageViewl"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/imageViewl"
+        app:layout_constraintTop_toTopOf="@+id/imageViewl"
+        app:layout_constraintVertical_bias="0.898" />
+
+    <ImageButton
+        android:id="@+id/bell"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:importantForAccessibility="no"
+        android:src="@drawable/bell5"
         app:layout_constraintBottom_toBottomOf="@+id/imageViewl"
         app:layout_constraintEnd_toEndOf="@+id/imageViewl"
         app:layout_constraintHorizontal_bias="1.0"
@@ -78,29 +91,19 @@
         app:layout_constraintVertical_bias="1.0" />
 
     <Button
-        android:id="@+id/find_bag"
+        android:id="@+id/alertBtn"
         android:layout_width="284dp"
         android:layout_height="59dp"
         android:background="@drawable/button_round"
-        android:text="도난방지 켜기"
+        android:text="@string/alert_Btn"
         android:textSize="20sp"
         android:textStyle="bold"
         app:backgroundTint="@null"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.496"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.918" />
-
-    <ImageButton
-        android:id="@+id/bell"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/bell5"
-        tools:layout_editor_absoluteY="455dp"
-        tools:layout_editor_absoluteX="308dp"
-        tools:ignore="MissingConstraints" />
-
+        app:layout_constraintVertical_bias="0.867" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

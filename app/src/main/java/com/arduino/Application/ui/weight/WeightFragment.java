@@ -28,8 +28,8 @@ public class WeightFragment extends Fragment {
 
     // UI 요소 선언
     private TextView weightNow;
-    private TextView weightTps;
-    private TextView looseWeight;
+    private TextView weightSet;
+    private TextView weightInfo;
     private Button mBtnWeight;
     private BluetoothAdapter mBluetoothAdapter;
     private FragmentWeightBinding binding;
@@ -51,19 +51,19 @@ public class WeightFragment extends Fragment {
         Log.d("Weight Fragment", "Weight Fragment-onCreateView()");
 
         // UI 요소 초기화
-        weightNow = root.findViewById(R.id.text_weightnow);         // 현재 무게정보 텍스트뷰
-        weightTps = root.findViewById(R.id.text_weightps);          // 허용 무게 텍스트 뷰
-        looseWeight = root.findViewById(R.id.text_looseweight);     // 초과 무게 텍스트 뷰
+        weightNow = root.findViewById(R.id.weightNow);         // 현재 무게정보 텍스트뷰
+        weightSet = root.findViewById(R.id.weightSet);          // 허용 무게 텍스트 뷰
+        weightInfo = root.findViewById(R.id.weightInfo);     // 초과 무게 텍스트 뷰
         mBtnWeight = root.findViewById(R.id.weight_btn);            // 무게 측정 시작 버튼
 
         // DrawerLayout과 NavigationView 설정
-        drawerLayout = requireActivity().findViewById(R.id.drawer_layout_weight);
-        navigationView = requireActivity().findViewById(R.id.nav_view_weight);
+        drawerLayout = root.findViewById(R.id.drawer_layout_weight_fragment);
+        navigationView = root.findViewById(R.id.nav_view_weight_fragment);
 
         // ViewModel과 UI 요소 바인딩
         weightViewModel.getWeightNowLiveData().observe(getViewLifecycleOwner(), weight -> weightNow.setText(weight));
-        weightViewModel.getWeightTpsLiveData().observe(getViewLifecycleOwner(), tps -> weightTps.setText(tps));
-        weightViewModel.getLooseWeightLiveData().observe(getViewLifecycleOwner(), loose -> looseWeight.setText(loose));
+        weightViewModel.getWeightSetLiveData().observe(getViewLifecycleOwner(), tps -> weightSet.setText(tps));
+        weightViewModel.getWeightInfoLiveData().observe(getViewLifecycleOwner(), info -> weightInfo.setText(info));
         weightViewModel.getWeightBtnLiveData().observe(getViewLifecycleOwner(), btn -> mBtnWeight.setText(btn));
 
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -129,9 +129,6 @@ public class WeightFragment extends Fragment {
         super.onResume();
         Log.d("Weight Fragment", "Weight Fragment-onResume()");
 
-        int menuNum = 3;
-        setMenuNum(menuNum);
-
         weight = checkWeightSetting();
 
         if (!mBluetoothAdapter.isEnabled()) {
@@ -154,13 +151,6 @@ public class WeightFragment extends Fragment {
             }
         } else if (weight != null && weight[0] == -1){  // 무게 측정 실패한 경우
             mBtnWeight.setBackgroundColor(Color.parseColor("#D32F2F"));
-        }
-    }
-
-    private void setMenuNum(int num) {
-        MainActivity mainActivity = (MainActivity) getActivity();
-        if (mainActivity != null) {
-            mainActivity.setMenuNum(num);
         }
     }
 
