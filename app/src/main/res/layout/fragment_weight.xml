@@ -93,7 +93,7 @@
             android:layout_width="284dp"
             android:layout_height="59dp"
             android:background="@drawable/button_round"
-            app:backgroundTint="@color/indigo_500"
+            app:backgroundTint="@null"
             android:text="@string/measureBtn"
             android:textSize="20sp"
             android:textStyle="bold"

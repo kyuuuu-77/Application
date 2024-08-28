@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,6 +15,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
@@ -26,17 +28,24 @@ import com.google.android.material.navigation.NavigationView;
 
 public class WeightFragment extends Fragment {
 
-    // UI 요소 선언
+    // 버튼 요소 및 텍스트 뷰 초기화
     private TextView weightNow;
     private TextView weightSet;
     private TextView weightInfo;
     private Button mBtnWeight;
-    private BluetoothAdapter mBluetoothAdapter;
-    private FragmentWeightBinding binding;
+
+    Drawable Btn_blue;
+    Drawable Btn_red;
+
+    // 앱서랍 선언
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
 
-    private double[] weight = {0, 0};   // weight, tps
+    private double[] weight = {0, 0};   // weight, set
+
+    private BluetoothAdapter mBluetoothAdapter;
+
+    private FragmentWeightBinding binding;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -45,16 +54,18 @@ public class WeightFragment extends Fragment {
         WeightViewModel weightViewModel =
                 new ViewModelProvider(requireActivity()).get(WeightViewModel.class);
 
-        // 바인딩을 통해 레이아웃을 인플레이트합니다.
         binding = FragmentWeightBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
         Log.d("Weight Fragment", "Weight Fragment-onCreateView()");
 
-        // UI 요소 초기화
+        // 버튼 요소 및 텍스트 뷰 초기화
         weightNow = root.findViewById(R.id.weightNow);         // 현재 무게정보 텍스트뷰
         weightSet = root.findViewById(R.id.weightSet);          // 허용 무게 텍스트 뷰
         weightInfo = root.findViewById(R.id.weightInfo);     // 초과 무게 텍스트 뷰
         mBtnWeight = root.findViewById(R.id.weight_btn);            // 무게 측정 시작 버튼
+
+        Btn_blue = ContextCompat.getDrawable(requireContext(), R.drawable.button_round);
+        Btn_red = ContextCompat.getDrawable(requireContext(), R.drawable.button_round_off);
 
         // DrawerLayout과 NavigationView 설정
         drawerLayout = root.findViewById(R.id.drawer_layout_weight_fragment);
@@ -62,7 +73,7 @@ public class WeightFragment extends Fragment {
 
         // ViewModel과 UI 요소 바인딩
         weightViewModel.getWeightNowLiveData().observe(getViewLifecycleOwner(), weight -> weightNow.setText(weight));
-        weightViewModel.getWeightSetLiveData().observe(getViewLifecycleOwner(), tps -> weightSet.setText(tps));
+        weightViewModel.getWeightSetLiveData().observe(getViewLifecycleOwner(), set -> weightSet.setText(set));
         weightViewModel.getWeightInfoLiveData().observe(getViewLifecycleOwner(), info -> weightInfo.setText(info));
         weightViewModel.getWeightBtnLiveData().observe(getViewLifecycleOwner(), btn -> mBtnWeight.setText(btn));
 
@@ -95,19 +106,19 @@ public class WeightFragment extends Fragment {
     @SuppressLint("SetTextI18n")
     private void measureWeight() {
         MainActivity mainActivity = (MainActivity) getActivity();
-        double maxTps = 20.0;
-        weight[1] = maxTps;
+        double maxSet = 20.0;
+        weight[1] = maxSet;
         if (mainActivity != null) {
-            weight[0] = mainActivity.measureWeight(maxTps);
-            mBtnWeight.setBackgroundColor(Color.parseColor("#2196F3"));
+            weight[0] = mainActivity.measureWeight(maxSet);
+            mBtnWeight.setBackground(Btn_blue);
             if (weight[0] == -1) {
                 showCustomDialog(2);
-                mBtnWeight.setBackgroundColor(Color.parseColor("#D32F2F"));
+                mBtnWeight.setBackground(Btn_red);
             } else {
                 if (weight[0] > 32.0) {
                     showCustomDialog(3);
                     weightNow.setTextColor(Color.parseColor("#D32F2F"));
-                } else if (weight[0] > maxTps) {
+                } else if (weight[0] > maxSet) {
                     weightNow.setTextColor(Color.parseColor("#F57C00"));
                 } else {
                     weightNow.setTextColor(Color.parseColor("#319EF2"));
@@ -134,23 +145,24 @@ public class WeightFragment extends Fragment {
         if (!mBluetoothAdapter.isEnabled()) {
             showCustomDialog(1);
             mBtnWeight.setEnabled(false);
+            mBtnWeight.setBackground(Btn_red);
         } else {
             mBtnWeight.setEnabled(true);
         }
 
         if (weight != null && weight[0] != 0 && weight[0] != -1) {
-            double maxTps = weight[1];
-            mBtnWeight.setBackgroundColor(Color.parseColor("#2196F3"));
+            double maxSet = weight[1];
+            mBtnWeight.setBackground(Btn_blue);
             if (weight[0] > 32.0) {             // 32kg을 초과한 경우
                 showCustomDialog(3);
                 weightNow.setTextColor(Color.parseColor("#D32F2F"));
-            } else if (weight[0] > maxTps) {    // 허용 무게를 초과한 경우
+            } else if (weight[0] > maxSet) {    // 허용 무게를 초과한 경우
                 weightNow.setTextColor(Color.parseColor("#F57C00"));
             } else {                            // 무게를 초과하지 않은 경우
                 weightNow.setTextColor(Color.parseColor("#319EF2"));
             }
         } else if (weight != null && weight[0] == -1){  // 무게 측정 실패한 경우
-            mBtnWeight.setBackgroundColor(Color.parseColor("#D32F2F"));
+            mBtnWeight.setBackground(Btn_red);
         }
     }
 
@@ -184,7 +196,7 @@ public class WeightFragment extends Fragment {
             case 2:
                 iconView.setImageResource(R.drawable.dialog_error);
                 titleView.setText("무게 측정 실패!");
-                messageTextView.setText("무게 측정에 실패했습니다.\n스마트 캐리어와 연결되어 있고 통신 상태가 양호한지 확인 후 다시 시도하세요.");
+                messageTextView.setText("무게 측정에 실패했습니다.\n스마트 캐리어와 연결되어 있고 통신 상태가 양호한지 확인 후\n다시 시도하세요.");
                 messageImageView.setImageResource(R.drawable.connection_error);
                 checkBtn.setVisibility(View.GONE);
                 break;
@@ -213,7 +225,6 @@ public class WeightFragment extends Fragment {
     private void setupNavigationViewMenu() {
         if (navigationView != null) {
             navigationView.setNavigationItemSelectedListener(item -> {
-                // 메뉴 항목 클릭 시, 체크 상태를 변경합니다.
                 item.setChecked(!item.isChecked());
                 return true;
             });
