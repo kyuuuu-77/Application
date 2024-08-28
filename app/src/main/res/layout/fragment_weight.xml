@@ -7,19 +7,6 @@
     tools:context=".ui.weight.WeightFragment">
 
     <ImageView
-        android:id="@+id/home"
-        android:layout_width="wrap_content"
-        android:layout_height="30dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginStart="16dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_menu_home"
-        tools:ignore="ContentDescription" />
-
-    <ImageView
         android:id="@+id/menu"
         android:layout_width="wrap_content"
         android:layout_height="30dp"
@@ -93,17 +80,19 @@
 
     <Button
         android:id="@+id/weight_btn"
-        android:layout_width="300dp"
-        android:layout_height="75dp"
-        android:backgroundTint="#319EF2"
+        android:layout_width="284dp"
+        android:layout_height="59dp"
+        android:background="@drawable/button_round"
+        app:backgroundTint="@color/indigo_500"
         android:text="@string/measure_weight"
+        android:background="@drawable/button_round"
         android:textSize="20sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.495"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.893" />
+        app:layout_constraintVertical_bias="0.867" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

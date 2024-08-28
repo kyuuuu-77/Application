@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -40,11 +41,10 @@ public class FindFragment extends Fragment {
         // 버튼 이벤트 리스너
         findBtn.setOnClickListener(view -> {
             Log.d("Button Click", "Button clicked!");
-            textFind.setText("버튼이 눌렸습니다!");
+            textFind.setText("찾기 시도중...");
+            Toast.makeText(getActivity(), "찾기 시도중...", Toast.LENGTH_SHORT).show();
         });
 
-        final TextView textView = binding.textFind;
-        findViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
         return root;
     }
 

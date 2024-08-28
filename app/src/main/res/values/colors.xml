@@ -1,29 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="purple_200">#FFBB86FC</color>
-    <color name="purple_500">#FF6200EE</color>
-    <color name="purple_700">#FF3700B3</color>
-    <color name="teal_200">#FF03DAC5</color>
-    <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
+    <color name="light_black">#FF262626</color>
     <color name="white">#FFFFFFFF</color>
 
-    <!--Material 디자인 색상 https://m2.material.io/design/color/the-color-system.html#tools-for-picking-colors -->
+    <color name="purple_700">#FF3700B3</color>
+    <color name="purple_500">#FF6200EE</color>
+    <color name="purple_200">#FFBB86FC</color>
+
+    <color name="teal_700">#FF018786</color>
+    <color name="teal_200">#FF03DAC5</color>
+
     <color name="red_700">#D32F2F</color>
     <color name="red_500">#F44336</color>
+    <color name="red_100">#FFCDD2</color>
+
     <color name="indigo_700">#303F9F</color>
     <color name="indigo_500">#3F51B5</color>
+    <color name="indigo_100">#C5CAE9</color>
+
     <color name="blue_700">#1976D2</color>
     <color name="blue_500">#2196F3</color>
+    <color name="blue_100">#BBDEFB</color>
+
     <color name="orange_700">#F57C00</color>
     <color name="orange_500">#FF9800</color>
+    <color name="orange_100">#FFE0B2</color>
 
-    <color name="pink_500">#E91E63</color>
     <color name="pink_700">#C2185B</color>
-    <color name="cyan_500">#00BCD4</color>
+    <color name="pink_500">#E91E63</color>
+    <color name="pink_100">#F8BBD0</color>
+
     <color name="cyan_700">#0097A7</color>
-    <color name="lightblue_500">#03A9F4</color>
+    <color name="cyan_500">#00BCD4</color>
+    <color name="cyan_100">#B2EBF2</color>
+
     <color name="lightblue_700">#0288D1</color>
-    <color name="green_500">#4CAF50</color>
+    <color name="lightblue_500">#03A9F4</color>
+    <color name="lightblue_100">#B3E5FC</color>
+
     <color name="green_700">#388E3C</color>
+    <color name="green_500">#4CAF50</color>
+    <color name="green_100">#B2EBF2</color>
 </resources>
