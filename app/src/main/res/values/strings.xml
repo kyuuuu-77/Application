@@ -2,11 +2,15 @@
     <string name="app_name">스마트 캐리어</string>
     <string name="navigation_drawer_open">네비게이션 바 열기</string>
     <string name="navigation_drawer_close">네비게이션 바 닫기</string>
+
+    <!-- 네비게이션 바 -->
     <string name="nav_header_title">스마트 캐리어</string>
-    <string name="nav_header_subtitle">Smart Suitcase with Arduino</string>
+    <string name="nav_header_subtitle">Smart Suitcase with BLE</string>
     <string name="nav_header_desc">네비게이션 해더</string>
     <string name="action_settings">설정</string>
+    <string name="app_version">v2024.08.24/12</string>
 
+    <!-- 스플리시 화면 및 알림창 -->
     <string name="splash_name">Suitcase Genie</string>
     <string name="weight_popup">Notification</string>
 
