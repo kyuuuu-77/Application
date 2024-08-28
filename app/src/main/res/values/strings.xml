@@ -42,6 +42,8 @@
     <string name="info_text">Info 데이터 표시</string>
     <string name="auto_search_text">캐리어 자동 검색</string>
     <string name="security_status">도난방지 상태</string>
+    <string name="resetBtn">설정 초기화</string>
+    <string name="app_version">v2024.08.24/12</string>
 
     <string name="Korean_Air">대한항공(Korean_Air)</string>
     <string name="Asiana_Airlines">아시아나항공(Asiana_Airlines)</string>

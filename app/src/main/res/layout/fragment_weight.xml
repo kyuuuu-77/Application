@@ -85,7 +85,6 @@
         android:background="@drawable/button_round"
         app:backgroundTint="@color/indigo_500"
         android:text="@string/measure_weight"
-        android:background="@drawable/button_round"
         android:textSize="20sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"

@@ -89,7 +89,6 @@ public class MainActivity extends AppCompatActivity {
     private BluetoothGattCharacteristic readCharacteristic;
     private BluetoothLeScanner bluetoothLeScanner;
     private ScanCallback scanCallback;
-    private long writeStartTime;
 
     // 블루투스 통신에 사용되는 final 변수들
     final int BT_REQUEST_ENABLE = 1;
@@ -426,9 +425,8 @@ public class MainActivity extends AppCompatActivity {
 
     // 메뉴 번호를 저장하고 아두이노에 송신하는 메서드
     public void setMenuNum(int num){
-        if (writeCharacteristic != null){
+        if (writeCharacteristic != null) {
             sendData(String.valueOf(num));
-            writeStartTime = System.currentTimeMillis();
             Log.d("setMenuNum", "메뉴 값 전송 완료");
         } else {
             Log.d("setMenuNum", "메뉴 값 전송 실패");
@@ -578,9 +576,6 @@ public class MainActivity extends AppCompatActivity {
         public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
             super.onCharacteristicWrite(gatt, characteristic, status);
             if (status == BluetoothGatt.GATT_SUCCESS) {
-                long writeEndTime = System.currentTimeMillis();
-                long delay = writeEndTime - writeStartTime;
-                runOnUiThread(() -> Toast.makeText(getApplicationContext(), "전송 Delay : " + delay + "ms", Toast.LENGTH_SHORT).show());
                 Log.d("Send data", "데이터 송신 성공");
             }
         }
