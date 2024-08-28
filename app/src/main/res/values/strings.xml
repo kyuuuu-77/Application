@@ -42,4 +42,16 @@
     <string name="info_text">Info 데이터 표시</string>
     <string name="auto_search_text">캐리어 자동 검색</string>
     <string name="security_status">도난방지 상태</string>
+
+    <!--항공사별 수화물 무게 화면-->
+    <string name="Korean_Air">대한항공(Korean Air)</string>
+    <string name="Asiana_Airlines">아시아나항공(Asiana Airlines)</string>
+    <string name="Jin_Air">진에어(Jin Air)</string>
+    <string name="Jeju_Air">제주항공(Jeju Air)</string>
+    <string name="Tway_Air">티웨이항공(Tway Air)</string>
+    <string name="Air_Busan">에어부산(Air Busan)</string>
+    <string name="Air_Seoul">에어서울(Air Seoul)</string>
+
+
+
 </resources>
