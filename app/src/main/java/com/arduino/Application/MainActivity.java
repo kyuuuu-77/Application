@@ -83,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
     private static final UUID SERVICE_UUID = UUID.fromString("0000FFF0-0000-1000-8000-00805F9B34FB");
     private static final UUID WRITE_CHAR_UUID = UUID.fromString("0000FFF1-0000-1000-8000-00805F9B34FB");
     private static final UUID READ_CHAR_UUID = UUID.fromString("0000FFF2-0000-1000-8000-00805F9B34FB");
-    private BluetoothGatt bluetoothGatt;        //Gatt = Generic Attribute Profile
+    private BluetoothGatt bluetoothGatt;        // Gatt = Generic Attribute Profile
     private BluetoothGattCharacteristic writeCharacteristic;
     private BluetoothGattCharacteristic readCharacteristic;
     private BluetoothLeScanner bluetoothLeScanner;
@@ -112,6 +112,7 @@ public class MainActivity extends AppCompatActivity {
     private double[] weight = {0.0, 0.0};   // weight, set
     private String data;
     private int BLE_status = 0;
+    private int rssi_global = 99;
 
     // 윈도우 및 툴바 관련 변수
     Window window;
@@ -579,7 +580,8 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onReadRemoteRssi(BluetoothGatt gatt, int rssi, int status) {
             super.onReadRemoteRssi(gatt, rssi, status);
-            handler_RSSI.post(() -> viewModel_info.setRssi("RSSI: " + rssi + " dBm"));
+            rssi_global = rssi - 30;
+            handler_RSSI.post(() -> viewModel_info.setRssi("RSSI: " + rssi_global + " dBm"));
         }
     };
 
@@ -595,20 +597,6 @@ public class MainActivity extends AppCompatActivity {
                 bluetoothGatt.writeCharacteristic(writeCharacteristic);
             }
         }
-    }
-
-    // 도난방지 ON 메서드
-    public boolean security_ON(){
-        security = true;
-        Toast.makeText(getApplicationContext(), "도난방지가 켜졌습니다.", Toast.LENGTH_SHORT).show();
-        return security;
-    }
-
-    // 도난방지 OFF 메서드
-    public boolean security_OFF(){
-        security = false;
-        Toast.makeText(getApplicationContext(), "도난방지가 꺼졌습니다.", Toast.LENGTH_SHORT).show();
-        return security;
     }
 
     // 무게를 측정하는 메서드
@@ -681,11 +669,100 @@ public class MainActivity extends AppCompatActivity {
     // 도난방지 여부를 전달하는 메서드
     public boolean checkSecurity() {
         if (security){
+            viewModel_find.setAlertStatus("도난방지 켜짐");
             viewModel_info.setSecurity("도난방지 켜짐");
         } else {
+            viewModel_find.setAlertStatus("도난방지 꺼짐");
             viewModel_info.setSecurity("도난방지 꺼짐");
         }
         return security;
+    }
+
+    // 도난방지 ON 메서드
+    public boolean security_ON() {
+        security = true;
+        checkSecurity();
+        Toast.makeText(getApplicationContext(), "도난방지가 켜졌습니다.", Toast.LENGTH_SHORT).show();
+        return security;
+    }
+
+    // 도난방지 OFF 메서드
+    public boolean security_OFF() {
+        security = false;
+        checkSecurity();
+        Toast.makeText(getApplicationContext(), "도난방지가 꺼졌습니다.", Toast.LENGTH_SHORT).show();
+        return security;
+    }
+
+    // 벨 울리는 메서드
+    public int ringBell() {
+        if (writeCharacteristic != null) {
+            if (data == null | !Objects.equals(data, "ring_suc")){
+                // 데이터 값 초기화
+                data = null;
+
+                // 동작값을 먼저 전송 -> 캐리어에서 값 인식 후 벨 울림
+                sendData("menu 1");
+
+                int cnt = 0;
+                while (true) {
+                    cnt ++;
+                    SystemClock.sleep(10);
+                    if (data != null) {
+                        Log.d("받은 데이터", data);
+                        break;
+                    } else if (cnt >= 300){
+                        Log.d("받은 데이터", "수신 실패");
+                        break;
+                    }
+                }
+
+                // 벨 울리기 실패
+                if (data == null) {
+                    viewModel_find.setAlertText("벨 울리기 실패\n통신 상태를 확인하세요.");
+                    return -1;
+                } else if (data.trim().equals("ring_suc")) {   // 벨 울리기 성공
+                    data = "ring_suc";
+                    viewModel_find.setAlertText("벨 울리기 성공!");
+                    return 1;
+                } else {    // 잘못된 값을 받은 경우
+                    viewModel_find.setAlertText("벨 울리기 실패\n잘못된 인자값이 전달되었습니다.");
+                    return -1;
+                }
+            } else {   // 벨 울리기 중지 동작
+                data = null;
+
+                sendData("menu 2");
+
+                int cnt = 0;
+                while (true) {
+                    cnt ++;
+                    SystemClock.sleep(10);
+                    if (data != null) {
+                        Log.d("받은 데이터", data);
+                        break;
+                    } else if (cnt >= 300){
+                        Log.d("받은 데이터", "수신 실패");
+                        break;
+                    }
+                }
+
+                if (data == null) {
+                    return -1;
+                }
+                else if (data.trim().equals("ring_stop")) {   // 벨 울리기 성공
+                    viewModel_find.setAlertText("도난방지 기능으로\n캐리어를 안전하게 보관하세요!");
+                    data = null;
+                    return 2;
+                } else {
+                    data = null;
+                    return -1;
+                }
+            }
+        } else {
+            viewModel_find.setAlertText("벨 울리기 실패\n통신 상태를 확인하세요.");
+            return -1;
+        }
     }
 
     // 연결 상태를 전달하는 메서드
