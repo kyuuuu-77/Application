@@ -435,8 +435,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    // RSSI 측정 메서드들
-    // Handler로 1초마다 RSSI 측정
+    // Handler로 1초마다 RSSI 측정하는 Handler와 Runnable
     private final Handler handler_RSSI = new Handler();
     private final Runnable runnable_RSSI = new Runnable() {
         @Override
@@ -475,6 +474,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    // 5초마다 블루투스 재접속을 시도하는 Handler와 Runnable
     private final Handler reconnectHandler = new Handler();
     private final Runnable reconnectRunnable = new Runnable() {
         @Override
@@ -507,9 +507,13 @@ public class MainActivity extends AppCompatActivity {
                         checkDialog = true;
                         reconnectHandler.removeCallbacks(reconnectRunnable);
                         createNotif("connect", "캐리어와 연결됨", "스마트 캐리어와 연결되었습니다!");
+                        window.setStatusBarColor(Color.parseColor("#3F51B5"));
+                        toolbar.setBackgroundColor(Color.parseColor("#3F51B5"));
                     } else {
                         viewModel_home.setHomeText("잘못된 디바이스에 연결됨");
                         Toast.makeText(getApplicationContext(), "연결된 디바이스는 스마트 캐리어가 아닙니다.", Toast.LENGTH_SHORT).show();
+                        window.setStatusBarColor(Color.parseColor("#4CAF50"));
+                        toolbar.setBackgroundColor(Color.parseColor("#4CAF50"));
                     }
                 });
                 bluetoothGatt.discoverServices();
@@ -521,6 +525,8 @@ public class MainActivity extends AppCompatActivity {
                         viewModel_home.setHomeText("디바이스와의 연결이 끊어졌습니다");
                         Toast.makeText(getApplicationContext(), "디바이스와의 연결이 끊어졌습니다", Toast.LENGTH_SHORT).show();
                         createNotif("disconnect", "캐리어와 연결 끊김", "스마트 캐리어와 연결이 끊겼습니다.");
+                        window.setStatusBarColor(Color.parseColor("#FF9800"));
+                        toolbar.setBackgroundColor(Color.parseColor("#FF9800"));
                     });
                     reconnectHandler.postDelayed(reconnectRunnable, 5000);
                     alreadyConnected = false;
@@ -760,10 +766,10 @@ public class MainActivity extends AppCompatActivity {
         Log.d("MainActivity", "MainActivity-onResume()");
 
         if (mBluetoothAdapter.isEnabled()) {
-            window.setStatusBarColor(Color.parseColor("#1976D2"));
-            toolbar.setBackgroundColor(Color.parseColor("#2196F3"));
+            window.setStatusBarColor(Color.parseColor("#4CAF50"));
+            toolbar.setBackgroundColor(Color.parseColor("#4CAF50"));
         } else if (!mBluetoothAdapter.isEnabled()) {
-            window.setStatusBarColor(Color.parseColor("#F57C00"));
+            window.setStatusBarColor(Color.parseColor("#FF9800"));
             toolbar.setBackgroundColor(Color.parseColor("#FF9800"));
         }
         startLeScan();

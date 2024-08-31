@@ -90,7 +90,7 @@ public class HomeFragment extends Fragment {
                 Fragment_BT_on_Legacy();
                 mBtnBT_on.setEnabled(false);
                 mBtnBT_off.setEnabled(true);
-                window.setStatusBarColor(Color.parseColor("#1976D2"));
+                window.setStatusBarColor(Color.parseColor("#388E3C"));
                 //toolbar.setBackgroundColor(Color.parseColor("#2196F3"));
             }
 
@@ -111,7 +111,7 @@ public class HomeFragment extends Fragment {
                 mBtnBT_off.setEnabled(false);
                 mBtnAlert_on.setEnabled(false);
                 mBtnAlert_off.setEnabled(false);
-                window.setStatusBarColor(Color.parseColor("#F57C00"));
+                window.setStatusBarColor(Color.parseColor("#FF9800"));
                 //toolbar.setBackgroundColor(Color.parseColor("#FF9800"));
             }
 
@@ -167,7 +167,7 @@ public class HomeFragment extends Fragment {
 
         if (mBluetoothAdapter == null) {
             mTvBT_Status.setText("블루투스 지원하지 않음");
-            window.setStatusBarColor(Color.parseColor("#D32F2F"));
+//            window.setStatusBarColor(Color.parseColor("#E91E63"));
             mBtnBT_on.setEnabled(false);
             mBtnBT_off.setEnabled(false);
             mBtnBT_Connect.setEnabled(false);
@@ -176,14 +176,14 @@ public class HomeFragment extends Fragment {
         } else {
             if (mBluetoothAdapter.isEnabled()) {
                 mTvBT_Status.setText("블루투스 활성화");
-                window.setStatusBarColor(Color.parseColor("#1976D2"));
+//                window.setStatusBarColor(Color.parseColor("#4CAF50"));
                 mBtnBT_on.setEnabled(false);
                 mBtnBT_off.setEnabled(true);
                 mBtnBT_Connect.setEnabled(true);
                 checkSecurity();
             } else {
                 mTvBT_Status.setText("블루투스 비활성화");
-                window.setStatusBarColor(Color.parseColor("#F57C00"));
+//                window.setStatusBarColor(Color.parseColor("#FF9800"));
                 mBtnBT_on.setEnabled(true);
                 mBtnBT_off.setEnabled(false);
                 mBtnBT_Connect.setEnabled(false);

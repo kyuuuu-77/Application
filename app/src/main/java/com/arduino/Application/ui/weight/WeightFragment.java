@@ -195,14 +195,14 @@ public class WeightFragment extends Fragment {
         dialog.setCancelable(false);
         dialog.show();
 
-        retryBtn.setOnClickListener(v -> {  // 다시시도 버튼
+        retryBtn.setOnClickListener(v -> {      // 다시시도 버튼
             measureWeight();
             dialog.dismiss();
         });
-        checkBtn.setOnClickListener(v -> {  // 확인 버튼
+        checkBtn.setOnClickListener(v -> {      // 확인 버튼
             dialog.dismiss();
         });
-        cancelBtn.setOnClickListener(v -> { // 취소 버튼
+        cancelBtn.setOnClickListener(v -> {     // 취소 버튼
             dialog.dismiss();
         });
     }

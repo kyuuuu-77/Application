@@ -14,39 +14,35 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.arduino.Application.MainActivity;
 import com.arduino.Application.R;
-import com.arduino.Application.databinding.FragmentFindBinding;
+import com.arduino.Application.databinding.FragmentAlertBinding;
 
 public class AlertFragment extends Fragment {
 
-    private FragmentFindBinding binding;
+    private FragmentAlertBinding binding;
 
-    Button findBtn;
-    TextView textFind;
+    Button alertBtn;
+    TextView alert;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        AlertViewModel findViewModel =
+        AlertViewModel alertViewModel =
                 new ViewModelProvider(requireActivity()).get(AlertViewModel.class);
 
-        binding = FragmentFindBinding.inflate(inflater, container, false);
+        binding = FragmentAlertBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
         Log.d("Alert Fragment", "Alert Fragment-onCreatedView()");
 
         // 버튼 및 텍스트 뷰 선언
-        findBtn = root.findViewById(R.id.find_bag);
-        textFind = root.findViewById(R.id.text_find);
-
-        // ViewModel 설정
+        alertBtn = root.findViewById(R.id.alert_bag);
+        alert = root.findViewById(R.id.text_alert);
 
         // 버튼 이벤트 리스너
-        findBtn.setOnClickListener(view -> {
+        alertBtn.setOnClickListener(view -> {
             Log.d("Button Click", "Button clicked!");
-            textFind.setText("버튼이 눌렸습니다!");
+            alert.setText("버튼이 눌렸습니다!");
         });
 
-        final TextView textView = binding.textFind;
-        findViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
         return root;
     }
 
