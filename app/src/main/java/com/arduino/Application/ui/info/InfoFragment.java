@@ -20,7 +20,7 @@ import com.arduino.Application.databinding.FragmentInfoBinding;
 
 public class InfoFragment extends Fragment {
 
-    // 버튼, 텍스트뷰 및 아이콘 변수 초기화
+    // 버튼, 텍스트뷰 및 아이콘 초기화
     Button mBtn_charge;
 
     TextView rssiTextView;
@@ -39,7 +39,7 @@ public class InfoFragment extends Fragment {
     private boolean rssiSignal = false;     // rssiSignal
     private boolean autoSearch = false;     // onAutoSearch
     private boolean security = false;       // security
-    private int connection = -2;
+    private int connection = -2;            // connection
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -87,7 +87,6 @@ public class InfoFragment extends Fragment {
         if (mainActivity != null) {
             rssiSignal = mainActivity.checkRssi();
         }
-
         if (rssiSignal) {
             RSSI_icon.setImageResource(R.drawable.info_rssi_on);
         } else {
@@ -101,7 +100,6 @@ public class InfoFragment extends Fragment {
         if (mainActivity != null) {
             autoSearch = mainActivity.checkAutoSearch();
         }
-
         if (autoSearch) {
             Search_icon.setImageResource(R.drawable.info_search_on);
         } else {
@@ -115,7 +113,6 @@ public class InfoFragment extends Fragment {
         if (mainActivity != null) {
             security = mainActivity.checkSecurity();
         }
-
         if (security) {
             Security_icon.setImageResource(R.drawable.info_security_on);
         } else {
@@ -129,7 +126,6 @@ public class InfoFragment extends Fragment {
         if (mainActivity != null) {
             connection = mainActivity.checkConnection();
         }
-
         switch (connection) {
             case -2:
             case -1:
@@ -145,20 +141,9 @@ public class InfoFragment extends Fragment {
         }
     }
 
-    // 메뉴를 설정하는 메서드
-    private void setMenuNum(int num){
-        MainActivity mainActivity = (MainActivity) getActivity();
-        if (mainActivity != null) {
-            mainActivity.setMenuNum(num);
-        }
-    }
-
     public void onResume(){
         super.onResume();
         Log.d("Info Fragment", "Info Fragment-onResume()");
-
-        int menuNum = 5;
-        setMenuNum(menuNum);
 
         checkRssi();
         checkAutoSearch();

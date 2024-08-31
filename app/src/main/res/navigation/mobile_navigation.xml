@@ -24,12 +24,6 @@
         tools:layout="@layout/fragment_weight" />
 
     <fragment
-        android:id="@+id/nav_alert"
-        android:name="com.arduino.Application.ui.alert.AlertFragment"
-        android:label="@string/menu_alert"
-        tools:layout="@layout/fragment_alert" />
-
-    <fragment
         android:id="@+id/nav_info"
         android:name="com.arduino.Application.ui.info.InfoFragment"
         android:label="@string/menu_info"
