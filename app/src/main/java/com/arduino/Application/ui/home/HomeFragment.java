@@ -24,12 +24,8 @@ import com.arduino.Application.R;
 import com.arduino.Application.databinding.FragmentHomeBinding;
 
 public class HomeFragment extends Fragment {
-    /* Fragment 생명주기 참고할 것 !!!
-     * onAttach()->onCreate()->onCreateView()->onViewCreated()->onViewStateRestored()->
-     * onStart()->onResume()->onPause()->onStop()->onDestoryView->onDestroy()->onDetach()
-     * */
 
-    // 버튼 및 텍스트뷰 변수 초기화
+    // 버튼 및 텍스트 뷰 변수 초기화
     Button mBtnBT;
     Button mBtnBT_Connect;
     

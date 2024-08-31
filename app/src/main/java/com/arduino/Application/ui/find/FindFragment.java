@@ -2,6 +2,7 @@ package com.arduino.Application.ui.find;
 
 import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.SystemClock;
@@ -23,6 +24,8 @@ import androidx.lifecycle.ViewModelProvider;
 import com.arduino.Application.MainActivity;
 import com.arduino.Application.R;
 import com.arduino.Application.databinding.FragmentFindBinding;
+
+import java.util.Objects;
 
 public class FindFragment extends Fragment {
 
@@ -67,6 +70,20 @@ public class FindFragment extends Fragment {
         // ViewModel과 UI 요소 바인딩
         findViewModel.getAlertTextLiveData().observe(getViewLifecycleOwner(), text -> textAlert.setText(text));
         findViewModel.getAlertStatusLiveData().observe(getViewLifecycleOwner(), status -> alertStatus.setText(status));
+        findViewModel.getDistanceLiveData().observe(getViewLifecycleOwner(), bag_distance -> {
+            if (Objects.equals(bag_distance, "캐리어와 떨어져 있음")) {
+                distance.setTextColor(Color.parseColor("#F57C00"));
+            } else if (Objects.equals(bag_distance, "캐리어와 멂")) {
+                distance.setTextColor(Color.parseColor("#D32F2F"));
+            } else if (Objects.equals(bag_distance, "캐리어와 매우 가까움")) {
+                distance.setTextColor(Color.parseColor("#1976D2"));
+            } else if (Objects.equals(bag_distance, "캐리어와 가까움")) {
+                distance.setTextColor(Color.parseColor("#388E3C"));
+            } else {
+                distance.setTextColor(ContextCompat.getColor(requireActivity(), R.color.black));
+            }
+            distance.setText(bag_distance);
+        });
         findViewModel.getAlertBtnLiveData().observe(getViewLifecycleOwner(), btn -> securityBtn.setText(btn));
 
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -102,6 +119,7 @@ public class FindFragment extends Fragment {
         return root;
     }
 
+    // 벨을 울리는 메서드
     private void ringBell(int onOff) {
         MainActivity mainActivity = (MainActivity) getActivity();
         if (mainActivity != null) {

@@ -128,9 +128,11 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        toolbar = findViewById(R.id.toolbar);   //툴바
+        //툴바
+        toolbar = findViewById(R.id.toolbar);
 
-        setSupportActionBar(toolbar);  // 액티비티의 App Bar로 지정
+        // 액티비티의 앱바(App Bar)로 지정
+        setSupportActionBar(toolbar);
         setSupportActionBar(binding.appBarMain.toolbar);
         DrawerLayout drawer = binding.drawerLayout;
         NavigationView navigationView = binding.navView;
@@ -143,7 +145,7 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
 
-        // 퍼미션 리스트 배열
+        // 필요 퍼미션 리스트 배열
         String[] permission_list = {
                 Manifest.permission.BLUETOOTH_CONNECT,      // 블루투스 연결 권한
                 Manifest.permission.BLUETOOTH_SCAN,         // 블루투스 검색 권한
@@ -152,7 +154,7 @@ public class MainActivity extends AppCompatActivity {
         };
         ActivityCompat.requestPermissions(MainActivity.this, permission_list, 1);
 
-        // 블루투스 어댑터, 매니저 초기화
+        // 블루투스 어댑터, 매니저, 리스캐너 초기화
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         mBluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
         bluetoothLeScanner = mBluetoothAdapter.getBluetoothLeScanner();
@@ -288,12 +290,12 @@ public class MainActivity extends AppCompatActivity {
 
     // 블루투스 디바이스 목록을 보여주는 메서드
     public void listPairedDevices() {
-        if (mBluetoothAdapter.isEnabled()) {
+        if (mBluetoothAdapter.isEnabled()) {        // 블루투스가 켜져 있을때
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 checkPermission();
             }
             mPairedDevices = mBluetoothAdapter.getBondedDevices();
-            if (!mPairedDevices.isEmpty()) {
+            if (!mPairedDevices.isEmpty()) {        // 페어링 가능한 장치가 있을때
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder.setTitle("장치 선택");
                 mListPairedDevices = new ArrayList<>();
@@ -312,10 +314,10 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), "스마트 캐리어와 연결하려면 FB301(73F06C)를 선택하세요.", Toast.LENGTH_SHORT).show();
                 AlertDialog alert = builder.create();
                 alert.show();
-            } else {
+            } else {        // 페어링 가능한 장치가 없을때
                 Toast.makeText(getApplicationContext(),"페어링 된 장치가 없습니다.", Toast.LENGTH_SHORT).show();
             }
-        } else{
+        } else {            // 블루투스가 꺼져 있을때
             Toast.makeText(getApplicationContext(),"블루투스가 비활성화되어 있습니다.", Toast.LENGTH_SHORT).show();
         }
     }
@@ -351,13 +353,14 @@ public class MainActivity extends AppCompatActivity {
     // 주변의 BLE 디바이스를 스캔
     public void startLeScan() {
         if (mBluetoothAdapter == null || !mBluetoothAdapter.isEnabled()){
-            Toast.makeText(this, "블루투스가 꺼져 있어 자동 검색을 수행할 수 없습니다.", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "블루투스가 꺼져 있어 자동 검색을 수행할 수 없습니다.", Toast.LENGTH_SHORT).show();
             return;
         }
-
         bluetoothLeScanner = mBluetoothAdapter.getBluetoothLeScanner();
+
+        // 리스캐너 사용할 수 없을때
         if (bluetoothLeScanner == null) {
-            Toast.makeText(this, "BluetoothLeScanner 초기화 오류.", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "BluetoothLeScanner 초기화 오류", Toast.LENGTH_LONG).show();
             return;
         }
 
@@ -385,7 +388,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onScanFailed(int errorCode) {
                 super.onScanFailed(errorCode);
-                Log.e("ScanFailed", "스캔 실패, 에러코드 : " + errorCode);
+                Log.e("ScanFailed", "스캔 실패 -> 에러코드 : " + errorCode);
             }
         };
 
@@ -393,7 +396,7 @@ public class MainActivity extends AppCompatActivity {
         bluetoothLeScanner.startScan(scanCallback);
     }
 
-    // 스캔 중지
+    // BLE 스캔 중지
     private void stopLeScan() {
         if (bluetoothLeScanner != null && scanCallback != null) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -406,7 +409,6 @@ public class MainActivity extends AppCompatActivity {
     // 스마트 캐리어를 자동으로 발견했을때 연결 시도 다이얼로그를 띄우는 메서드
     private void showConnectionDialog(final BluetoothDevice device) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-
         builder.setTitle("스마트 캐리어 발견")
                 .setMessage("스마트 캐리어를 자동으로 발견했습니다. 연결하시겠습니까?")
                 .setPositiveButton("연결", (dialog, which) -> {
@@ -465,7 +467,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    // 5초마다 블루투스 재접속을 시도하는 Handler와 Runnable
+    // 5초마다 BLE 재연결을 시도하는 Handler와 Runnable
     private final Handler reconnectHandler = new Handler();
     private final Runnable reconnectRunnable = new Runnable() {
         @Override
@@ -556,7 +558,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        // 데이터를 수신
+        // 데이터 수신 메서드
         @Override
         public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
             if (characteristic.getUuid().equals(READ_CHAR_UUID)) {
@@ -567,7 +569,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        // 데이터를 송신
+        // 데이터 송신 메서드
         @Override
         public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
             super.onCharacteristicWrite(gatt, characteristic, status);
@@ -576,11 +578,28 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        // RSSI 값 측정
+        // RSSI 값 측정 메서드
         @Override
         public void onReadRemoteRssi(BluetoothGatt gatt, int rssi, int status) {
             super.onReadRemoteRssi(gatt, rssi, status);
             rssi_global = rssi - 30;
+
+            runOnUiThread(() -> {
+                if (security) {     // 도난방지가 켜져 있을때
+                    if (rssi_global > -35) {
+                        viewModel_find.setDistance("캐리어와 매우 가까움");
+                    } else if (rssi_global > -40) {
+                        viewModel_find.setDistance("캐리어와 가까움");
+                    } else if (rssi_global > -55) {
+                        viewModel_find.setDistance("캐리어와 떨어져 있음");
+                    } else {
+                        viewModel_find.setDistance("캐리어와 멂");
+                    }
+                } else {        // 도난방지가 꺼져 있을때
+                    viewModel_find.setDistance("캐리어와의 거리");
+                }
+            });
+
             handler_RSSI.post(() -> viewModel_info.setRssi("RSSI: " + rssi_global + " dBm"));
         }
     };
@@ -601,7 +620,7 @@ public class MainActivity extends AppCompatActivity {
 
     // 무게를 측정하는 메서드
     @SuppressLint({"DefaultLocale", "HandlerLeak"})
-    public double measureWeight(double maxTps) {
+    public double measureWeight(double maxSet) {
         if (writeCharacteristic != null) {
             // 무게값 초기화
             data = null;
@@ -628,7 +647,7 @@ public class MainActivity extends AppCompatActivity {
 
             double tmp_weight = Double.parseDouble(data);
             weight[0] = tmp_weight;
-            weight[1] = maxTps;
+            weight[1] = maxSet;
             viewModel_weight.setWeightNow(String.format("%.1f", weight[0]) +" Kg");
 
             if (weight[0] > 32){                    // 32kg 초과시
@@ -696,8 +715,8 @@ public class MainActivity extends AppCompatActivity {
 
     // 벨 울리는 메서드
     public int ringBell() {
-        if (writeCharacteristic != null) {
-            if (data == null | !Objects.equals(data, "ring_suc")){
+        if (writeCharacteristic != null) {      // 통신이 가능할 때
+            if (data == null | !Objects.equals(data, "ring_suc")) {      // 벨 울리기를 해제할 때
                 // 데이터 값 초기화
                 data = null;
 
@@ -759,7 +778,7 @@ public class MainActivity extends AppCompatActivity {
                     return -1;
                 }
             }
-        } else {
+        } else {        // 통신이 불가능할 때
             viewModel_find.setAlertText("벨 울리기 실패\n통신 상태를 확인하세요.");
             return -1;
         }
