@@ -2,7 +2,6 @@ package com.arduino.Application.ui.home;
 
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;

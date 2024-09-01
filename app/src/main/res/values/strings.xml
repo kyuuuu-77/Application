@@ -23,7 +23,7 @@
 
     <!-- 캐리어 도난방지 화면 -->
     <string name="alert_text">도난방지 기능으로\n캐리어를 안전하게 보관하세요!</string>
-    <string name="alertStatus">도난방지가 꺼져 있습니다.</string>
+    <string name="alertStatus">도난방지가 꺼짐</string>
     <string name="bag_distance">캐리어와의 거리</string>
     <string name="alert_Btn">도난방지 켜기</string>
 
