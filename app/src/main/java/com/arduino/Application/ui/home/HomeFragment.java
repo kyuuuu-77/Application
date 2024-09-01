@@ -34,6 +34,8 @@ public class HomeFragment extends Fragment {
 
     Drawable Btn_blue;
     Drawable Btn_red;
+    Drawable connect_blue;
+    Drawable connect_red;
 
     Window window;
 
@@ -61,6 +63,8 @@ public class HomeFragment extends Fragment {
 
         Btn_blue = ContextCompat.getDrawable(requireContext(), R.drawable.button_round);
         Btn_red = ContextCompat.getDrawable(requireContext(), R.drawable.button_round_off);
+        connect_blue = ContextCompat.getDrawable(requireContext(), R.drawable.home_connect_on);
+        connect_red = ContextCompat.getDrawable(requireContext(), R.drawable.home_connect_off);
 
         window = requireActivity().getWindow();
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
@@ -126,22 +130,26 @@ public class HomeFragment extends Fragment {
             mBtnBT.setText("블루투스 사용불가");
             mBtnBT.setBackground(Btn_red);
             mBtnBT_Connect.setEnabled(false);
+            mBtnBT_Connect.setBackground(connect_red);
         } else {
             if (Fragment_checkBLE() == 2) {
                 mTvBT_Status.setText("블루투스 활성화");
                 mBtnBT.setText("블루투스 끄기");
                 mBtnBT.setBackground(Btn_red);
                 mBtnBT_Connect.setEnabled(false);
+                mBtnBT_Connect.setBackground(connect_blue);
             } else if (mBluetoothAdapter.isEnabled()) {
                 mTvBT_Status.setText("블루투스 활성화");
                 mBtnBT.setText("블루투스 끄기");
                 mBtnBT.setBackground(Btn_red);
                 mBtnBT_Connect.setEnabled(true);
+                mBtnBT_Connect.setBackground(connect_blue);
             } else {
                 mTvBT_Status.setText("블루투스 비활성화");
                 mBtnBT.setText("블루투스 켜기");
                 mBtnBT.setBackground(Btn_blue);
                 mBtnBT_Connect.setEnabled(false);
+                mBtnBT_Connect.setBackground(connect_red);
             }
         }
     }

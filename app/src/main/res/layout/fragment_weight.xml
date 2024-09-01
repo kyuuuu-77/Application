@@ -16,18 +16,34 @@
         android:layout_height="match_parent"
         tools:context=".ui.weight.WeightFragment">
 
-        <ImageView
-            android:id="@+id/menu"
+        <LinearLayout
             android:layout_width="wrap_content"
-            android:layout_height="30dp"
+            android:layout_height="wrap_content"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.958"
+            app:layout_constraintHorizontal_bias="0.95"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.022"
-            app:srcCompat="@drawable/baseline_menu_24"
-            tools:ignore="ContentDescription" />
+            app:layout_constraintVertical_bias="0.02">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="무게 설정"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:layout_gravity="center"
+                android:layout_marginEnd="5dp">
+            </TextView>
+
+            <Button
+                android:id="@+id/menu"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="@drawable/weight_menu_on"
+                app:backgroundTint="@null"
+                tools:ignore="SpeakableTextPresentCheck" />
+        </LinearLayout>
 
         <ImageView
             android:id="@+id/bag_img"

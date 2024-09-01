@@ -11,7 +11,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -34,11 +33,13 @@ public class FindFragment extends Fragment {
     TextView alertStatus;
     TextView distance;
 
-    ImageButton bellBtn;
+    Button bellBtn;
     Button securityBtn;
 
     Drawable Btn_blue;
     Drawable Btn_red;
+    Drawable find_blue;
+    Drawable find_red;
 
     private boolean security = false;       // security
 
@@ -66,6 +67,8 @@ public class FindFragment extends Fragment {
 
         Btn_blue = ContextCompat.getDrawable(requireContext(), R.drawable.button_round);
         Btn_red = ContextCompat.getDrawable(requireContext(), R.drawable.button_round_off);
+        find_blue = ContextCompat.getDrawable(requireContext(), R.drawable.find_bell_on);
+        find_red = ContextCompat.getDrawable(requireContext(), R.drawable.find_bell_off);
 
         // ViewModel과 UI 요소 바인딩
         findViewModel.getAlertTextLiveData().observe(getViewLifecycleOwner(), text -> textAlert.setText(text));
@@ -233,10 +236,12 @@ public class FindFragment extends Fragment {
         if (!mBluetoothAdapter.isEnabled()) {
             showCustomDialog(1);
             bellBtn.setEnabled(false);
+            bellBtn.setBackground(find_red);
             securityBtn.setEnabled(false);
             securityBtn.setBackground(Btn_red);
         } else {
             bellBtn.setEnabled(true);
+            bellBtn.setBackground(find_blue);
             securityBtn.setEnabled(true);
             if (security) {     // 도난방지가 켜져있는 경우
                 securityBtn.setText("도난방지 끄기");

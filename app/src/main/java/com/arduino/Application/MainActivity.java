@@ -20,14 +20,20 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.PixelFormat;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
+import android.provider.Settings;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.appcompat.widget.Toolbar;
@@ -118,6 +124,11 @@ public class MainActivity extends AppCompatActivity {
     Window window;
     Toolbar toolbar;
 
+    // 오버레이
+    private static final int REQUEST_OVERLAY_PERMISSION = 1;
+    private WindowManager windowManager;
+    private View overlayView;
+
     @RequiresApi(api = Build.VERSION_CODES.S)
     @SuppressLint({"HandlerLeak", "ResourceAsColor"})
     @Override
@@ -191,6 +202,12 @@ public class MainActivity extends AppCompatActivity {
         } else if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION_PERMISSION);
         }
+    }
+
+    private void checkOverlayPermission() {
+        Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                Uri.parse("package:" + getPackageName()));
+        startActivityForResult(intent, REQUEST_OVERLAY_PERMISSION);
     }
 
     // 블루투스를 켜는 메서드 -> SDK 31 이상 (안드로이드 12 이상)
@@ -285,7 +302,51 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), "취소됨", Toast.LENGTH_SHORT).show();
             }
         }
+        if (requestCode == REQUEST_OVERLAY_PERMISSION) {
+            if (Settings.canDrawOverlays(this)) {
+                Toast.makeText(this, "오버레이 권한이 부여됨", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, "오버레이 권한이 없음", Toast.LENGTH_SHORT).show();
+            }
+        }
         super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @SuppressLint("InflateParams")
+    private void showOverlay() {
+        windowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
+
+        // 오버레이 레이아웃 설정
+        WindowManager.LayoutParams layoutParams = new WindowManager.LayoutParams(
+                WindowManager.LayoutParams.WRAP_CONTENT,
+                WindowManager.LayoutParams.WRAP_CONTENT,
+                WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY, // 오버레이 타입 (API 26 이상)
+                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE, // 포커스 불가능 설정
+                PixelFormat.TRANSLUCENT // 투명도 설정
+        );
+
+        // 오버레이로 표시할 레이아웃을 인플레이트
+        LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+        overlayView = inflater.inflate(R.layout.overlay_main, null);
+
+        // WindowManager를 사용하여 오버레이 뷰 추가
+        windowManager.addView(overlayView, layoutParams);
+
+        Button overlayBtn = overlayView.findViewById(R.id.overlay_close);
+        overlayBtn.setOnClickListener(v -> {
+            if (Settings.canDrawOverlays(MainActivity.this)) {
+                removeOverlay();
+            } else {
+                checkOverlayPermission();
+            }
+        });
+    }
+    
+    private void removeOverlay() {
+        if (overlayView != null) {
+            windowManager.removeView(overlayView); // 오버레이 뷰 제거
+            overlayView = null;
+        }
     }
 
     // 블루투스 디바이스 목록을 보여주는 메서드
@@ -592,8 +653,10 @@ public class MainActivity extends AppCompatActivity {
                         viewModel_find.setDistance("캐리어와 가까움");
                     } else if (rssi_global > -55) {
                         viewModel_find.setDistance("캐리어와 떨어져 있음");
+                        showOverlay();
                     } else {
                         viewModel_find.setDistance("캐리어와 멂");
+                        showOverlay();
                     }
                 } else {        // 도난방지가 꺼져 있을때
                     viewModel_find.setDistance("캐리어와의 거리");
@@ -789,7 +852,7 @@ public class MainActivity extends AppCompatActivity {
         if (mBluetoothAdapter == null){
             viewModel_info.setInfoText("블루투스를 지원 X");
             return -2;
-        } else if (!mBluetoothAdapter.isEnabled()){                // 블루투스가 꺼져 있음
+        } else if (!mBluetoothAdapter.isEnabled()){     // 블루투스가 꺼져 있음
             viewModel_info.setInfoText("블루투스가 꺼짐");
             return -1;
         } else if (bluetoothGatt == null) {     // 캐리어에 연결되어 있지 않음
@@ -894,6 +957,7 @@ public class MainActivity extends AppCompatActivity {
         Log.d("MainActivity", "MainActivity-onDestroy()");
 
         stopRSSIMeasurement();          // RSSI 측정 중지
-        stopLeScan();
+        stopLeScan();       // 리스캔 중지
+        removeOverlay();    // 오버레이 닫기
     }
 }
