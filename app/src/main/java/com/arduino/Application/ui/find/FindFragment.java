@@ -65,12 +65,13 @@ public class FindFragment extends Fragment {
         bellBtn = root.findViewById(R.id.bell);
         securityBtn = root.findViewById(R.id.alertBtn);
 
+        // Drawable 선언
         Btn_blue = ContextCompat.getDrawable(requireContext(), R.drawable.button_round);
         Btn_red = ContextCompat.getDrawable(requireContext(), R.drawable.button_round_off);
         find_blue = ContextCompat.getDrawable(requireContext(), R.drawable.find_bell_on);
         find_red = ContextCompat.getDrawable(requireContext(), R.drawable.find_bell_off);
 
-        // ViewModel과 UI 요소 바인딩
+        // ViewModel 선언
         findViewModel.getAlertTextLiveData().observe(getViewLifecycleOwner(), text -> textAlert.setText(text));
         findViewModel.getAlertStatusLiveData().observe(getViewLifecycleOwner(), status -> alertStatus.setText(status));
         findViewModel.getDistanceLiveData().observe(getViewLifecycleOwner(), bag_distance -> {
@@ -89,6 +90,7 @@ public class FindFragment extends Fragment {
         });
         findViewModel.getAlertBtnLiveData().observe(getViewLifecycleOwner(), btn -> securityBtn.setText(btn));
 
+        // 블루투스 어뎁터 초기화
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
         // 버튼 이벤트 리스너
@@ -149,7 +151,7 @@ public class FindFragment extends Fragment {
         }
     }
 
-    // 도난방지 여부를 표시
+    // 도난방지 여부를 체크하는 메서드
     private void Fragment_checkSecurity() {
         MainActivity mainActivity = (MainActivity) getActivity();
         if (mainActivity != null) {
@@ -157,6 +159,7 @@ public class FindFragment extends Fragment {
         }
     }
 
+    // 도난방지를 켜는 메서드
     private void Fragment_security_ON() {
         MainActivity mainActivity = (MainActivity) getActivity();
         if (mainActivity != null) {
@@ -164,6 +167,7 @@ public class FindFragment extends Fragment {
         }
     }
 
+    // 도난방지를 끄는 메서드
     private void Fragment_security_OFF() {
         MainActivity mainActivity = (MainActivity) getActivity();
         if (mainActivity != null) {
@@ -171,6 +175,7 @@ public class FindFragment extends Fragment {
         }
     }
 
+    // 커스텀 다이얼로그를 표시하는 메서드
     private void showCustomDialog(int status) {
         LayoutInflater inflater = LayoutInflater.from(getContext());
         View dialogView = inflater.inflate(R.layout.custom_dialog, null);

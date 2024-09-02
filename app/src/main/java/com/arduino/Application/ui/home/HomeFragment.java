@@ -55,12 +55,13 @@ public class HomeFragment extends Fragment {
         Log.d("Home Fragment", "Home Fragment-onCreatedView()");
 
         // 버튼 및 텍스트뷰 선언
-        mBtnBT = root.findViewById(R.id.btnBT);           // 블루투스를 켜는 버튼 ID
+        mBtnBT = root.findViewById(R.id.btnBT);                 // 블루투스를 켜는 버튼 ID
         mBtnBT_Connect = root.findViewById(R.id.btnBT_Connect); // 연결 버튼
         
         mTvBT_Status = root.findViewById(R.id.BT_Status);       // 블루투스 상태 텍스트 뷰
         homeText = root.findViewById(R.id.text_home);           // 홈 텍스트 뷰
 
+        // Drawable 선언
         Btn_blue = ContextCompat.getDrawable(requireContext(), R.drawable.button_round);
         Btn_red = ContextCompat.getDrawable(requireContext(), R.drawable.button_round_off);
         connect_blue = ContextCompat.getDrawable(requireContext(), R.drawable.home_connect_on);
@@ -69,6 +70,7 @@ public class HomeFragment extends Fragment {
         window = requireActivity().getWindow();
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
 
+        // 블루투스 어뎁터 초기화
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
         // ViewModel 선언
@@ -155,14 +157,14 @@ public class HomeFragment extends Fragment {
     }
 
     @SuppressLint("NewApi")
-    public void Fragment_BT_on() {
+    private void Fragment_BT_on() {
         MainActivity mainActivity = (MainActivity) getActivity();
         if (mainActivity != null) {
             mainActivity.BT_on();
         }
     }
 
-    public void Fragment_BT_on_Legacy() {
+    private void Fragment_BT_on_Legacy() {
         MainActivity mainActivity = (MainActivity) getActivity();
         if (mainActivity != null) {
             mainActivity.BT_on_Legacy();
@@ -170,14 +172,14 @@ public class HomeFragment extends Fragment {
     }
 
     @SuppressLint("NewApi")
-    public void Fragment_BT_off() {
+    private void Fragment_BT_off() {
         MainActivity mainActivity = (MainActivity) getActivity();
         if (mainActivity != null) {
             mainActivity.BT_off();
         }
     }
 
-    public void Fragment_BT_off_Legacy() {
+    private void Fragment_BT_off_Legacy() {
         MainActivity mainActivity = (MainActivity) getActivity();
         if (mainActivity != null) {
             mainActivity.BT_off_Legacy();
@@ -185,14 +187,14 @@ public class HomeFragment extends Fragment {
     }
 
     @SuppressLint("NewApi")
-    public void Fragment_listPairedDevices() {
+    private void Fragment_listPairedDevices() {
         MainActivity mainActivity = (MainActivity) getActivity();
         if (mainActivity != null) {
             mainActivity.listPairedDevices();
         }
     }
 
-    public int Fragment_checkBLE() {
+    private int Fragment_checkBLE() {
         MainActivity mainActivity = (MainActivity) getActivity();
         if (mainActivity != null) {
             return mainActivity.checkBLE();
@@ -201,7 +203,7 @@ public class HomeFragment extends Fragment {
         }
     }
 
-    public void Fragment_setUIColor() {
+    private void Fragment_setUIColor() {
         MainActivity mainActivity = (MainActivity) getActivity();
         if (mainActivity != null) {
             mainActivity.setUIColor();

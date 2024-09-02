@@ -79,15 +79,16 @@ public class WeightFragment extends Fragment {
         drawerLayout = root.findViewById(R.id.drawer_layout_weight_fragment);
         navigationView = root.findViewById(R.id.nav_view_weight_fragment);
 
-        // ViewModel과 UI 요소 바인딩
+        // ViewModel 선언
         weightViewModel.getWeightNowLiveData().observe(getViewLifecycleOwner(), weight -> weightNow.setText(weight));
         weightViewModel.getWeightSetLiveData().observe(getViewLifecycleOwner(), set -> weightSet.setText(set));
         weightViewModel.getWeightInfoLiveData().observe(getViewLifecycleOwner(), info -> weightInfo.setText(info));
         weightViewModel.getWeightBtnLiveData().observe(getViewLifecycleOwner(), btn -> mBtnWeight.setText(btn));
 
+        // 블루투스 어뎁터 초기화
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
-        // 메뉴 버튼 클릭 이벤트 리스너 설정
+        // 메뉴 버튼 클릭 이벤트 리스너
         menuButton.setOnClickListener(view -> {
             if (drawerLayout != null) {
                 if (drawerLayout.isDrawerOpen(GravityCompat.END)) {
@@ -110,6 +111,7 @@ public class WeightFragment extends Fragment {
         return root;
     }
 
+    // 무게를 측정하는 메서드
     @SuppressLint("SetTextI18n")
     private void measureWeight() {
         MainActivity mainActivity = (MainActivity) getActivity();
@@ -134,6 +136,7 @@ public class WeightFragment extends Fragment {
         }
     }
 
+    // 무게 설정을 확인하는 메서드
     private double[] checkWeightSetting() {
         MainActivity mainActivity = (MainActivity) getActivity();
         if (mainActivity != null) {
@@ -177,6 +180,7 @@ public class WeightFragment extends Fragment {
         }
     }
 
+    // 커스텀 다이얼로그를 표시하는 메서드
     private void showCustomDialog(int status) {
         LayoutInflater inflater = LayoutInflater.from(getContext());
         View dialogView = inflater.inflate(R.layout.custom_dialog, null);
@@ -233,6 +237,7 @@ public class WeightFragment extends Fragment {
         cancelBtn.setOnClickListener(v -> dialog.dismiss());
     }
 
+    // 앱 서랍 메뉴를 표시하는 메서드
     private void setupNavigationViewMenu() {
         if (navigationView != null) {
             navigationView.setNavigationItemSelectedListener(item -> {
@@ -246,6 +251,7 @@ public class WeightFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
+
         Log.d("Weight Fragment", "Weight Fragment-onDestroyView()");
     }
 }

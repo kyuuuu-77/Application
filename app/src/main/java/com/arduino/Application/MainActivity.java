@@ -128,6 +128,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_OVERLAY_PERMISSION = 1;
     private WindowManager windowManager;
     private View overlayView;
+    private Boolean isOverlayShowing = false;
 
     @RequiresApi(api = Build.VERSION_CODES.S)
     @SuppressLint({"HandlerLeak", "ResourceAsColor"})
@@ -204,6 +205,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    // 오버레이 퍼미션을 체크하는 메서드
     private void checkOverlayPermission() {
         Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
                 Uri.parse("package:" + getPackageName()));
@@ -312,40 +314,47 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
     }
 
+    // 오버레이를 표시하는 메서드
     @SuppressLint("InflateParams")
     private void showOverlay() {
-        windowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
+        if (!isOverlayShowing) {
+            windowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
 
-        // 오버레이 레이아웃 설정
-        WindowManager.LayoutParams layoutParams = new WindowManager.LayoutParams(
-                WindowManager.LayoutParams.WRAP_CONTENT,
-                WindowManager.LayoutParams.WRAP_CONTENT,
-                WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY, // 오버레이 타입 (API 26 이상)
-                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE, // 포커스 불가능 설정
-                PixelFormat.TRANSLUCENT // 투명도 설정
-        );
+            // 오버레이 레이아웃 설정
+            WindowManager.LayoutParams layoutParams = new WindowManager.LayoutParams(
+                    WindowManager.LayoutParams.WRAP_CONTENT,
+                    WindowManager.LayoutParams.WRAP_CONTENT,
+                    WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY, // 오버레이 타입 (API 26 이상)
+                    WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE, // 포커스 불가능 설정
+                    PixelFormat.TRANSLUCENT // 투명도 설정
+            );
 
-        // 오버레이로 표시할 레이아웃을 인플레이트
-        LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
-        overlayView = inflater.inflate(R.layout.overlay_main, null);
+            // 오버레이로 표시할 레이아웃을 인플레이트
+            LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+            overlayView = inflater.inflate(R.layout.overlay_main, null);
 
-        // WindowManager를 사용하여 오버레이 뷰 추가
-        windowManager.addView(overlayView, layoutParams);
+            // WindowManager를 사용하여 오버레이 뷰 추가
+            windowManager.addView(overlayView, layoutParams);
 
-        Button overlayBtn = overlayView.findViewById(R.id.overlay_close);
-        overlayBtn.setOnClickListener(v -> {
-            if (Settings.canDrawOverlays(MainActivity.this)) {
-                removeOverlay();
-            } else {
-                checkOverlayPermission();
-            }
-        });
+            isOverlayShowing = true;
+
+            Button overlayBtn = overlayView.findViewById(R.id.overlay_close);
+            overlayBtn.setOnClickListener(v -> {
+                if (Settings.canDrawOverlays(MainActivity.this)) {
+                    removeOverlay();
+                } else {
+                    checkOverlayPermission();
+                }
+            });
+        }
     }
-    
+
+    // 오버레이를 지우는 메서드
     private void removeOverlay() {
         if (overlayView != null) {
             windowManager.removeView(overlayView); // 오버레이 뷰 제거
             overlayView = null;
+            isOverlayShowing = false;
         }
     }
 

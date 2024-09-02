@@ -81,7 +81,7 @@ public class InfoFragment extends Fragment {
         return root;
     }
 
-    // RSSI 측정여부를 표시
+    // RSSI 측정여부를 표시하는 메서드
     private void checkRssi() {
         MainActivity mainActivity = (MainActivity) getActivity();
         if (mainActivity != null) {
@@ -94,7 +94,7 @@ public class InfoFragment extends Fragment {
         }
     }
 
-    // 자동 검색 사용여부 표시
+    // 자동 검색 사용여부 표시하는 메서드
     private void checkAutoSearch() {
         MainActivity mainActivity = (MainActivity) getActivity();
         if (mainActivity != null) {
@@ -107,7 +107,7 @@ public class InfoFragment extends Fragment {
         }
     }
 
-    // 도난방지 여부를 표시
+    // 도난방지 여부를 표시하는 메서드
     private void checkSecurity() {
         MainActivity mainActivity = (MainActivity) getActivity();
         if (mainActivity != null) {
