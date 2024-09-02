@@ -2,6 +2,7 @@ package com.arduino.Application.ui.find;
 
 import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.SystemClock;
@@ -10,7 +11,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -24,6 +24,8 @@ import com.arduino.Application.MainActivity;
 import com.arduino.Application.R;
 import com.arduino.Application.databinding.FragmentFindBinding;
 
+import java.util.Objects;
+
 public class FindFragment extends Fragment {
 
     // 버튼 및 텍스트 뷰 초기화
@@ -31,11 +33,13 @@ public class FindFragment extends Fragment {
     TextView alertStatus;
     TextView distance;
 
-    ImageButton bellBtn;
+    Button bellBtn;
     Button securityBtn;
 
     Drawable Btn_blue;
     Drawable Btn_red;
+    Drawable find_blue;
+    Drawable find_red;
 
     private boolean security = false;       // security
 
@@ -61,14 +65,32 @@ public class FindFragment extends Fragment {
         bellBtn = root.findViewById(R.id.bell);
         securityBtn = root.findViewById(R.id.alertBtn);
 
+        // Drawable 선언
         Btn_blue = ContextCompat.getDrawable(requireContext(), R.drawable.button_round);
         Btn_red = ContextCompat.getDrawable(requireContext(), R.drawable.button_round_off);
+        find_blue = ContextCompat.getDrawable(requireContext(), R.drawable.find_bell_on);
+        find_red = ContextCompat.getDrawable(requireContext(), R.drawable.find_bell_off);
 
-        // ViewModel과 UI 요소 바인딩
+        // ViewModel 선언
         findViewModel.getAlertTextLiveData().observe(getViewLifecycleOwner(), text -> textAlert.setText(text));
         findViewModel.getAlertStatusLiveData().observe(getViewLifecycleOwner(), status -> alertStatus.setText(status));
+        findViewModel.getDistanceLiveData().observe(getViewLifecycleOwner(), bag_distance -> {
+            if (Objects.equals(bag_distance, "캐리어와 떨어져 있음")) {
+                distance.setTextColor(Color.parseColor("#F57C00"));
+            } else if (Objects.equals(bag_distance, "캐리어와 멂")) {
+                distance.setTextColor(Color.parseColor("#D32F2F"));
+            } else if (Objects.equals(bag_distance, "캐리어와 매우 가까움")) {
+                distance.setTextColor(Color.parseColor("#1976D2"));
+            } else if (Objects.equals(bag_distance, "캐리어와 가까움")) {
+                distance.setTextColor(Color.parseColor("#388E3C"));
+            } else {
+                distance.setTextColor(ContextCompat.getColor(requireActivity(), R.color.black));
+            }
+            distance.setText(bag_distance);
+        });
         findViewModel.getAlertBtnLiveData().observe(getViewLifecycleOwner(), btn -> securityBtn.setText(btn));
 
+        // 블루투스 어뎁터 초기화
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
         // 버튼 이벤트 리스너
@@ -102,6 +124,7 @@ public class FindFragment extends Fragment {
         return root;
     }
 
+    // 벨을 울리는 메서드
     private void ringBell(int onOff) {
         MainActivity mainActivity = (MainActivity) getActivity();
         if (mainActivity != null) {
@@ -128,7 +151,7 @@ public class FindFragment extends Fragment {
         }
     }
 
-    // 도난방지 여부를 표시
+    // 도난방지 여부를 체크하는 메서드
     private void Fragment_checkSecurity() {
         MainActivity mainActivity = (MainActivity) getActivity();
         if (mainActivity != null) {
@@ -136,6 +159,7 @@ public class FindFragment extends Fragment {
         }
     }
 
+    // 도난방지를 켜는 메서드
     private void Fragment_security_ON() {
         MainActivity mainActivity = (MainActivity) getActivity();
         if (mainActivity != null) {
@@ -143,6 +167,7 @@ public class FindFragment extends Fragment {
         }
     }
 
+    // 도난방지를 끄는 메서드
     private void Fragment_security_OFF() {
         MainActivity mainActivity = (MainActivity) getActivity();
         if (mainActivity != null) {
@@ -150,6 +175,7 @@ public class FindFragment extends Fragment {
         }
     }
 
+    // 커스텀 다이얼로그를 표시하는 메서드
     private void showCustomDialog(int status) {
         LayoutInflater inflater = LayoutInflater.from(getContext());
         View dialogView = inflater.inflate(R.layout.custom_dialog, null);
@@ -215,10 +241,12 @@ public class FindFragment extends Fragment {
         if (!mBluetoothAdapter.isEnabled()) {
             showCustomDialog(1);
             bellBtn.setEnabled(false);
+            bellBtn.setBackground(find_red);
             securityBtn.setEnabled(false);
             securityBtn.setBackground(Btn_red);
         } else {
             bellBtn.setEnabled(true);
+            bellBtn.setBackground(find_blue);
             securityBtn.setEnabled(true);
             if (security) {     // 도난방지가 켜져있는 경우
                 securityBtn.setText("도난방지 끄기");

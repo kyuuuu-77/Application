@@ -7,18 +7,34 @@
     tools:context=".ui.home.HomeFragment"
     android:id="@+id/container_home">
 
-    <Button
-        android:id="@+id/btnBT_Connect"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:background="@drawable/connect"
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.95"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.02"
-        tools:ignore="SpeakableTextPresentCheck" />
+        app:layout_constraintVertical_bias="0.02">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="연결"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_gravity="center"
+            android:layout_marginEnd="5dp">
+        </TextView>
+
+        <Button
+            android:id="@+id/btnBT_Connect"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="@drawable/home_connect_on"
+            app:backgroundTint="@null"
+            tools:ignore="SpeakableTextPresentCheck" />
+    </LinearLayout>
 
     <ImageView
         android:id="@+id/main_img"
@@ -31,7 +47,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.126"
         app:srcCompat="@drawable/main"
-        tools:ignore="ContentDescription" />
+        tools:ignore="ContentDescription,ImageContrastCheck" />
 
     <TextView
         android:id="@+id/BT_Status"
