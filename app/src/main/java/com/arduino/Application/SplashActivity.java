@@ -16,7 +16,6 @@ import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.graphics.Insets;
@@ -50,9 +49,7 @@ public class SplashActivity extends AppCompatActivity {
         textView.setAnimation(teanim);
 
         // 필요한 권한 확인 및 요청
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            checkPermissions();
-        }
+        checkPermissions();
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -62,17 +59,21 @@ public class SplashActivity extends AppCompatActivity {
     }
 
     // 권한 확인 및 요청 메서드
-    @RequiresApi(api = Build.VERSION_CODES.S)
     private void checkPermissions() {
-        String[] permissionList = {     // 권한 리스트 (메인 액티비티에도 동일)
-                Manifest.permission.BLUETOOTH_CONNECT,
-                Manifest.permission.BLUETOOTH_SCAN,
-                Manifest.permission.BLUETOOTH_ADMIN,
-                Manifest.permission.ACCESS_COARSE_LOCATION
-        };
+        String[] permissionList;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            permissionList = new String[]{     // 권한 리스트 (메인 액티비티에도 동일)
+                    Manifest.permission.BLUETOOTH_CONNECT,
+                    Manifest.permission.BLUETOOTH_SCAN,
+                    Manifest.permission.BLUETOOTH_ADMIN,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+            };
 
-        // 필요한 권한이 부여여부 확인
-        if (!hasPermissions(permissionList)) {
+            // 필요한 권한이 부여여부 확인
+        } else {
+            permissionList = new String[]{Manifest.permission.ACCESS_COARSE_LOCATION};
+        }
+        if (!hasPermissionsGranted(permissionList)) {
             ActivityCompat.requestPermissions(this, permissionList, PERMISSION_REQUEST_CODE);
         } else {
             proceedWithSplash();
@@ -80,7 +81,7 @@ public class SplashActivity extends AppCompatActivity {
     }
 
     // 권한 확인 메서드
-    private boolean hasPermissions(String[] permissions) {
+    private boolean hasPermissionsGranted(String[] permissions) {
         for (String permission : permissions) {
             if (ActivityCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
                 return false;

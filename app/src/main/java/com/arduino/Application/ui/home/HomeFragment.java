@@ -23,6 +23,8 @@ import com.arduino.Application.MainActivity;
 import com.arduino.Application.R;
 import com.arduino.Application.databinding.FragmentHomeBinding;
 
+import java.util.Objects;
+
 public class HomeFragment extends Fragment {
 
     // 버튼 및 텍스트 뷰 변수 초기화
@@ -81,6 +83,13 @@ public class HomeFragment extends Fragment {
         homeViewModel.getBluetoothStatusLiveData().observe(getViewLifecycleOwner(), bluetoothStatus -> mTvBT_Status.setText(bluetoothStatus));
         homeViewModel.getHomeTextLiveData().observe(getViewLifecycleOwner(), text -> homeText.setText(text));
         homeViewModel.getBtBtnLiveData().observe(getViewLifecycleOwner(), text -> mBtnBT.setText(text));
+        homeViewModel.getconnectBtnLiveData().observe(getViewLifecycleOwner(), text -> {
+            connectText.setText(text);
+            if (Objects.equals(text, "연결됨")) {
+                mBtnBT_Connect.setEnabled(false);
+                mBtnBT_Connect.setBackground(connect_fin);
+            }
+        });
 
         // 버튼 이벤트 리스너들
         // 블루투스 버튼
@@ -96,10 +105,12 @@ public class HomeFragment extends Fragment {
                     } else {
                         mBtnBT.setBackground(Btn_blue);
                     }
-                } else {
+                } else {    // 레거시
                     Fragment_BT_on_Legacy();
-                    Fragment_setUIColor();
+                    homeViewModel.setBtBtn("블루투스 끄기");
                     mBtnBT.setBackground(Btn_red);
+                    mBtnBT_Connect.setEnabled(true);
+                    mBtnBT_Connect.setBackground(connect_blue);
                 }
             } else {        // 블루투스가 켜져있는 경우
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -108,10 +119,12 @@ public class HomeFragment extends Fragment {
                     if (!mBluetoothAdapter.isEnabled()) {
                         mBtnBT.setBackground(Btn_blue);
                     }
-                } else {
+                } else {    // 레거시
                     Fragment_BT_off_Legacy();
-                    Fragment_setUIColor();
-                    mBtnBT.setBackground(Btn_red);
+                    homeViewModel.setBtBtn("블루투스 켜기");
+                    mBtnBT.setBackground(Btn_blue);
+                    mBtnBT_Connect.setEnabled(false);
+                    mBtnBT_Connect.setBackground(connect_red);
                 }
             }
         });
@@ -121,12 +134,6 @@ public class HomeFragment extends Fragment {
             Log.d("Button Click", "Button clicked!");
 
             Fragment_listPairedDevices();
-
-            if (Fragment_checkBLE() == 2) {
-                mBtnBT_Connect.setEnabled(false);
-                mBtnBT_Connect.setBackground(connect_fin);
-                connectText.setText("연결됨");
-            }
         });
 
         return root;
