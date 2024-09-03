@@ -318,6 +318,12 @@ public class MainActivity extends AppCompatActivity {
     @SuppressLint("InflateParams")
     private void showOverlay() {
         if (!isOverlayShowing) {
+            if (!Settings.canDrawOverlays(this)) {
+                checkOverlayPermission();
+                Toast.makeText(this, "오버레이 권한이 없음", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
             windowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
 
             // 오버레이 레이아웃 설정
