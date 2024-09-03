@@ -25,6 +25,12 @@
         <item
             android:id="@+id/airline_air_seoul"
             android:title="@string/Air_Seoul" />
+        <item
+            android:id="@+id/airline_easter_jet"
+            android:title="@string/Easter_Jet" />
+        <item
+            android:id="@+id/airline_air_premia"
+            android:title="@string/Air_Premia" />
     </group>
 
     <!-- 기내/위탁 항목 (기본적으로 숨김) -->
@@ -33,11 +39,11 @@
         android:checkableBehavior="single"
         android:visibility="gone">
         <item
-            android:id="@+id/cabin_baggage"
-            android:title="기내 수하물" />
+            android:id="@+id/carryon_baggage"
+            android:title="@string/carryon_baggage" />
         <item
             android:id="@+id/checked_baggage"
-            android:title="위탁 수하물" />
+            android:title="@string/checked_baggage" />
     </group>
 
     <!-- 무게 옵션 (기본적으로 숨김) -->
@@ -47,18 +53,18 @@
         android:visibility="gone">
         <item
             android:id="@+id/weight_7kg"
-            android:title="7kg" />
+            android:title="@string/weight_7" />
         <item
             android:id="@+id/weight_10kg"
-            android:title="10kg" />
+            android:title="@string/weight_10" />
         <item
             android:id="@+id/weight_15kg"
-            android:title="15kg" />
+            android:title="@string/weight_15" />
         <item
             android:id="@+id/weight_23kg"
-            android:title="23kg" />
+            android:title="@string/weight_23" />
         <item
             android:id="@+id/weight_32kg"
-            android:title="32kg" />
+            android:title="@string/weight_32" />
     </group>
 </menu>

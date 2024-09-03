@@ -36,6 +36,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
 
 import com.arduino.Application.ui.find.FindViewModel;
@@ -166,7 +167,7 @@ public class MainActivity extends AppCompatActivity {
         };
         ActivityCompat.requestPermissions(MainActivity.this, permission_list, 1);
 
-        // 블루투스 어댑터, 매니저, 리스캐너 초기화
+        // 블루투스 어댑터 및 매니저 선언
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         mBluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
         bluetoothLeScanner = mBluetoothAdapter.getBluetoothLeScanner();

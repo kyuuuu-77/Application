@@ -18,9 +18,10 @@
         app:layout_constraintVertical_bias="0.02">
 
         <TextView
+            android:id="@+id/connectText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="연결"
+            android:text="@string/connectBtn_text"
             android:textSize="18sp"
             android:textStyle="bold"
             android:layout_gravity="center"

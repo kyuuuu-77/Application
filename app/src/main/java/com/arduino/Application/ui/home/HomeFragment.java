@@ -31,11 +31,13 @@ public class HomeFragment extends Fragment {
     
     TextView mTvBT_Status;
     TextView homeText;
+    TextView connectText;
 
     Drawable Btn_blue;
     Drawable Btn_red;
     Drawable connect_blue;
     Drawable connect_red;
+    Drawable connect_fin;
 
     Window window;
 
@@ -55,9 +57,10 @@ public class HomeFragment extends Fragment {
         Log.d("Home Fragment", "Home Fragment-onCreatedView()");
 
         // 버튼 및 텍스트뷰 선언
-        mBtnBT = root.findViewById(R.id.btnBT);                 // 블루투스를 켜는 버튼 ID
-        mBtnBT_Connect = root.findViewById(R.id.btnBT_Connect); // 연결 버튼
-        
+        mBtnBT = root.findViewById(R.id.btnBT);                     // 블루투스를 켜는 버튼 ID
+        mBtnBT_Connect = root.findViewById(R.id.btnBT_Connect);     // 연결 버튼
+
+        connectText = root.findViewById(R.id.connectText);      // 연결 버튼 텍스트 뷰
         mTvBT_Status = root.findViewById(R.id.BT_Status);       // 블루투스 상태 텍스트 뷰
         homeText = root.findViewById(R.id.text_home);           // 홈 텍스트 뷰
 
@@ -66,6 +69,7 @@ public class HomeFragment extends Fragment {
         Btn_red = ContextCompat.getDrawable(requireContext(), R.drawable.button_round_off);
         connect_blue = ContextCompat.getDrawable(requireContext(), R.drawable.home_connect_on);
         connect_red = ContextCompat.getDrawable(requireContext(), R.drawable.home_connect_off);
+        connect_fin = ContextCompat.getDrawable(requireContext(), R.drawable.home_connect_fin);
 
         window = requireActivity().getWindow();
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
@@ -117,6 +121,12 @@ public class HomeFragment extends Fragment {
             Log.d("Button Click", "Button clicked!");
 
             Fragment_listPairedDevices();
+
+            if (Fragment_checkBLE() == 2) {
+                mBtnBT_Connect.setEnabled(false);
+                mBtnBT_Connect.setBackground(connect_fin);
+                connectText.setText("연결됨");
+            }
         });
 
         return root;
@@ -134,24 +144,27 @@ public class HomeFragment extends Fragment {
             mBtnBT_Connect.setEnabled(false);
             mBtnBT_Connect.setBackground(connect_red);
         } else {
-            if (Fragment_checkBLE() == 2) {
+            if (Fragment_checkBLE() == 2) {     // 블루투스가 켜져 있고 페어링 까지 된 경우
                 mTvBT_Status.setText("블루투스 활성화");
                 mBtnBT.setText("블루투스 끄기");
                 mBtnBT.setBackground(Btn_red);
                 mBtnBT_Connect.setEnabled(false);
-                mBtnBT_Connect.setBackground(connect_blue);
-            } else if (mBluetoothAdapter.isEnabled()) {
+                mBtnBT_Connect.setBackground(connect_fin);
+                connectText.setText("연결됨");
+            } else if (mBluetoothAdapter.isEnabled()) {     // 블루투스가 켜져 있는 경우
                 mTvBT_Status.setText("블루투스 활성화");
                 mBtnBT.setText("블루투스 끄기");
                 mBtnBT.setBackground(Btn_red);
                 mBtnBT_Connect.setEnabled(true);
                 mBtnBT_Connect.setBackground(connect_blue);
-            } else {
+                connectText.setText("연결");
+            } else {        // 블루투스가 꺼져 있는 경우
                 mTvBT_Status.setText("블루투스 비활성화");
                 mBtnBT.setText("블루투스 켜기");
                 mBtnBT.setBackground(Btn_blue);
                 mBtnBT_Connect.setEnabled(false);
                 mBtnBT_Connect.setBackground(connect_red);
+                connectText.setText("연결");
             }
         }
     }
