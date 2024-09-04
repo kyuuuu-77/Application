@@ -26,8 +26,6 @@ import com.arduino.Application.R;
 import com.arduino.Application.databinding.FragmentWeightBinding;
 import com.google.android.material.navigation.NavigationView;
 
-import java.util.Objects;
-
 public class WeightFragment extends Fragment {
 
     // 버튼 요소 및 텍스트 뷰 초기화
@@ -42,11 +40,6 @@ public class WeightFragment extends Fragment {
     // 앱서랍 선언
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
-
-    // 선택된 옵션을 저장할 변수들
-    private String selectedAirline = "";
-    private String selectedBaggage = "";
-    private String selectedWeight = "";
 
     private double[] weight = {0, 0};   // weight, set
 
@@ -78,10 +71,6 @@ public class WeightFragment extends Fragment {
         drawerLayout = root.findViewById(R.id.drawer_layout_weight_fragment);
         navigationView = root.findViewById(R.id.nav_view_weight_fragment);
 
-        TextView selectedAirlineTextView = navigationView.findViewById(R.id.selected_airline);
-        TextView selectedBaggageTextView = navigationView.findViewById(R.id.selected_baggage);
-        TextView selectedWeightTextView = navigationView.findViewById(R.id.selected_weight);
-
         // ViewModel과 UI 요소 바인딩
         weightViewModel.getWeightNowLiveData().observe(getViewLifecycleOwner(), weight -> weightNow.setText(weight));
         weightViewModel.getWeightSetLiveData().observe(getViewLifecycleOwner(), set -> weightSet.setText(set));
@@ -101,55 +90,6 @@ public class WeightFragment extends Fragment {
                 }
             }
         });
-
-        navigationView.setNavigationItemSelectedListener(item -> {
-           int id = item.getItemId();
-
-           // 항공사 항목 선택 시
-           if (id == R.id.airline_korean_air || id == R.id.airline_asiana_airlines ||
-                   id == R.id.airline_jin_air || id == R.id.airline_jeju_air ||
-                   id == R.id.airline_tway_air || id == R.id.airline_air_busan ||
-                   id == R.id.airline_air_seoul) {
-               //선택된 항공사 저장
-               selectedAirline = Objects.requireNonNull(item.getTitle()).toString();
-               // 텍스트 방향을 수동으로 지정
-               selectedAirlineTextView.setText("선택된 항공사: " + selectedAirline);
-
-               Log.d("Weight Fragment", "Selected Airline Text: " + selectedAirline);
-               Log.d("Weight Fragment", "TextView Direction: " + selectedAirlineTextView.getTextDirection());
-
-               // 기내/위탁 그룹과 무게 그룹을 보이도록 설정
-               navigationView.getMenu().setGroupVisible(R.id.baggage_group, true);
-               navigationView.getMenu().setGroupVisible(R.id.weight_group, true);
-               navigationView.invalidate();
-
-               selectedBaggageTextView.setVisibility(View.VISIBLE);
-               selectedWeightTextView.setVisibility(View.VISIBLE);
-
-           } else if (id == R.id.cabin_baggage || id == R.id.checked_baggage) {
-               // 선택된 기내/위탁 수하물 저장
-               selectedBaggage = Objects.requireNonNull(item.getTitle()).toString();
-               selectedBaggageTextView.setText("선택된 수하물 유형: " + selectedBaggage);
-
-               Log.d("Weight Fragment", "Selected Baggage Text: " + selectedBaggage);
-               Log.d("Weight Fragment", "TextView Direction: " + selectedBaggageTextView.getTextDirection());
-
-           } else if (id == R.id.weight_7kg || id == R.id.weight_10kg ||
-                   id == R.id.weight_15kg || id == R.id.weight_23kg ||
-                   id == R.id.weight_32kg) {
-               // 선택된 무게 저장
-               selectedWeight = Objects.requireNonNull(item.getTitle()).toString();
-
-               selectedWeightTextView.setText("선택된 무게: " + selectedWeight);
-               // 로그 출력
-               Log.d("Weight Fragment", "Selected Weight Text: " + selectedWeight);
-               Log.d("Weight Fragment", "TextView Direction: " + selectedWeightTextView.getTextDirection());
-           }
-           drawerLayout = root.findViewById(R.id.drawer_layout_weight_fragment);
-           drawerLayout.openDrawer(GravityCompat.END);
-           return true;
-       });
-
 
         // 무게 측정 버튼 클릭 이벤트 리스너 설정
         mBtnWeight.setOnClickListener(view -> {

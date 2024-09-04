@@ -6,10 +6,19 @@ import androidx.lifecycle.ViewModel;
 
 public class InfoViewModel extends ViewModel {
 
+    private final MutableLiveData<String> deviceNameLiveData = new MutableLiveData<>();
     private final MutableLiveData<String> rssiLiveData = new MutableLiveData<>();
     private final MutableLiveData<String> autoSearchLiveData = new MutableLiveData<>();
     private final MutableLiveData<String> securityLiveData = new MutableLiveData<>();
     private final MutableLiveData<String> infoTextLiveData = new MutableLiveData<>();
+
+    // 디바이스 이름
+    public LiveData<String> getdeviceNameLiveData() {
+        return deviceNameLiveData;
+    }
+    public void setdeviceName(String name) {
+        deviceNameLiveData.setValue(name);
+    }
 
     // RSSI 센서값
     public LiveData<String> getRssiLiveData() {
