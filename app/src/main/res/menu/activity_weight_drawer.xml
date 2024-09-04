@@ -3,62 +3,77 @@
     android:id="@id/nav_view_weight"
     xmlns:tools="http://schemas.android.com/tools">
     <!-- 항공사 항목 -->
-    <group android:checkableBehavior="single">
+    <group android:checkableBehavior="all"
+        android:visibility="visible">
         <item
             android:id="@+id/airline_korean_air"
-            android:title="@string/Korean_Air" />
+            android:title="@string/Korean_Air"
+            android:checkable="true"/>
         <item
             android:id="@+id/airline_asiana_airlines"
-            android:title="@string/Asiana_Airlines" />
+            android:title="@string/Asiana_Airlines"
+            android:checkable="true"/>
         <item
             android:id="@+id/airline_jin_air"
-            android:title="@string/Jin_Air" />
+            android:title="@string/Jin_Air"
+            android:checkable="true"/>
         <item
             android:id="@+id/airline_jeju_air"
-            android:title="@string/Jeju_Air" />
+            android:title="@string/Jeju_Air"
+            android:checkable="true"/>
         <item
             android:id="@+id/airline_tway_air"
-            android:title="@string/Tway_Air" />
+            android:title="@string/Tway_Air"
+            android:checkable="true"/>
         <item
             android:id="@+id/airline_air_busan"
-            android:title="@string/Air_Busan" />
+            android:title="@string/Air_Busan"
+            android:checkable="true"/>
         <item
             android:id="@+id/airline_air_seoul"
-            android:title="@string/Air_Seoul" />
+            android:title="@string/Air_Seoul"
+            android:checkable="true"/>
     </group>
 
     <!-- 기내/위탁 항목 (기본적으로 숨김) -->
     <group
         android:id="@+id/baggage_group"
-        android:checkableBehavior="single"
-        android:visibility="gone">
+        android:checkableBehavior="all"
+        android:visibility="visible">
         <item
             android:id="@+id/cabin_baggage"
-            android:title="기내 수하물" />
+            android:title="기내 수하물"
+            android:checkable="true"/>
         <item
             android:id="@+id/checked_baggage"
-            android:title="위탁 수하물" />
+            android:title="위탁 수하물"
+            android:checkable="true"/>
     </group>
 
     <!-- 무게 옵션 (기본적으로 숨김) -->
     <group
         android:id="@+id/weight_group"
-        android:checkableBehavior="single"
-        android:visibility="gone">
+        android:checkableBehavior="all"
+        android:visibility="visible">
         <item
             android:id="@+id/weight_7kg"
-            android:title="7kg" />
+            android:title="7kg"
+            android:checkable="true"/>
         <item
             android:id="@+id/weight_10kg"
-            android:title="10kg" />
+            android:title="10kg"
+            android:checkable="true"/>
         <item
             android:id="@+id/weight_15kg"
-            android:title="15kg" />
+            android:title="15kg"
+            android:checkable="true"/>
         <item
             android:id="@+id/weight_23kg"
-            android:title="23kg" />
+            android:title="23kg"
+            android:checkable="true"/>
         <item
             android:id="@+id/weight_32kg"
-            android:title="32kg" />
+            android:title="32kg"
+            android:checkable="true"/>
     </group>
 </menu>
