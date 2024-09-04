@@ -1,116 +1,82 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="350dp"
-    android:layout_height="600dp"
-    android:background="#CDDC39"
-
-    android:padding="15dp"
-    app:layout_constraintBottom_toBottomOf="parent"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintHorizontal_bias="0.046"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toTopOf="parent"
-    app:layout_constraintVertical_bias="0.978"
-
-
-
-
-
-    >
-
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="20dp"
+    android:background="#CDDC39">
 
     <TextView
-        android:id="@+id/overlay_text"
+        android:id="@+id/overlay_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity=""
-        android:text="경고!  도난방지 기능 활성화"
+        android:layout_gravity="center"
+        android:text="@string/overlay_title"
         android:textColor="@color/red_700"
-        android:textSize="27sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.51"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0" />
+        android:textSize="25sp"
+        android:textStyle="bold"/>
 
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:orientation="vertical">
 
-    <ImageView
-        android:id="@+id/dialog_message_image"
+        <ImageView
+            android:layout_width="230dp"
+            android:layout_height="177dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="10dp"
+            android:src="@drawable/ringring"
+            tools:ignore="ContentDescription"/>
+
+        <TextView
+            android:id="@+id/overlay_main"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="40dp"
+            android:text="@string/overlay_main"
+            android:textColor="@color/red_700"
+            android:textSize="22sp"
+            android:textStyle="bold"/>
+        <TextView
+            android:id="@+id/overlay_sub"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="20dp"
+            android:text="@string/overlay_sub"
+            android:textAlignment="center"
+            android:textColor="@color/black"
+            android:textSize="17sp"
+            android:textStyle="bold"/>
+    </LinearLayout>
+
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="177dp"
-        android:layout_gravity="center"
-        android:src="@drawable/ringring"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.213" />
-
-    <TextView
-        android:id="@+id/overlay_text2"
-        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:text=" 현재 캐리어의 도난이 의심 됩니다"
-        android:textColor="@color/red_700"
-        android:textSize="22sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.818"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.641" />
+        android:orientation="horizontal"
+        android:gravity="center_horizontal"
+        android:layout_marginTop="40dp">
 
-    <TextView
-        android:id="@+id/overlay_text3"
-        android:layout_width="wrap_content"
-        android:layout_height="58dp"
-        android:layout_gravity="center"
+        <Button
+            android:id="@+id/overlay_check"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/indigo_500"
+            android:layout_marginEnd="20dp"
+            android:text="@string/overlayBtn_check"
+            tools:ignore="ButtonStyle" />
 
-        android:text=" 캐리어가 사용자로 부터 빠르게 멀어지고 있습니다"
-        android:textColor="@color/black"
-        android:textSize="15sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.761" />
-
-
-    <Button
-        android:id="@+id/overlay_close"
-        android:layout_width="128dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:backgroundTint="#3F51B5"
-        android:text="닫기"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.046"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.978" />
-
-    <Button
-        android:id="@+id/overlay_close2"
-        android:layout_width="128dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:backgroundTint="#FF5722"
-        android:text="무시"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.973"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.978" />
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <Button
+            android:id="@+id/overlay_ignore"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/red_500"
+            android:layout_marginStart="20dp"
+            android:text="@string/overlayBtn_ignore"
+            tools:ignore="ButtonStyle" />
+    </LinearLayout>
+</LinearLayout>

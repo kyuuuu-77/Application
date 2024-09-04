@@ -63,4 +63,10 @@
     <string name="weight_23">23kg</string>
     <string name="weight_32">32kg</string>
 
+    <!-- 오버레이 화면 -->
+    <string name="overlay_sub">캐리어가 사용자로부터 멀어지고 있습니다\n캐리어가 가까워질 때까지 계속 경고가 울립니다.</string>
+    <string name="overlay_main">현재 캐리어의 도난이 의심됩니다</string>
+    <string name="overlay_title">캐리어 도난방지 경고!</string>
+    <string name="overlayBtn_check">확인</string>
+    <string name="overlayBtn_ignore">무시</string>
 </resources>

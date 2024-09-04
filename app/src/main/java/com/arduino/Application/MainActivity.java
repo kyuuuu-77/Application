@@ -181,6 +181,9 @@ public class MainActivity extends AppCompatActivity {
         // 윈도우 생성
         window = getWindow();
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+
+        checkOverlayPermission();
+        checkAlertPermission();
     }
 
     @Override
@@ -201,16 +204,29 @@ public class MainActivity extends AppCompatActivity {
     public void checkPermission() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.BLUETOOTH_CONNECT}, SINGLE_PERMISSION);
-        } else if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        }
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION_PERMISSION);
         }
     }
 
     // 오버레이 퍼미션을 체크하는 메서드
     private void checkOverlayPermission() {
-        Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                Uri.parse("package:" + getPackageName()));
-        startActivityForResult(intent, REQUEST_OVERLAY_PERMISSION);
+        if (!Settings.canDrawOverlays(this)) {
+            Toast.makeText(this, "오버레이 권한이 없음", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                    Uri.parse("package:" + getPackageName()));
+            startActivityForResult(intent, REQUEST_OVERLAY_PERMISSION);
+        }
+    }
+
+    // 알림 퍼미션을 체크하는 메서드
+    private void checkAlertPermission() {
+        if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.POST_NOTIFICATIONS}, 1);
+            }
+        }
     }
 
     // 블루투스를 켜는 메서드 -> SDK 31 이상 (안드로이드 12 이상)
@@ -321,11 +337,7 @@ public class MainActivity extends AppCompatActivity {
     @SuppressLint("InflateParams")
     private void showOverlay() {
         if (!isOverlayShowing) {
-            if (!Settings.canDrawOverlays(this)) {
-                checkOverlayPermission();
-                Toast.makeText(this, "오버레이 권한이 없음", Toast.LENGTH_SHORT).show();
-                return;
-            }
+            checkOverlayPermission();
 
             windowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
 
@@ -347,14 +359,25 @@ public class MainActivity extends AppCompatActivity {
 
             isOverlayShowing = true;
 
-            Button overlayBtn = overlayView.findViewById(R.id.overlay_close);
-            overlayBtn.setOnClickListener(v -> {
+            Button overlayBtnCheck = overlayView.findViewById(R.id.overlay_check);
+            Button overlayBtnIgnore = overlayView.findViewById(R.id.overlay_ignore);
+            overlayBtnCheck.setOnClickListener(v -> {       // 확인을 누를 경우
                 if (Settings.canDrawOverlays(MainActivity.this)) {
+                    Toast.makeText(this, "캐리어를 계속 확인합니다.", Toast.LENGTH_SHORT).show();
                     removeOverlay();
                 } else {
                     checkOverlayPermission();
                 }
             });
+            overlayBtnIgnore.setOnClickListener(v -> {        // 무시를 누를 경우
+                if (Settings.canDrawOverlays(MainActivity.this)) {
+                    Toast.makeText(this, "도난방지 경고를 무시합니다.", Toast.LENGTH_SHORT).show();
+                    removeOverlay();
+                } else {
+                    checkOverlayPermission();
+                }
+            });
+
         }
     }
 
@@ -666,7 +689,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onReadRemoteRssi(BluetoothGatt gatt, int rssi, int status) {
             super.onReadRemoteRssi(gatt, rssi, status);
-            rssi_global = rssi - 30;
+            rssi_global = rssi - 60;
 
             runOnUiThread(() -> {
                 if (security) {     // 도난방지가 켜져 있을때
@@ -980,12 +1003,7 @@ public class MainActivity extends AppCompatActivity {
         builder.setContentIntent(contentIntent);
         NotificationManagerCompat m = NotificationManagerCompat.from(getApplicationContext());
 
-        if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.POST_NOTIFICATIONS}, 1);
-            }
-            return;
-        }
+        checkAlertPermission();
 
         m.notify(1, builder.build());
     }

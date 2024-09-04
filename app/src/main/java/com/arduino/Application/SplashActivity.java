@@ -4,9 +4,11 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -25,7 +27,8 @@ import androidx.core.view.WindowInsetsCompat;
 @SuppressLint("CustomSplashScreen")
 public class SplashActivity extends AppCompatActivity {
 
-    private static final int PERMISSION_REQUEST_CODE = 1; // 권한 요청 코드 상수
+    private static final int PERMISSION_REQUEST_CODE = 1;
+    private static final int OVERLAY_PERMISSION_REQUEST_CODE = 2;
 
     ImageView imageView;
     TextView textView;
@@ -66,18 +69,24 @@ public class SplashActivity extends AppCompatActivity {
                     Manifest.permission.BLUETOOTH_CONNECT,
                     Manifest.permission.BLUETOOTH_SCAN,
                     Manifest.permission.BLUETOOTH_ADMIN,
-                    Manifest.permission.ACCESS_COARSE_LOCATION
+                    Manifest.permission.ACCESS_COARSE_LOCATION,
+                    Manifest.permission.ACCESS_FINE_LOCATION
             };
-
             // 필요한 권한이 부여여부 확인
         } else {
-            permissionList = new String[]{Manifest.permission.ACCESS_COARSE_LOCATION};
+            permissionList = new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION};
         }
+
         if (!hasPermissionsGranted(permissionList)) {
             ActivityCompat.requestPermissions(this, permissionList, PERMISSION_REQUEST_CODE);
         } else {
             proceedWithSplash();
         }
+    }
+
+    private void overlayPermission() {
+        Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + getPackageName()));
+        startActivityForResult(intent, OVERLAY_PERMISSION_REQUEST_CODE);
     }
 
     // 권한 확인 메서드

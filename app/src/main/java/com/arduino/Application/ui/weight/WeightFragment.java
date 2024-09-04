@@ -8,6 +8,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -41,6 +42,7 @@ public class WeightFragment extends Fragment {
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
 
+    private MenuItem lastCheckedItem = null;
     private double[] weight = {0, 0};   // weight, set
 
     private BluetoothAdapter mBluetoothAdapter;
@@ -222,10 +224,16 @@ public class WeightFragment extends Fragment {
         cancelBtn.setOnClickListener(v -> dialog.dismiss());
     }
 
+    // 앱서랍 클릭 리스너
     private void setupNavigationViewMenu() {
         if (navigationView != null) {
             navigationView.setNavigationItemSelectedListener(item -> {
-                item.setChecked(!item.isChecked());
+                if (lastCheckedItem != null) {
+                    lastCheckedItem.setChecked(false);
+                }
+                item.setChecked(true);
+                lastCheckedItem = item;
+
                 return true;
             });
         }
