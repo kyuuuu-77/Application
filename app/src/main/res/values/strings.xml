@@ -8,7 +8,7 @@
     <string name="action_settings">설정</string>
     <string name="splash_name">Suitcase Genie</string>
     <string name="weight_popup">Notification</string>
-    <string name="app_version">v2024.08.28/16</string>
+    <string name="app_version">v2024.09.03/12</string>
 
     <!-- 네비게이션 바 -->
     <string name="menu_home">메인 화면</string>
@@ -17,23 +17,28 @@
     <string name="menu_info">캐리어 정보</string>
 
     <!-- 메인 화면 -->
+    <string name="connectBtn_text">연결</string>
     <string name="BT_status">블루투스 상태</string>
     <string name="homeText">캐리어에 연결되지 않음</string>
     <string name="BT_btn">블루투스 켜기</string>
 
     <!-- 캐리어 도난방지 화면 -->
+    <string name="findBtn_text">찾기</string>
     <string name="alert_text">도난방지 기능으로\n캐리어를 안전하게 보관하세요!</string>
     <string name="alertStatus">도난방지가 꺼짐</string>
     <string name="bag_distance">캐리어와의 거리</string>
     <string name="alert_Btn">도난방지 켜기</string>
 
     <!-- 캐리어 무게측정 화면 -->
+    <string name="menuBtn_text">무게 설정</string>
     <string name="weight">-- Kg</string>
-    <string name="weight_set">허용무게 : 20 Kg</string>
+    <string name="weight_set">허용 무게 : 20 Kg</string>
     <string name="weight_info">무게 초과 여부 표시</string>
-    <string name="measureBtn">무게측정 시작!</string>
+    <string name="measureBtn">무게 측정 시작!</string>
 
     <!-- 캐리어 정보 화면 -->
+    <string name="deviceName">BLE :</string>
+    <string name="batteryText">확인중…</string>
     <string name="rssi_value">RSSI 센서값</string>
     <string name="auto_search_text">캐리어 자동 검색</string>
     <string name="security_status">도난방지 상태</string>
@@ -41,11 +46,21 @@
     <string name="resetBtn">설정 초기화</string>
 
     <!-- 앱서랍 화면 -->
-    <string name="Korean_Air">대한항공(Korean_Air)</string>
-    <string name="Asiana_Airlines">아시아나항공(Asiana_Airlines)</string>
-    <string name="Jin_Air">진에어(Jin_Air)</string>
-    <string name="Jeju_Air">제주항공(Jeju_Air)</string>
-    <string name="Tway_Air">티웨이항공(Tway_Air)</string>
-    <string name="Air_Busan">에어부산(Air_Busan)</string>
-    <string name="Air_Seoul">에어서울(Air_Seoul)</string>
+    <string name="Korean_Air">대한항공(Korean Air)</string>
+    <string name="Asiana_Airlines">아시아나항공(Asiana Airlines)</string>
+    <string name="Jin_Air">진에어(Jin Air)</string>
+    <string name="Jeju_Air">제주항공(Jeju Air)</string>
+    <string name="Tway_Air">티웨이항공(Tway Air)</string>
+    <string name="Air_Busan">에어부산(Air Busan)</string>
+    <string name="Air_Seoul">에어서울(Air Seoul)</string>
+    <string name="Easter_Jet">이스타항공(Easter Jet)</string>
+    <string name="Air_Premia">에어프레미아(Air Premia)</string>
+    <string name="carryon_baggage">기내 수하물</string>
+    <string name="checked_baggage">위탁 수하물</string>
+    <string name="weight_7">7kg</string>
+    <string name="weight_10">10kg</string>
+    <string name="weight_15">15kg</string>
+    <string name="weight_23">23kg</string>
+    <string name="weight_32">32kg</string>
+
 </resources>

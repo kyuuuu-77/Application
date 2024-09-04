@@ -19,7 +19,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="찾기"
+            android:text="@string/findBtn_text"
             android:textSize="18sp"
             android:textStyle="bold"
             android:layout_gravity="center"
@@ -73,7 +73,8 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/imageViewl"
         app:layout_constraintTop_toTopOf="@+id/imageViewl"
-        app:layout_constraintVertical_bias="0.078" />
+        app:layout_constraintVertical_bias="0.078"
+        tools:ignore="TextSizeCheck" />
 
     <TextView
         android:id="@+id/alert_status"

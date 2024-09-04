@@ -88,7 +88,6 @@ public class FindFragment extends Fragment {
             }
             distance.setText(bag_distance);
         });
-        findViewModel.getAlertBtnLiveData().observe(getViewLifecycleOwner(), btn -> securityBtn.setText(btn));
 
         // 블루투스 어뎁터 초기화
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -148,6 +147,16 @@ public class FindFragment extends Fragment {
                     }
                 }
             }
+        }
+    }
+
+    // BLE 연결 여부를 체크하는 메서드
+    private int Fragment_checkBLE() {
+        MainActivity mainActivity = (MainActivity) getActivity();
+        if (mainActivity != null) {
+            return mainActivity.checkBLE();
+        } else {
+            return -1;
         }
     }
 
@@ -218,6 +227,14 @@ public class FindFragment extends Fragment {
                 retryBtn.setVisibility(View.GONE);
                 checkBtn.setVisibility(View.GONE);
                 break;
+            case 0:
+                iconView.setImageResource(R.drawable.info_bt_on);
+                titleView.setText("도난방지 및 찾기 비활성화");
+                messageTextView.setText("스마트 캐리어에 연결되지 않아 도난방지 기능을 사용할 수 없습니다.\n연결 후에 다시 시도하세요.");
+                messageImageView.setImageResource(R.drawable.connection);
+                retryBtn.setVisibility(View.GONE);
+                checkBtn.setVisibility(View.GONE);
+                break;
         }
 
         AlertDialog dialog = builder.create();
@@ -244,7 +261,7 @@ public class FindFragment extends Fragment {
             bellBtn.setBackground(find_red);
             securityBtn.setEnabled(false);
             securityBtn.setBackground(Btn_red);
-        } else {
+        } else if (Fragment_checkBLE() == 2) {
             bellBtn.setEnabled(true);
             bellBtn.setBackground(find_blue);
             securityBtn.setEnabled(true);
@@ -255,6 +272,12 @@ public class FindFragment extends Fragment {
                 securityBtn.setText("도난방지 켜기");
                 securityBtn.setBackground(Btn_blue);
             }
+        } else {
+            showCustomDialog(0);
+            bellBtn.setEnabled(false);
+            bellBtn.setBackground(find_red);
+            securityBtn.setEnabled(false);
+            securityBtn.setBackground(Btn_red);
         }
     }
 

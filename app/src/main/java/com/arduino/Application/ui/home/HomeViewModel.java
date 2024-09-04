@@ -9,6 +9,7 @@ public class HomeViewModel extends ViewModel {
     private final MutableLiveData<String> bluetoothStatusLiveData = new MutableLiveData<>();
     private final MutableLiveData<String> homeTextLiveData = new MutableLiveData<>();
     private final MutableLiveData<String> btBtnLiveData = new MutableLiveData<>();
+    private final MutableLiveData<String> connectBtnLiveData = new MutableLiveData<>();
 
     // 블루투스 상태
     public LiveData<String> getBluetoothStatusLiveData() {
@@ -32,5 +33,13 @@ public class HomeViewModel extends ViewModel {
     }
     public void setBtBtn(String text) {
         btBtnLiveData.setValue(text);
+    }
+
+    // 연결 버튼 텍스트
+    public LiveData<String> getconnectBtnLiveData() {
+        return connectBtnLiveData;
+    }
+    public void setConnectBtn(String text) {
+        connectBtnLiveData.setValue(text);
     }
 }
