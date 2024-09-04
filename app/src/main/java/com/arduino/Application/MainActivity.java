@@ -720,11 +720,12 @@ public class MainActivity extends AppCompatActivity {
                 if (data != null) {
                     Log.d("받은 데이터", data);
                     break;
-                } else if (cnt >= 300){
+                } else if (cnt >= 500){
                     Log.d("받은 데이터", "수신 실패");
                     break;
                 }
             }
+
             // 배터리 정보를 받지 못했으면
             if (data == null) {
                 Toast.makeText(getApplicationContext(), "배터리 정보 취득 실패", Toast.LENGTH_SHORT).show();
@@ -871,7 +872,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             } else {   // 벨 울리기 중지 동작
                 data = null;
-
                 sendData("menu 2");
 
                 int cnt = 0;
@@ -895,7 +895,6 @@ public class MainActivity extends AppCompatActivity {
                     data = null;
                     return 2;
                 } else {
-                    data = null;
                     return -1;
                 }
             }

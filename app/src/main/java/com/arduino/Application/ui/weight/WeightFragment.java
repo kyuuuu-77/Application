@@ -80,7 +80,7 @@ public class WeightFragment extends Fragment {
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
         // 메뉴 버튼 클릭 이벤트 리스너 설정
-        ImageView menuButton = root.findViewById(R.id.menu);
+        Button menuButton = root.findViewById(R.id.menu);
         menuButton.setOnClickListener(view -> {
             if (drawerLayout != null) {
                 if (drawerLayout.isDrawerOpen(GravityCompat.END)) {
