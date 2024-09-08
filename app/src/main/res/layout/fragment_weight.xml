@@ -64,11 +64,12 @@
             android:layout_height="wrap_content"
             android:text="@string/weight"
             android:textAlignment="center"
-            android:textColor="@color/blue_500"
+            android:textColor="@color/indigo_500"
             android:textSize="60sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.545" />
@@ -84,7 +85,7 @@
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.498"
+            app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.666" />
@@ -100,6 +101,7 @@
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.723" />
@@ -121,7 +123,7 @@
             app:layout_constraintVertical_bias="0.867" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <!-- 오른쪽 Drawer (무게 측정용) -->
+    <!-- 오른쪽 Drawer (무게 설정용) -->
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/nav_view_weight_fragment"
         android:layout_width="wrap_content"

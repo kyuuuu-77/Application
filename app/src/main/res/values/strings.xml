@@ -5,7 +5,8 @@
     <string name="nav_header_title">스마트 캐리어</string>
     <string name="nav_header_subtitle">Smart Suitcase with BLE</string>
     <string name="nav_header_desc">네비게이션 해더</string>
-    <string name="action_settings">설정</string>
+    <string name="action_autoSearch">자동 검색</string>
+    <string name="action_appInfo">앱 정보</string>
     <string name="splash_name">Suitcase Genie</string>
     <string name="weight_popup">Notification</string>
     <string name="app_version">v2024.09.03/12</string>
@@ -69,4 +70,11 @@
     <string name="overlay_title">캐리어 도난방지 경고!</string>
     <string name="overlayBtn_check">확인</string>
     <string name="overlayBtn_ignore">무시</string>
+
+    <!-- 다이얼로그 화면 -->
+    <string name="dialog_main">경고!</string>
+    <string name="dialog_sub">여기에 내용이 표시됩니다.</string>
+    <string name="dialog_retry">다시시도</string>
+    <string name="dialog_okay">확인</string>
+    <string name="dialog_cancel">취소</string>
 </resources>

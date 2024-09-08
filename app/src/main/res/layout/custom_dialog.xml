@@ -5,9 +5,9 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="16dp"
-    app:cardCornerRadius="8dp"
+    app:cardCornerRadius="6dp"
     app:cardElevation="4dp"
-    app:cardBackgroundColor="@android:color/white"
+    app:cardBackgroundColor="@color/white"
     android:padding="16dp">
 
     <LinearLayout
@@ -20,12 +20,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:gravity="center_vertical">
+            android:gravity="center_vertical"
+            tools:ignore="UseCompoundDrawables">
 
             <ImageView
                 android:id="@+id/dialog_icon"
                 android:layout_width="32sp"
                 android:layout_height="32sp"
+                android:importantForAccessibility="no"
                 android:src="@drawable/dialog_warning" />
 
             <TextView
@@ -35,7 +37,7 @@
                 android:layout_marginStart="8dp"
                 android:textSize="23sp"
                 android:textColor="@android:color/black"
-                android:text="경고!" />
+                android:text="@string/dialog_main" />
         </LinearLayout>
 
         <LinearLayout
@@ -48,7 +50,7 @@
                 android:id="@+id/dialog_message_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="여기에 내용이 표시됩니다."
+                android:text="@string/dialog_sub"
                 android:textSize="16sp"
                 android:textAlignment="center"
                 android:textColor="@android:color/black" />
@@ -62,7 +64,6 @@
                 android:layout_gravity="center"
                 tools:ignore="ContentDescription" />
 
-            <!-- Buttons -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -74,25 +75,31 @@
                     android:id="@+id/retry"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:backgroundTint="@color/blue_500"
+                    android:backgroundTint="@color/yellow_700"
                     android:layout_marginEnd="10dp"
-                    android:text="다시시도" />
+                    android:text="@string/dialog_retry"
+                    tools:ignore="ButtonStyle" />
 
                 <Button
                     android:id="@+id/confirm"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:backgroundTint="@color/blue_500"
-                    android:text="확인" />
+                    android:backgroundTint="@color/indigo_500"
+                    android:text="@string/dialog_okay"
+                    tools:ignore="ButtonStyle" />
 
                 <Button
                     android:id="@+id/cancel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
-                    android:backgroundTint="@color/blue_500"
-                    android:text="취소" />
+                    android:backgroundTint="@color/red_500"
+                    android:text="@string/dialog_cancel"
+                    tools:ignore="ButtonStyle" />
             </LinearLayout>
+
         </LinearLayout>
+
     </LinearLayout>
+
 </androidx.cardview.widget.CardView>
