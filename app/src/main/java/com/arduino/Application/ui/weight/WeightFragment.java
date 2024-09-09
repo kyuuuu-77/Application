@@ -8,6 +8,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -93,7 +94,7 @@ public class WeightFragment extends Fragment {
             }
         });
 
-        // 무게 측정 버튼 클릭 이벤트 리스너 설정
+                // 무게 측정 버튼 클릭 이벤트 리스너 설정
         mBtnWeight.setOnClickListener(view -> {
             Log.d("Button Click", "Button clicked!");
             measureWeight();
@@ -223,22 +224,63 @@ public class WeightFragment extends Fragment {
         checkBtn.setOnClickListener(v -> dialog.dismiss());
         cancelBtn.setOnClickListener(v -> dialog.dismiss());
     }
-
     // 앱서랍 클릭 리스너
     private void setupNavigationViewMenu() {
         if (navigationView != null) {
             navigationView.setNavigationItemSelectedListener(item -> {
+                int itemId = item.getItemId();
+                View root = binding.getRoot();
+
+                if (itemId == R.id.airline_korean_air || itemId == R.id.airline_asiana_airlines ||
+                        itemId == R.id.airline_jin_air || itemId == R.id.airline_jeju_air ||
+                        itemId == R.id.airline_tway_air || itemId == R.id.airline_air_busan ||
+                        itemId == R.id.airline_air_seoul || itemId == R.id.airline_easter_jet ||
+                        itemId == R.id.airline_air_premia) {
+
+                    TextView selectedAirlineTextView = root.findViewById(R.id.selected_airline);
+                    if (selectedAirlineTextView != null) {
+                        selectedAirlineTextView.setText("선택된 항공사: " + item.getTitle());
+                    } else {
+                        Log.e("WeightFragment", "selectedAirlineTextView is null");
+                    }
+
+                    Menu menu = navigationView.getMenu();
+                    menu.setGroupVisible(R.id.baggage_group, true);
+
+                } else if (itemId == R.id.carryon_baggage || itemId == R.id.checked_baggage) {
+                    TextView selectedBaggageTextView = root.findViewById(R.id.selected_baggage);
+                    if (selectedBaggageTextView != null) {
+                        selectedBaggageTextView.setText("선택된 수하물 유형: " + item.getTitle());
+                    } else {
+                        Log.e("WeightFragment", "selectedBaggageTextView is null");
+                    }
+
+                    Menu menu = navigationView.getMenu();
+                    menu.setGroupVisible(R.id.weight_group, true);
+
+                } else if (itemId == R.id.weight_7kg || itemId == R.id.weight_10kg ||
+                        itemId == R.id.weight_15kg || itemId == R.id.weight_23kg ||
+                        itemId == R.id.weight_32kg) {
+                    TextView selectedWeightTextView = root.findViewById(R.id.selected_weight);
+                    if (selectedWeightTextView != null) {
+                        selectedWeightTextView.setText("선택된 무게: " + item.getTitle());
+                    } else {
+                        Log.e("WeightFragment", "selectedWeightTextView is null");
+                    }
+                }
+
                 if (lastCheckedItem != null) {
                     lastCheckedItem.setChecked(false);
                 }
                 item.setChecked(true);
                 lastCheckedItem = item;
 
+                drawerLayout.closeDrawer(GravityCompat.END);
+
                 return true;
             });
         }
     }
-
     @Override
     public void onDestroyView() {
         super.onDestroyView();

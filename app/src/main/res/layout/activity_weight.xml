@@ -14,25 +14,28 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
+    <!-- 드로어 메뉴 및 텍스트뷰 -->
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="end"
         android:orientation="vertical">
 
+        <!-- NavigationView: 메뉴가 표시되는 곳 -->
         <com.google.android.material.navigation.NavigationView
             android:id="@+id/nav_view_weight"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:layout_weight="1"
             android:fitsSystemWindows="true"
             app:menu="@menu/activity_weight_drawer" />
 
+        <!-- 선택된 항목들을 표시할 텍스트뷰 -->
         <TextView
             android:id="@+id/selected_airline"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingTop="1dp"
+            android:paddingTop="8dp"
             android:text="선택된 항공사: 없음"
             android:textColor="@color/black"
             android:textSize="16sp"
@@ -42,8 +45,9 @@
             android:id="@+id/selected_baggage"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingTop="1dp"
+            android:paddingTop="8dp"
             android:text="선택된 수하물 유형: 없음"
+            android:textColor="@color/black"
             android:textSize="16sp"
             android:visibility="visible" />
 
@@ -51,9 +55,10 @@
             android:id="@+id/selected_weight"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingTop="1dp"
+            android:paddingTop="8dp"
             android:text="선택된 무게: 없음"
-            android:visibility="visible"
-            android:textSize="16sp" />
+            android:textColor="@color/black"
+            android:textSize="16sp"
+            android:visibility="visible" />
     </LinearLayout>
 </androidx.drawerlayout.widget.DrawerLayout>
