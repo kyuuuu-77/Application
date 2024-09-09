@@ -42,4 +42,12 @@
     <color name="green_700">#388E3C</color>
     <color name="green_500">#4CAF50</color>
     <color name="green_100">#B2EBF2</color>
+
+    <color name="yellow_700">#FBC02D</color>
+    <color name="yellow_500">#FFEB3B</color>
+    <color name="yellow_100">#FFF9C4</color>
+
+    <color name="brown_700">#5D4037</color>
+    <color name="brown_500">#795548</color>
+    <color name="brown_100">#D7CCC8</color>
 </resources>

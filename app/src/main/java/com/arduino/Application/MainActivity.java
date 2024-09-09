@@ -95,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
     private BluetoothLeScanner bluetoothLeScanner;
     private ScanCallback scanCallback;
 
-    // 블루투스 통신에 사용되는 final 변수들
+    // 블루투스 통신 요청에 사용되는 final 변수들
     final int BT_REQUEST_ENABLE = 1;
     final int BT_REQUEST_DISABLE = 3;
     final int REQUEST_LOCATION_PERMISSION = 123;
@@ -115,11 +115,14 @@ public class MainActivity extends AppCompatActivity {
     private boolean security = false;
     private boolean alreadyConnected = false;
     private boolean checkDialog = false;
+    private boolean isFirstRssi = true;
+    private boolean ignoreSecurity = false;
     private double[] weight = {0.0, 0.0};   // weight, set
     private String data;
     private String deviceName = null;
     private int BLE_status = 0;
     private int rssi_global = 99;
+    private int firstRssi = 99;
 
     // 윈도우 및 툴바 관련 변수
     Window window;
@@ -141,7 +144,7 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        //툴바
+        // 툴바
         toolbar = findViewById(R.id.toolbar);
 
         // 액티비티의 앱바(App Bar)로 지정
@@ -356,11 +359,11 @@ public class MainActivity extends AppCompatActivity {
 
             // WindowManager를 사용하여 오버레이 뷰 추가
             windowManager.addView(overlayView, layoutParams);
-
             isOverlayShowing = true;
 
             Button overlayBtnCheck = overlayView.findViewById(R.id.overlay_check);
             Button overlayBtnIgnore = overlayView.findViewById(R.id.overlay_ignore);
+
             overlayBtnCheck.setOnClickListener(v -> {       // 확인을 누를 경우
                 if (Settings.canDrawOverlays(MainActivity.this)) {
                     Toast.makeText(this, "캐리어를 계속 확인합니다.", Toast.LENGTH_SHORT).show();
@@ -369,9 +372,11 @@ public class MainActivity extends AppCompatActivity {
                     checkOverlayPermission();
                 }
             });
+
             overlayBtnIgnore.setOnClickListener(v -> {        // 무시를 누를 경우
                 if (Settings.canDrawOverlays(MainActivity.this)) {
                     Toast.makeText(this, "도난방지 경고를 무시합니다.", Toast.LENGTH_SHORT).show();
+                    ignoreSecurity = true;
                     removeOverlay();
                 } else {
                     checkOverlayPermission();
@@ -484,7 +489,6 @@ public class MainActivity extends AppCompatActivity {
                         checkDialog = true;
                     }
                 }
-
             }
 
             @Override
@@ -689,26 +693,12 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onReadRemoteRssi(BluetoothGatt gatt, int rssi, int status) {
             super.onReadRemoteRssi(gatt, rssi, status);
-            rssi_global = rssi - 60;
-
-            runOnUiThread(() -> {
-                if (security) {     // 도난방지가 켜져 있을때
-                    if (rssi_global > -35) {
-                        viewModel_find.setDistance("캐리어와 매우 가까움");
-                    } else if (rssi_global > -40) {
-                        viewModel_find.setDistance("캐리어와 가까움");
-                    } else if (rssi_global > -55) {
-                        viewModel_find.setDistance("캐리어와 떨어져 있음");
-                        showOverlay();
-                    } else {
-                        viewModel_find.setDistance("캐리어와 멂");
-                        showOverlay();
-                    }
-                } else {        // 도난방지가 꺼져 있을때
-                    viewModel_find.setDistance("캐리어와의 거리");
-                }
-            });
-
+            rssi_global = rssi;
+            if (isFirstRssi) {      // RSSI값이 다르게 측정되는 기기를 위해서
+                isFirstRssi = false;
+                firstRssi = rssi_global;
+            }
+            runSecurity();
             handler_RSSI.post(() -> viewModel_info.setRssi("RSSI: " + rssi_global + " dBm"));
         }
     };
@@ -732,22 +722,9 @@ public class MainActivity extends AppCompatActivity {
         if (writeCharacteristic != null) {
             // 데이터 초기화
             data = null;
-
-            // 동작값을 먼저 전송 -> 캐리어에서 값 인식 후 배터리 정보 전달
             sendData("menu 4");
 
-            int cnt = 0;
-            while (true) {
-                cnt ++;
-                SystemClock.sleep(10);
-                if (data != null) {
-                    Log.d("받은 데이터", data);
-                    break;
-                } else if (cnt >= 500){
-                    Log.d("받은 데이터", "수신 실패");
-                    break;
-                }
-            }
+            checkData();
 
             // 배터리 정보를 받지 못했으면
             if (data == null) {
@@ -773,18 +750,8 @@ public class MainActivity extends AppCompatActivity {
             // 동작값을 먼저 전송 -> 캐리어에서 값 인식 후 무게값 전달
             sendData("menu 3");
 
-            int cnt = 0;
-            while (true) {
-                cnt ++;
-                SystemClock.sleep(10);
-                if (data != null) {
-                    Log.d("받은 데이터", data);
-                    break;
-                } else if (cnt >= 300){
-                    Log.d("받은 데이터", "수신 실패");
-                    break;
-                }
-            }
+            checkData();
+
             // 무게값을 받지 못했으면
             if (data == null) {
                 return -1;
@@ -830,6 +797,45 @@ public class MainActivity extends AppCompatActivity {
         return onAutoSearch;
     }
 
+    // 도난방지 동작 메서드
+    private void runSecurity() {
+        if (!security) {        // 도난 방지가 꺼져 있으면
+            viewModel_find.setDistance("캐리어와의 거리");
+        } else {                // 도난 방지가 켜져 있으면
+            if (firstRssi < 12) {
+                runOnUiThread(() -> {
+                    if (rssi_global > -5) {
+                        viewModel_find.setDistance("캐리어와 매우 가까움");
+                    } else if (rssi_global > -15) {
+                        viewModel_find.setDistance("캐리어와 가까움");
+                    } else if (rssi_global > -25) {
+                        viewModel_find.setDistance("캐리어와 떨어져 있음");
+                    } else {
+                        viewModel_find.setDistance("캐리어와 멂");
+                        if (!ignoreSecurity) {
+                            showOverlay();
+                        }
+                    }
+                });
+            } else {
+                runOnUiThread(() -> {
+                    if (rssi_global > -40) {
+                        viewModel_find.setDistance("캐리어와 매우 가까움");
+                    } else if (rssi_global > -55) {
+                        viewModel_find.setDistance("캐리어와 가까움");
+                    } else if (rssi_global > -70) {
+                        viewModel_find.setDistance("캐리어와 떨어져 있음");
+                    } else {
+                        viewModel_find.setDistance("캐리어와 멂");
+                        if (!ignoreSecurity) {
+                            showOverlay();
+                        }
+                    }
+                });
+            }
+        }
+    }
+
     // 도난방지 여부를 전달하는 메서드
     public boolean checkSecurity() {
         if (security){
@@ -858,28 +864,31 @@ public class MainActivity extends AppCompatActivity {
         return security;
     }
 
+    // 데이터 전송 여부를 확인하는 메서드
+    private void checkData() {
+        int cnt = 0;
+        while (true) {
+            cnt ++;
+            SystemClock.sleep(10);
+            if (data != null) {
+                Log.d("받은 데이터", data);
+                break;
+            } else if (cnt >= 500){
+                Log.d("받은 데이터", "수신 실패");
+                break;
+            }
+        }
+    }
+
     // 벨 울리는 메서드
     public int ringBell() {
         if (writeCharacteristic != null) {      // 통신이 가능할 때
             if (data == null | !Objects.equals(data, "ring_suc")) {      // 벨 울리기를 해제할 때
                 // 데이터 값 초기화
                 data = null;
-
-                // 동작값을 먼저 전송 -> 캐리어에서 값 인식 후 벨 울림
                 sendData("menu 1");
 
-                int cnt = 0;
-                while (true) {
-                    cnt ++;
-                    SystemClock.sleep(10);
-                    if (data != null) {
-                        Log.d("받은 데이터", data);
-                        break;
-                    } else if (cnt >= 300){
-                        Log.d("받은 데이터", "수신 실패");
-                        break;
-                    }
-                }
+                checkData();
 
                 // 벨 울리기 실패
                 if (data == null) {
@@ -897,18 +906,7 @@ public class MainActivity extends AppCompatActivity {
                 data = null;
                 sendData("menu 2");
 
-                int cnt = 0;
-                while (true) {
-                    cnt ++;
-                    SystemClock.sleep(10);
-                    if (data != null) {
-                        Log.d("받은 데이터", data);
-                        break;
-                    } else if (cnt >= 300){
-                        Log.d("받은 데이터", "수신 실패");
-                        break;
-                    }
-                }
+                checkData();
 
                 if (data == null) {
                     return -1;
