@@ -29,36 +29,5 @@
             android:layout_weight="1"
             android:fitsSystemWindows="true"
             app:menu="@menu/activity_weight_drawer" />
-
-        <!-- 선택된 항목들을 표시할 텍스트뷰 -->
-        <TextView
-            android:id="@+id/selected_airline"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingTop="8dp"
-            android:text="선택된 항공사: 없음"
-            android:textColor="@color/black"
-            android:textSize="16sp"
-            android:visibility="visible" />
-
-        <TextView
-            android:id="@+id/selected_baggage"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingTop="8dp"
-            android:text="선택된 수하물 유형: 없음"
-            android:textColor="@color/black"
-            android:textSize="16sp"
-            android:visibility="visible" />
-
-        <TextView
-            android:id="@+id/selected_weight"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingTop="8dp"
-            android:text="선택된 무게: 없음"
-            android:textColor="@color/black"
-            android:textSize="16sp"
-            android:visibility="visible" />
     </LinearLayout>
 </androidx.drawerlayout.widget.DrawerLayout>

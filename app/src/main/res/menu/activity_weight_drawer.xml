@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@id/nav_view_weight">
+
     <!-- 항공사 항목 -->
     <group android:checkableBehavior="single">
         <item
@@ -14,7 +15,7 @@
             android:title="@string/Jin_Air" />
         <item
             android:id="@+id/airline_jeju_air"
-            android:title="@string/Jeju_Air" />
+            android:title="@string/Jeju_Air"/>
         <item
             android:id="@+id/airline_tway_air"
             android:title="@string/Tway_Air" />
@@ -36,7 +37,7 @@
     <group
         android:id="@+id/baggage_group"
         android:checkableBehavior="single"
-        android:visibility="gone">
+        android:visible="false">
         <item
             android:id="@+id/carryon_baggage"
             android:title="@string/carryon_baggage" />
@@ -49,7 +50,7 @@
     <group
         android:id="@+id/weight_group"
         android:checkableBehavior="single"
-        android:visibility="gone">
+        android:visible="false">
         <item
             android:id="@+id/weight_7kg"
             android:title="@string/weight_7" />

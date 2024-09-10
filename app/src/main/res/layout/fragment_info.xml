@@ -91,10 +91,11 @@
 
     <TextView
         android:id="@+id/rssi_signal"
-        android:layout_width="wrap_content"
+        android:layout_width="220dp"
         android:layout_height="wrap_content"
         android:text="@string/rssi_value"
         android:textSize="25sp"
+        android:textAlignment="center"
         app:layout_constraintBottom_toBottomOf="@+id/imageViewl"
         app:layout_constraintEnd_toEndOf="@+id/imageViewl"
         app:layout_constraintHorizontal_bias="0.5"
@@ -117,10 +118,11 @@
 
     <TextView
         android:id="@+id/auto_search"
-        android:layout_width="wrap_content"
+        android:layout_width="220dp"
         android:layout_height="wrap_content"
         android:text="@string/auto_search_text"
         android:textSize="25sp"
+        android:textAlignment="center"
         app:layout_constraintBottom_toBottomOf="@+id/imageViewl"
         app:layout_constraintEnd_toEndOf="@+id/imageViewl"
         app:layout_constraintHorizontal_bias="0.5"
@@ -143,10 +145,11 @@
 
     <TextView
         android:id="@+id/security"
-        android:layout_width="wrap_content"
+        android:layout_width="220dp"
         android:layout_height="wrap_content"
         android:text="@string/security_status"
         android:textSize="25sp"
+        android:textAlignment="center"
         app:layout_constraintBottom_toBottomOf="@+id/imageViewl"
         app:layout_constraintEnd_toEndOf="@+id/imageViewl"
         app:layout_constraintHorizontal_bias="0.5"
@@ -170,11 +173,11 @@
 
     <TextView
         android:id="@+id/text_info"
-        android:layout_width="wrap_content"
+        android:layout_width="220dp"
         android:layout_height="wrap_content"
         android:text="@string/info_text"
-        android:textAlignment="center"
         android:textSize="25sp"
+        android:textAlignment="center"
         app:layout_constraintBottom_toBottomOf="@+id/imageViewl"
         app:layout_constraintEnd_toEndOf="@+id/imageViewl"
         app:layout_constraintHorizontal_bias="0.5"

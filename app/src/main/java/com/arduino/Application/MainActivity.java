@@ -339,7 +339,7 @@ public class MainActivity extends AppCompatActivity {
     // 오버레이를 표시하는 메서드
     @SuppressLint("InflateParams")
     private void showOverlay() {
-        if (!isOverlayShowing) {
+        if (!isOverlayShowing && !ignoreSecurity) {
             checkOverlayPermission();
 
             windowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
@@ -377,12 +377,12 @@ public class MainActivity extends AppCompatActivity {
                 if (Settings.canDrawOverlays(MainActivity.this)) {
                     Toast.makeText(this, "도난방지 경고를 무시합니다.", Toast.LENGTH_SHORT).show();
                     ignoreSecurity = true;
+                    viewModel_find.setIgnoreText("무시");
                     removeOverlay();
                 } else {
                     checkOverlayPermission();
                 }
             });
-
         }
     }
 
@@ -451,7 +451,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         // 연결한 디바이스가 스마트 캐리어인지 확인
-        if (Objects.equals(selectedDeviceName, "FB301(73F06C)")){
+        if (Objects.equals(selectedDeviceName, "FB301(73F06C)")) {
             isSuitcase = true;
         }
         bluetoothGatt = mBluetoothDevice.connectGatt(this, false, bluetoothGattCallback);
@@ -698,8 +698,43 @@ public class MainActivity extends AppCompatActivity {
                 isFirstRssi = false;
                 firstRssi = rssi_global;
             }
-            runSecurity();
-            handler_RSSI.post(() -> viewModel_info.setRssi("RSSI: " + rssi_global + " dBm"));
+
+            if (!security) {        // 도난 방지가 꺼져 있으면
+                runOnUiThread(() -> viewModel_find.setDistance("캐리어와의 거리"));
+            } else {                // 도난 방지가 켜져 있으면
+                if (firstRssi < 12) {
+                    runOnUiThread(() -> {
+                        if (rssi_global > -5) {
+                            viewModel_find.setDistance("캐리어와 매우 가까움");
+                        } else if (rssi_global > -15) {
+                            viewModel_find.setDistance("캐리어와 가까움");
+                        } else if (rssi_global > -25) {
+                            viewModel_find.setDistance("캐리어와 떨어져 있음");
+                        } else {
+                            viewModel_find.setDistance("캐리어와 멂");
+                            if (!ignoreSecurity) {
+                                showOverlay();
+                            }
+                        }
+                    });
+                } else {
+                    runOnUiThread(() -> {
+                        if (rssi_global > -40) {
+                            viewModel_find.setDistance("캐리어와 매우 가까움");
+                        } else if (rssi_global > -55) {
+                            viewModel_find.setDistance("캐리어와 가까움");
+                        } else if (rssi_global > -70) {
+                            viewModel_find.setDistance("캐리어와 떨어져 있음");
+                        } else {
+                            viewModel_find.setDistance("캐리어와 멂");
+                            if (!ignoreSecurity) {
+                                showOverlay();
+                            }
+                        }
+                    });
+                }
+            }
+            handler_RSSI.post(() -> runOnUiThread(() -> viewModel_info.setRssi("RSSI: " + rssi_global + " dBm")));
         }
     };
 
@@ -781,7 +816,7 @@ public class MainActivity extends AppCompatActivity {
 
     // RSSI 측정 여부를 전달하는 메서드
     public boolean checkRssi() {
-        if (!rssiSignal){
+        if (!rssiSignal) {
             viewModel_info.setRssi("RSSI 측정 불가");
         }
         return rssiSignal;
@@ -795,45 +830,6 @@ public class MainActivity extends AppCompatActivity {
             viewModel_info.setAutoSearch("자동 검색 꺼짐");
         }
         return onAutoSearch;
-    }
-
-    // 도난방지 동작 메서드
-    private void runSecurity() {
-        if (!security) {        // 도난 방지가 꺼져 있으면
-            viewModel_find.setDistance("캐리어와의 거리");
-        } else {                // 도난 방지가 켜져 있으면
-            if (firstRssi < 12) {
-                runOnUiThread(() -> {
-                    if (rssi_global > -5) {
-                        viewModel_find.setDistance("캐리어와 매우 가까움");
-                    } else if (rssi_global > -15) {
-                        viewModel_find.setDistance("캐리어와 가까움");
-                    } else if (rssi_global > -25) {
-                        viewModel_find.setDistance("캐리어와 떨어져 있음");
-                    } else {
-                        viewModel_find.setDistance("캐리어와 멂");
-                        if (!ignoreSecurity) {
-                            showOverlay();
-                        }
-                    }
-                });
-            } else {
-                runOnUiThread(() -> {
-                    if (rssi_global > -40) {
-                        viewModel_find.setDistance("캐리어와 매우 가까움");
-                    } else if (rssi_global > -55) {
-                        viewModel_find.setDistance("캐리어와 가까움");
-                    } else if (rssi_global > -70) {
-                        viewModel_find.setDistance("캐리어와 떨어져 있음");
-                    } else {
-                        viewModel_find.setDistance("캐리어와 멂");
-                        if (!ignoreSecurity) {
-                            showOverlay();
-                        }
-                    }
-                });
-            }
-        }
     }
 
     // 도난방지 여부를 전달하는 메서드
@@ -862,6 +858,20 @@ public class MainActivity extends AppCompatActivity {
         checkSecurity();
         Toast.makeText(getApplicationContext(), "도난방지가 꺼졌습니다.", Toast.LENGTH_SHORT).show();
         return security;
+    }
+
+    // 도난방지 무시 여부 체크 메서드
+    public void checkIgnore() {
+        if (!ignoreSecurity) {     // 도난방지 무시가 꺼진 경우
+            viewModel_find.setIgnoreText("알림");
+        } else {
+            viewModel_find.setIgnoreText("무시");
+        }
+    }
+
+    // 도난방지 무시 설정 메서드
+    public void ignoreAlert() {
+        ignoreSecurity = !ignoreSecurity;
     }
 
     // 데이터 전송 여부를 확인하는 메서드
@@ -975,14 +985,24 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    // 설정을 초기화 하는 메서드
+    public void resetSettings() {
+        onAutoSearch = true;
+        security = false;
+        ignoreSecurity = false;
+        weight = new double[]{0.0, 0.0};
+        viewModel_weight.setWeightNow("-- Kg");
+        viewModel_weight.setWeightInfo("무게 초과 여부 표시");
+    }
+
     // 알람을 띄우는 메서드
     private void createNotif(String channel_id, String big, String summary) {
         NotificationManager manager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
         NotificationChannel channel = manager.getNotificationChannel(channel_id);
         if (channel == null) {
-            channel = new NotificationChannel(channel_id, "Channel Title", NotificationManager.IMPORTANCE_HIGH);
+            channel = new NotificationChannel(channel_id, "캐리어 연결 알림", NotificationManager.IMPORTANCE_HIGH);
             // 채널 설정
-            channel.setDescription("[Channel description]");
+            channel.setDescription("캐리어 " + channel_id + " 상태를 알려줍니다.");
             channel.enableVibration(true);
             channel.setVibrationPattern(new long[]{100, 1000, 200, 340});
             channel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);

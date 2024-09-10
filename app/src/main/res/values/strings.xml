@@ -24,13 +24,17 @@
     <string name="BT_btn">블루투스 켜기</string>
 
     <!-- 캐리어 도난방지 화면 -->
+    <string name="text_ignore">알림</string>
     <string name="findBtn_text">찾기</string>
     <string name="alert_text">도난방지 기능으로\n캐리어를 안전하게 보관하세요!</string>
-    <string name="alertStatus">도난방지가 꺼짐</string>
+    <string name="alertStatus">도난방지 꺼짐</string>
     <string name="bag_distance">캐리어와의 거리</string>
     <string name="alert_Btn">도난방지 켜기</string>
 
     <!-- 캐리어 무게측정 화면 -->
+    <string name="text_airline">항공사 없음</string>
+    <string name="text_bag">수하물 유형</string>
+    <string name="text_allowWeight">허용 무게</string>
     <string name="menuBtn_text">무게 설정</string>
     <string name="weight">-- Kg</string>
     <string name="weight_set">허용 무게 : 20 Kg</string>

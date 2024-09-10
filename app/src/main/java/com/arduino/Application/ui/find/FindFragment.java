@@ -29,10 +29,12 @@ import java.util.Objects;
 public class FindFragment extends Fragment {
 
     // 버튼 및 텍스트 뷰 초기화
+    TextView textIgnore;
     TextView textAlert;
     TextView alertStatus;
     TextView distance;
 
+    Button ignoreBtn;
     Button bellBtn;
     Button securityBtn;
 
@@ -40,6 +42,8 @@ public class FindFragment extends Fragment {
     Drawable Btn_red;
     Drawable find_blue;
     Drawable find_red;
+    Drawable ignore_blue;
+    Drawable ignore_red;
 
     private boolean security = false;       // security
 
@@ -58,10 +62,12 @@ public class FindFragment extends Fragment {
         Log.d("Find Fragment", "Find Fragment-onCreatedView()");
 
         // 버튼 및 텍스트 뷰 선언
+        textIgnore = root.findViewById(R.id.text_ignore);
         textAlert = root.findViewById(R.id.text_alert);
         alertStatus = root.findViewById(R.id.alert_status);
         distance = root.findViewById(R.id.find_distance);
 
+        ignoreBtn = root.findViewById(R.id.ignore);
         bellBtn = root.findViewById(R.id.bell);
         securityBtn = root.findViewById(R.id.alertBtn);
 
@@ -70,6 +76,8 @@ public class FindFragment extends Fragment {
         Btn_red = ContextCompat.getDrawable(requireContext(), R.drawable.button_round_off);
         find_blue = ContextCompat.getDrawable(requireContext(), R.drawable.find_bell_on);
         find_red = ContextCompat.getDrawable(requireContext(), R.drawable.find_bell_off);
+        ignore_blue = ContextCompat.getDrawable(requireContext(), R.drawable.find_ignore_off);
+        ignore_red = ContextCompat.getDrawable(requireContext(), R.drawable.find_ignore_on);
 
         // ViewModel 선언
         findViewModel.getAlertTextLiveData().observe(getViewLifecycleOwner(), text -> textAlert.setText(text));
@@ -88,11 +96,27 @@ public class FindFragment extends Fragment {
             }
             distance.setText(bag_distance);
         });
+        findViewModel.getIgnoreTextLiveData().observe(getViewLifecycleOwner(), ignore -> {
+            if (Objects.equals(ignore, "알림")) {
+                ignoreBtn.setBackground(ignore_blue);
+            } else if(Objects.equals(ignore, "무시")) {
+                ignoreBtn.setBackground(ignore_red);
+            }
+            textIgnore.setText(ignore);
+        });
 
         // 블루투스 어뎁터 초기화
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
         // 버튼 이벤트 리스너
+        // 도난방지 무시 버튼
+        ignoreBtn.setOnClickListener(view -> {
+            Log.d("Button Click", "Button clicked!");
+
+            Fragment_ignoreAlert();
+            Fragment_checkIgnore();
+        });
+
         // 벨 울리는 버튼
         bellBtn.setOnClickListener(view -> {
             Log.d("Button Click", "Button clicked!");
@@ -184,6 +208,22 @@ public class FindFragment extends Fragment {
         }
     }
 
+    // 도난방지 경고 무시 설정 메서드
+    private void Fragment_ignoreAlert() {
+        MainActivity mainActivity = (MainActivity) getActivity();
+        if (mainActivity != null) {
+            mainActivity.ignoreAlert();
+        }
+    }
+
+    // 도난방지 무시 여부 체크 메서드
+    private void Fragment_checkIgnore() {
+        MainActivity mainActivity = (MainActivity) getActivity();
+        if (mainActivity != null) {
+            mainActivity.checkIgnore();
+        }
+    }
+
     // 커스텀 다이얼로그를 표시하는 메서드
     private void showCustomDialog(int status) {
         LayoutInflater inflater = LayoutInflater.from(getContext());
@@ -254,6 +294,7 @@ public class FindFragment extends Fragment {
         Log.d("Find Fragment", "Find Fragment-onResume()");
 
         Fragment_checkSecurity();
+        Fragment_checkIgnore();
 
         if (!mBluetoothAdapter.isEnabled()) {
             showCustomDialog(1);

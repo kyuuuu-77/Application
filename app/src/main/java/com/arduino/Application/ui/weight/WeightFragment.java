@@ -34,6 +34,11 @@ public class WeightFragment extends Fragment {
     private TextView weightNow;
     private TextView weightSet;
     private TextView weightInfo;
+
+    private TextView selectedAirline;
+    private TextView selectedBaggage;
+    private TextView selectedWeight;
+
     private Button mBtnWeight;
 
     Drawable Btn_blue;
@@ -43,19 +48,19 @@ public class WeightFragment extends Fragment {
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
 
-    private MenuItem lastCheckedItem = null;
     private double[] weight = {0, 0};   // weight, set
 
     private BluetoothAdapter mBluetoothAdapter;
 
     private FragmentWeightBinding binding;
 
+    WeightViewModel weightViewModel;
+
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         // ViewModel 설정
-        WeightViewModel weightViewModel =
-                new ViewModelProvider(requireActivity()).get(WeightViewModel.class);
+        weightViewModel = new ViewModelProvider(requireActivity()).get(WeightViewModel.class);
 
         binding = FragmentWeightBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
@@ -74,11 +79,19 @@ public class WeightFragment extends Fragment {
         drawerLayout = root.findViewById(R.id.drawer_layout_weight_fragment);
         navigationView = root.findViewById(R.id.nav_view_weight_fragment);
 
+        selectedAirline = root.findViewById(R.id.selected_airline);
+        selectedBaggage = root.findViewById(R.id.selected_baggage);
+        selectedWeight = root.findViewById(R.id.selected_weight);
+
         // ViewModel과 UI 요소 바인딩
         weightViewModel.getWeightNowLiveData().observe(getViewLifecycleOwner(), weight -> weightNow.setText(weight));
         weightViewModel.getWeightSetLiveData().observe(getViewLifecycleOwner(), set -> weightSet.setText(set));
         weightViewModel.getWeightInfoLiveData().observe(getViewLifecycleOwner(), info -> weightInfo.setText(info));
         weightViewModel.getWeightBtnLiveData().observe(getViewLifecycleOwner(), btn -> mBtnWeight.setText(btn));
+
+        weightViewModel.getAirlineLiveData().observe(getViewLifecycleOwner(), air -> selectedAirline.setText(air));
+        weightViewModel.getBaggageLiveData().observe(getViewLifecycleOwner(), bag -> selectedBaggage.setText(bag));
+        weightViewModel.getWeightSelectedLiveData().observe(getViewLifecycleOwner(), weight -> selectedWeight.setText(weight));
 
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
@@ -120,11 +133,11 @@ public class WeightFragment extends Fragment {
             } else {
                 if (weight[0] > 32.0) {
                     showCustomDialog(3);
-                    weightNow.setTextColor(Color.parseColor("#D32F2F"));
+                    weightNow.setTextColor(Color.parseColor("#F44336"));
                 } else if (weight[0] > maxSet) {
                     weightNow.setTextColor(Color.parseColor("#F57C00"));
                 } else {
-                    weightNow.setTextColor(Color.parseColor("#319EF2"));
+                    weightNow.setTextColor(Color.parseColor("#3F51B5"));
                 }
             }
         }
@@ -158,11 +171,11 @@ public class WeightFragment extends Fragment {
             mBtnWeight.setBackground(Btn_blue);
             if (weight[0] > 32.0) {             // 32kg을 초과한 경우
                 showCustomDialog(3);
-                weightNow.setTextColor(Color.parseColor("#D32F2F"));
+                weightNow.setTextColor(Color.parseColor("#F44336"));
             } else if (weight[0] > maxSet) {    // 허용 무게를 초과한 경우
                 weightNow.setTextColor(Color.parseColor("#F57C00"));
             } else {                            // 무게를 초과하지 않은 경우
-                weightNow.setTextColor(Color.parseColor("#319EF2"));
+                weightNow.setTextColor(Color.parseColor("#3F51B5"));
             }
         } else if (weight != null && weight[0] == -1){  // 무게 측정 실패한 경우
             mBtnWeight.setBackground(Btn_red);
@@ -224,63 +237,56 @@ public class WeightFragment extends Fragment {
         checkBtn.setOnClickListener(v -> dialog.dismiss());
         cancelBtn.setOnClickListener(v -> dialog.dismiss());
     }
+
+    private MenuItem lastCheckedAirline;
+    private MenuItem lastCheckedBaggage;
+    private MenuItem lastCheckedWeight;
+
     // 앱서랍 클릭 리스너
     private void setupNavigationViewMenu() {
         if (navigationView != null) {
             navigationView.setNavigationItemSelectedListener(item -> {
                 int itemId = item.getItemId();
-                View root = binding.getRoot();
+                Menu menu = navigationView.getMenu();
 
                 if (itemId == R.id.airline_korean_air || itemId == R.id.airline_asiana_airlines ||
                         itemId == R.id.airline_jin_air || itemId == R.id.airline_jeju_air ||
                         itemId == R.id.airline_tway_air || itemId == R.id.airline_air_busan ||
                         itemId == R.id.airline_air_seoul || itemId == R.id.airline_easter_jet ||
                         itemId == R.id.airline_air_premia) {
-
-                    TextView selectedAirlineTextView = root.findViewById(R.id.selected_airline);
-                    if (selectedAirlineTextView != null) {
-                        selectedAirlineTextView.setText("선택된 항공사: " + item.getTitle());
-                    } else {
-                        Log.e("WeightFragment", "selectedAirlineTextView is null");
-                    }
-
-                    Menu menu = navigationView.getMenu();
+                    weightViewModel.setAirline((String) item.getTitle());
                     menu.setGroupVisible(R.id.baggage_group, true);
 
-                } else if (itemId == R.id.carryon_baggage || itemId == R.id.checked_baggage) {
-                    TextView selectedBaggageTextView = root.findViewById(R.id.selected_baggage);
-                    if (selectedBaggageTextView != null) {
-                        selectedBaggageTextView.setText("선택된 수하물 유형: " + item.getTitle());
-                    } else {
-                        Log.e("WeightFragment", "selectedBaggageTextView is null");
+                    if (lastCheckedAirline != null) {
+                        lastCheckedAirline.setChecked(false);
                     }
-
-                    Menu menu = navigationView.getMenu();
+                    item.setChecked(true);
+                    lastCheckedAirline = item;
+                } else if (itemId == R.id.carryon_baggage || itemId == R.id.checked_baggage) {
+                    weightViewModel.setBaggage((String) item.getTitle());
                     menu.setGroupVisible(R.id.weight_group, true);
 
+                    if (lastCheckedBaggage != null) {
+                        lastCheckedBaggage.setChecked(false);
+                    }
+                    item.setChecked(true);
+                    lastCheckedBaggage = item;
                 } else if (itemId == R.id.weight_7kg || itemId == R.id.weight_10kg ||
                         itemId == R.id.weight_15kg || itemId == R.id.weight_23kg ||
                         itemId == R.id.weight_32kg) {
-                    TextView selectedWeightTextView = root.findViewById(R.id.selected_weight);
-                    if (selectedWeightTextView != null) {
-                        selectedWeightTextView.setText("선택된 무게: " + item.getTitle());
-                    } else {
-                        Log.e("WeightFragment", "selectedWeightTextView is null");
+                    weightViewModel.setWeightSelected((String) item.getTitle());
+
+                    if (lastCheckedWeight != null) {
+                        lastCheckedWeight.setChecked(false);
                     }
+                    item.setChecked(true);
+                    lastCheckedWeight = item;
                 }
-
-                if (lastCheckedItem != null) {
-                    lastCheckedItem.setChecked(false);
-                }
-                item.setChecked(true);
-                lastCheckedItem = item;
-
-                drawerLayout.closeDrawer(GravityCompat.END);
-
                 return true;
             });
         }
     }
+
     @Override
     public void onDestroyView() {
         super.onDestroyView();

@@ -72,17 +72,20 @@ public class InfoFragment extends Fragment {
 
         // ViewModel 선언
         infoViewModel.getdeviceNameLiveData().observe(getViewLifecycleOwner(), name -> deviceName.setText(name));
-        infoViewModel.getRssiLiveData().observe(getViewLifecycleOwner(), rssiLD -> rssiTextView.setText(rssiLD));
-        infoViewModel.getAutoSearchLiveData().observe(getViewLifecycleOwner(), searchLD -> auto_search_status.setText(searchLD));
-        infoViewModel.getSecurityLiveData().observe(getViewLifecycleOwner(), securityLD -> security_status.setText(securityLD));
-        infoViewModel.getInfoTextLiveData().observe(getViewLifecycleOwner(), textLD -> infoText.setText(textLD));
+        infoViewModel.getRssiLiveData().observe(getViewLifecycleOwner(), rssi -> rssiTextView.setText(rssi));
+        infoViewModel.getAutoSearchLiveData().observe(getViewLifecycleOwner(), search -> auto_search_status.setText(search));
+        infoViewModel.getSecurityLiveData().observe(getViewLifecycleOwner(), security -> security_status.setText(security));
+        infoViewModel.getInfoTextLiveData().observe(getViewLifecycleOwner(), text -> infoText.setText(text));
 
         // 버튼 이벤트 리스너
         // 설정 초기화 버튼
         mBtn_charge.setOnClickListener(view -> {
             Log.d("Button Click", "Button clicked!");
 
-            Toast.makeText(getActivity(), "버튼 동작 확인", Toast.LENGTH_SHORT).show();
+            // 자동 검색, 도난방지, 도난방지 무시, 무게설정, 초기화
+            resetSettings();
+            checkAll();
+            Toast.makeText(getActivity(), "설정 초기화 완료!", Toast.LENGTH_SHORT).show();
         });
 
         return root;
@@ -175,15 +178,28 @@ public class InfoFragment extends Fragment {
         }
     }
 
-    public void onResume(){
-        super.onResume();
-        Log.d("Info Fragment", "Info Fragment-onResume()");
+    // 설정을 초기화하는 메서드
+    private void resetSettings() {
+        MainActivity mainActivity = (MainActivity) getActivity();
+        if (mainActivity != null) {
+            mainActivity.resetSettings();
+        }
+    }
 
+    // 캐리어 상태를 갱신하는 메서드
+    private void checkAll() {
         checkBattery();
         checkRssi();
         checkAutoSearch();
         checkSecurity();
         checkConnection();
+    }
+
+    public void onResume(){
+        super.onResume();
+        Log.d("Info Fragment", "Info Fragment-onResume()");
+
+        checkAll();
     }
 
     @Override

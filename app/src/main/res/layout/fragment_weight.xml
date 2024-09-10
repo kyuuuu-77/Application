@@ -121,6 +121,56 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.867" />
+
+        <!-- 선택된 항목들을 표시할 텍스트뷰 -->
+        <TextView
+            android:id="@+id/selected_airline"
+            android:layout_width="140dp"
+            android:layout_height="wrap_content"
+            android:text="@string/text_airline"
+            android:textColor="@color/black"
+            android:textSize="14sp"
+            android:visibility="visible"
+            android:textStyle="italic"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.05"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.02"/>
+
+        <TextView
+            android:id="@+id/selected_baggage"
+            android:layout_width="140dp"
+            android:layout_height="wrap_content"
+            android:text="@string/text_bag"
+            android:textColor="@color/black"
+            android:textSize="14sp"
+            android:visibility="visible"
+            android:textStyle="italic"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.05"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.05"/>
+
+        <TextView
+            android:id="@+id/selected_weight"
+            android:layout_width="140dp"
+            android:layout_height="wrap_content"
+            android:text="@string/text_allowWeight"
+            android:textColor="@color/black"
+            android:textSize="14sp"
+            android:visibility="visible"
+            android:textStyle="italic"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.05"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.08"/>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <!-- 오른쪽 Drawer (무게 설정용) -->
