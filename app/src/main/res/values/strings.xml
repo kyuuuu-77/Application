@@ -51,17 +51,9 @@
     <string name="resetBtn">설정 초기화</string>
 
     <!-- 앱서랍 화면 -->
-    <string name="Korean_Air">대한항공(Korean Air)</string>
-    <string name="Asiana_Airlines">아시아나항공(Asiana Airlines)</string>
-    <string name="Jin_Air">진에어(Jin Air)</string>
-    <string name="Jeju_Air">제주항공(Jeju Air)</string>
-    <string name="Tway_Air">티웨이항공(Tway Air)</string>
-    <string name="Air_Busan">에어부산(Air Busan)</string>
-    <string name="Air_Seoul">에어서울(Air Seoul)</string>
-    <string name="Easter_Jet">이스타항공(Easter Jet)</string>
-    <string name="Air_Premia">에어프레미아(Air Premia)</string>
     <string name="carryon_baggage">기내 수하물</string>
     <string name="checked_baggage">위탁 수하물</string>
+    <string name="weight_5">5kg</string>
     <string name="weight_7">7kg</string>
     <string name="weight_10">10kg</string>
     <string name="weight_15">15kg</string>

@@ -47,28 +47,12 @@ public class WeightViewModel extends ViewModel {
         weightBtnLiveData.setValue(btn);
     }
 
-    // 선택 항공사 텍스트
-    public LiveData<String> getAirlineLiveData() {
-        return airlineLiveData;
-    }
-    public void setAirline(String air) {
-        airlineLiveData.setValue(air);
-    }
-
     // 수화물 유형 텍스트
-    public LiveData<String> getBaggageLiveData() {
-        return baggageLiveData;
-    }
-    public void setBaggage(String bag) {
-        baggageLiveData.setValue(bag);
-    }
+    public LiveData<String> getBaggageLiveData() {return baggageLiveData;}
+    public void setBaggage(String bag) {baggageLiveData.setValue(bag);}
 
     // 선택된 무게 텍스트
-    public LiveData<String> getWeightSelectedLiveData() {
-        return weightSelectedLiveData;
-    }
-    public void setWeightSelected(String weight) {
-        weightSelectedLiveData.setValue(weight);
-    }
+    public LiveData<String> getWeightSelectedLiveData() {return weightSelectedLiveData;}
+    public void setWeightSelected(String weight) {weightSelectedLiveData.setValue(weight);}
 
 }

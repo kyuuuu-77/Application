@@ -35,7 +35,7 @@ public class WeightFragment extends Fragment {
     private TextView weightSet;
     private TextView weightInfo;
 
-    private TextView selectedAirline;
+    //private TextView selectedAirline;
     private TextView selectedBaggage;
     private TextView selectedWeight;
 
@@ -79,7 +79,7 @@ public class WeightFragment extends Fragment {
         drawerLayout = root.findViewById(R.id.drawer_layout_weight_fragment);
         navigationView = root.findViewById(R.id.nav_view_weight_fragment);
 
-        selectedAirline = root.findViewById(R.id.selected_airline);
+       // selectedAirline = root.findViewById(R.id.selected_airline);
         selectedBaggage = root.findViewById(R.id.selected_baggage);
         selectedWeight = root.findViewById(R.id.selected_weight);
 
@@ -89,7 +89,7 @@ public class WeightFragment extends Fragment {
         weightViewModel.getWeightInfoLiveData().observe(getViewLifecycleOwner(), info -> weightInfo.setText(info));
         weightViewModel.getWeightBtnLiveData().observe(getViewLifecycleOwner(), btn -> mBtnWeight.setText(btn));
 
-        weightViewModel.getAirlineLiveData().observe(getViewLifecycleOwner(), air -> selectedAirline.setText(air));
+       // weightViewModel.getAirlineLiveData().observe(getViewLifecycleOwner(), air -> selectedAirline.setText(air));
         weightViewModel.getBaggageLiveData().observe(getViewLifecycleOwner(), bag -> selectedBaggage.setText(bag));
         weightViewModel.getWeightSelectedLiveData().observe(getViewLifecycleOwner(), weight -> selectedWeight.setText(weight));
 
@@ -107,7 +107,7 @@ public class WeightFragment extends Fragment {
             }
         });
 
-                // 무게 측정 버튼 클릭 이벤트 리스너 설정
+        // 무게 측정 버튼 클릭 이벤트 리스너 설정
         mBtnWeight.setOnClickListener(view -> {
             Log.d("Button Click", "Button clicked!");
             measureWeight();
@@ -238,7 +238,7 @@ public class WeightFragment extends Fragment {
         cancelBtn.setOnClickListener(v -> dialog.dismiss());
     }
 
-    private MenuItem lastCheckedAirline;
+   // private MenuItem lastCheckedAirline;
     private MenuItem lastCheckedBaggage;
     private MenuItem lastCheckedWeight;
 
@@ -249,7 +249,7 @@ public class WeightFragment extends Fragment {
                 int itemId = item.getItemId();
                 Menu menu = navigationView.getMenu();
 
-                if (itemId == R.id.airline_korean_air || itemId == R.id.airline_asiana_airlines ||
+                /*if (itemId == R.id.airline_korean_air || itemId == R.id.airline_asiana_airlines ||
                         itemId == R.id.airline_jin_air || itemId == R.id.airline_jeju_air ||
                         itemId == R.id.airline_tway_air || itemId == R.id.airline_air_busan ||
                         itemId == R.id.airline_air_seoul || itemId == R.id.airline_easter_jet ||
@@ -262,7 +262,9 @@ public class WeightFragment extends Fragment {
                     }
                     item.setChecked(true);
                     lastCheckedAirline = item;
-                } else if (itemId == R.id.carryon_baggage || itemId == R.id.checked_baggage) {
+                } else*/
+                 if (itemId == R.id.carryon_baggage || itemId == R.id.checked_baggage) {
+
                     weightViewModel.setBaggage((String) item.getTitle());
                     menu.setGroupVisible(R.id.weight_group, true);
 
@@ -271,7 +273,7 @@ public class WeightFragment extends Fragment {
                     }
                     item.setChecked(true);
                     lastCheckedBaggage = item;
-                } else if (itemId == R.id.weight_7kg || itemId == R.id.weight_10kg ||
+                } else if (itemId == R.id.weight_5kg||itemId == R.id.weight_7kg || itemId == R.id.weight_10kg ||
                         itemId == R.id.weight_15kg || itemId == R.id.weight_23kg ||
                         itemId == R.id.weight_32kg) {
                     weightViewModel.setWeightSelected((String) item.getTitle());
