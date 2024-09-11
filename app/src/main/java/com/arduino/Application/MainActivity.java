@@ -719,11 +719,11 @@ public class MainActivity extends AppCompatActivity {
                     });
                 } else {
                     runOnUiThread(() -> {
-                        if (rssi_global > -55) {
+                        if (rssi_global > -50) {
                             viewModel_find.setDistance("캐리어와 매우 가까움");
-                        } else if (rssi_global > -70) {
+                        } else if (rssi_global > -75) {
                             viewModel_find.setDistance("캐리어와 가까움");
-                        } else if (rssi_global > -85) {
+                        } else if (rssi_global > -95) {
                             viewModel_find.setDistance("캐리어와 떨어져 있음");
                         } else {
                             viewModel_find.setDistance("캐리어와 멂");
