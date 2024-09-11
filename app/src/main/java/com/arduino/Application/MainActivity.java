@@ -702,7 +702,7 @@ public class MainActivity extends AppCompatActivity {
             if (!security) {        // 도난 방지가 꺼져 있으면
                 runOnUiThread(() -> viewModel_find.setDistance("캐리어와의 거리"));
             } else {                // 도난 방지가 켜져 있으면
-                if (firstRssi < 12) {
+                if (firstRssi > -12) {
                     runOnUiThread(() -> {
                         if (rssi_global > -5) {
                             viewModel_find.setDistance("캐리어와 매우 가까움");
@@ -719,11 +719,11 @@ public class MainActivity extends AppCompatActivity {
                     });
                 } else {
                     runOnUiThread(() -> {
-                        if (rssi_global > -40) {
+                        if (rssi_global > -55) {
                             viewModel_find.setDistance("캐리어와 매우 가까움");
-                        } else if (rssi_global > -55) {
-                            viewModel_find.setDistance("캐리어와 가까움");
                         } else if (rssi_global > -70) {
+                            viewModel_find.setDistance("캐리어와 가까움");
+                        } else if (rssi_global > -85) {
                             viewModel_find.setDistance("캐리어와 떨어져 있음");
                         } else {
                             viewModel_find.setDistance("캐리어와 멂");
