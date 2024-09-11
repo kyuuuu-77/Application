@@ -24,6 +24,12 @@
         tools:layout="@layout/fragment_weight" />
 
     <fragment
+        android:id="@+id/nav_bagdrop"
+        android:name="com.arduino.Application.ui.bagDrop.BagDropFragment"
+        android:label="@string/menu_bagdrop"
+        tools:layout="@layout/fragment_bagdrop" />
+
+    <fragment
         android:id="@+id/nav_info"
         android:name="com.arduino.Application.ui.info.InfoFragment"
         android:label="@string/menu_info"

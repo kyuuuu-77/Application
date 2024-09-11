@@ -17,6 +17,10 @@
             android:icon="@drawable/ic_menu_weight"
             android:title="@string/menu_weight" />
         <item
+            android:id="@+id/nav_bagdrop"
+            android:icon="@drawable/ic_menu_bagdrop"
+            android:title="@string/menu_bagdrop" />
+        <item
             android:id="@+id/nav_info"
             android:icon="@drawable/ic_menu_info"
             android:title="@string/menu_info" />

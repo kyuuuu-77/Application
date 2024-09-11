@@ -117,7 +117,7 @@ public class MainActivity extends AppCompatActivity {
     private boolean checkDialog = false;
     private boolean isFirstRssi = true;
     private boolean ignoreSecurity = false;
-    private double[] weight = {0.0, 0.0};   // weight, set
+    private final double[] weight = {0.0, 0.0};   // weight, set
     private String data;
     private String deviceName = null;
     private int BLE_status = 0;
@@ -154,7 +154,7 @@ public class MainActivity extends AppCompatActivity {
         NavigationView navigationView = binding.navView;
 
         mAppBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.nav_home, R.id.nav_find, R.id.nav_weight, R.id.nav_info)
+                R.id.nav_home, R.id.nav_find, R.id.nav_weight, R.id.nav_bagdrop, R.id.nav_info)
                 .setOpenableLayout(drawer)
                 .build();
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
