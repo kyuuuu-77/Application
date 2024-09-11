@@ -990,7 +990,8 @@ public class MainActivity extends AppCompatActivity {
         onAutoSearch = true;
         security = false;
         ignoreSecurity = false;
-        weight = new double[]{0.0, 0.0};
+        weight[0] = 0;
+        weight[1] = 0;
         viewModel_weight.setWeightNow("-- Kg");
         viewModel_weight.setWeightInfo("무게 초과 여부 표시");
     }

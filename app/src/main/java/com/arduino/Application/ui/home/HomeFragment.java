@@ -94,8 +94,6 @@ public class HomeFragment extends Fragment {
         // 버튼 이벤트 리스너들
         // 블루투스 버튼
         mBtnBT.setOnClickListener(view -> {
-            Log.d("Button Click", "Button clicked!");
-
             if (!mBluetoothAdapter.isEnabled()) {        // 블루투스가 꺼져있는 경우
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                     Fragment_BT_on();
@@ -130,11 +128,7 @@ public class HomeFragment extends Fragment {
         });
 
         // 연결 버튼
-        mBtnBT_Connect.setOnClickListener(view -> {
-            Log.d("Button Click", "Button clicked!");
-
-            Fragment_listPairedDevices();
-        });
+        mBtnBT_Connect.setOnClickListener(view -> Fragment_listPairedDevices());
 
         return root;
     }

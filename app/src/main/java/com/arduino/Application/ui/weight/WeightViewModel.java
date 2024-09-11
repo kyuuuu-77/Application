@@ -11,10 +11,6 @@ public class WeightViewModel extends ViewModel {
     private final MutableLiveData<String> weightInfoLiveData = new MutableLiveData<>();
     private final MutableLiveData<String> weightBtnLiveData = new MutableLiveData<>();
 
-    private final MutableLiveData<String> airlineLiveData = new MutableLiveData<>();
-    private final MutableLiveData<String> baggageLiveData = new MutableLiveData<>();
-    private final MutableLiveData<String> weightSelectedLiveData = new MutableLiveData<>();
-
     // 측정된 무게 텍스트
     public LiveData<String> getWeightNowLiveData() {
         return weightNowLiveData;
@@ -46,13 +42,5 @@ public class WeightViewModel extends ViewModel {
     public void setWeightBtn(String btn) {
         weightBtnLiveData.setValue(btn);
     }
-
-    // 수화물 유형 텍스트
-    public LiveData<String> getBaggageLiveData() {return baggageLiveData;}
-    public void setBaggage(String bag) {baggageLiveData.setValue(bag);}
-
-    // 선택된 무게 텍스트
-    public LiveData<String> getWeightSelectedLiveData() {return weightSelectedLiveData;}
-    public void setWeightSelected(String weight) {weightSelectedLiveData.setValue(weight);}
 
 }

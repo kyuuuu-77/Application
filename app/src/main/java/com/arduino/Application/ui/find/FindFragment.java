@@ -111,26 +111,19 @@ public class FindFragment extends Fragment {
         // 버튼 이벤트 리스너
         // 도난방지 무시 버튼
         ignoreBtn.setOnClickListener(view -> {
-            Log.d("Button Click", "Button clicked!");
-
             Fragment_ignoreAlert();
             Fragment_checkIgnore();
         });
 
         // 벨 울리는 버튼
         bellBtn.setOnClickListener(view -> {
-            Log.d("Button Click", "Button clicked!");
-
             textAlert.setText("벨 울리기 시도중...");
             Toast.makeText(getActivity(), "벨 울리기 시도중...", Toast.LENGTH_SHORT).show();
-
             ringBell(1);
         });
 
         // 도난방지 버튼
         securityBtn.setOnClickListener(view -> {
-            Log.d("Button Click", "Button clicked!");
-
             if (security) {     // 도난방지가 켜져있는 경우
                 Fragment_security_OFF();
                 securityBtn.setText("도난방지 켜기");
@@ -276,7 +269,6 @@ public class FindFragment extends Fragment {
                 checkBtn.setVisibility(View.GONE);
                 break;
         }
-
         AlertDialog dialog = builder.create();
         dialog.setCancelable(false);
         dialog.show();

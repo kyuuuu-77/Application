@@ -2,7 +2,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@id/nav_view_weight">
 
-    <!-- 기내/위탁 항목 -->
+    <!-- 기내/위탁 선택 -->
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/carryon_baggage"
@@ -18,22 +18,25 @@
         android:checkableBehavior="single"
         android:visible="false">
         <item
-            android:id="@+id/weight_5kg"
+            android:id="@+id/weight_5"
             android:title="@string/weight_5" />
         <item
-            android:id="@+id/weight_7kg"
+            android:id="@+id/weight_7"
             android:title="@string/weight_7" />
         <item
-            android:id="@+id/weight_10kg"
+            android:id="@+id/weight_10"
             android:title="@string/weight_10" />
         <item
-            android:id="@+id/weight_15kg"
+            android:id="@+id/weight_15"
             android:title="@string/weight_15" />
         <item
-            android:id="@+id/weight_23kg"
+            android:id="@+id/weight_20"
+            android:title="@string/weight_20" />
+        <item
+            android:id="@+id/weight_23"
             android:title="@string/weight_23" />
         <item
-            android:id="@+id/weight_32kg"
+            android:id="@+id/weight_32"
             android:title="@string/weight_32" />
     </group>
 </menu>

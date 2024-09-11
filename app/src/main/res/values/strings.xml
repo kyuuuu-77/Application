@@ -32,12 +32,10 @@
     <string name="alert_Btn">도난방지 켜기</string>
 
     <!-- 캐리어 무게측정 화면 -->
-    <string name="text_airline">항공사 없음</string>
-    <string name="text_bag">수하물 유형</string>
-    <string name="text_allowWeight">허용 무게</string>
+    <string name="text_reset">설정 리셋</string>
     <string name="menuBtn_text">무게 설정</string>
     <string name="weight">-- Kg</string>
-    <string name="weight_set">허용 무게 : 20 Kg</string>
+    <string name="weight_set">허용 무게를 설정하세요</string>
     <string name="weight_info">무게 초과 여부 표시</string>
     <string name="measureBtn">무게 측정 시작!</string>
 
@@ -57,6 +55,7 @@
     <string name="weight_7">7kg</string>
     <string name="weight_10">10kg</string>
     <string name="weight_15">15kg</string>
+    <string name="weight_20">20kg</string>
     <string name="weight_23">23kg</string>
     <string name="weight_32">32kg</string>
 
