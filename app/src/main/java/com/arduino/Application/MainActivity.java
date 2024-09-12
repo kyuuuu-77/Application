@@ -117,12 +117,14 @@ public class MainActivity extends AppCompatActivity {
     private boolean checkDialog = false;
     private boolean isFirstRssi = true;
     private boolean ignoreSecurity = false;
+    private boolean backDropMode = false;
     private final double[] weight = {0.0, 0.0};   // weight, set
     private String data;
     private String deviceName = null;
     private int BLE_status = 0;
     private int rssi_global = 99;
     private int firstRssi = 99;
+    private int setHourMin = -1;
 
     // 윈도우 및 툴바 관련 변수
     Window window;
@@ -994,6 +996,16 @@ public class MainActivity extends AppCompatActivity {
         weight[1] = 0;
         viewModel_weight.setWeightNow("-- Kg");
         viewModel_weight.setWeightInfo("무게 초과 여부 표시");
+    }
+
+    // 시간 설정을 저장하는 메서드
+    public void setTime(int hour, int min) {
+        setHourMin = hour * 100 + min;
+    }
+
+    // 시간 설정을 체크하는 메서드
+    public int checkTime() {
+        return setHourMin;
     }
 
     // 알람을 띄우는 메서드

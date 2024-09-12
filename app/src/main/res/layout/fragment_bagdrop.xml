@@ -6,6 +6,18 @@
     android:layout_height="match_parent"
     tools:context=".ui.bagDrop.BagDropFragment">
 
+    <ImageView
+        android:layout_width="0dp"
+        android:layout_height="240dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.126"
+        app:srcCompat="@drawable/bagdrop"
+        tools:ignore="ContentDescription" />
+
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -19,7 +31,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/findBtn_text"
+            android:text="@string/timeBtn_text"
             android:textSize="18sp"
             android:textStyle="bold"
             android:layout_gravity="center"
@@ -27,95 +39,183 @@
         </TextView>
 
         <Button
-            android:id="@+id/bell"
+            android:id="@+id/setTime"
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:background="@drawable/find_bell_on"
+            android:background="@drawable/bagdrop_time"
             app:backgroundTint="@null"
             tools:ignore="SpeakableTextPresentCheck" />
     </LinearLayout>
 
-    <ImageView
-        android:id="@+id/find_icon"
-        android:layout_width="200dp"
-        android:layout_height="200dp"
-        android:contentDescription="@string/nav_header_desc"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.142"
-        app:srcCompat="@drawable/ringring" />
-
-    <ImageView
-        android:id="@+id/imageViewl"
-        android:layout_width="350dp"
-        android:layout_height="185dp"
-        android:contentDescription="@string/nav_header_desc"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.58"
-        app:srcCompat="@drawable/rectangle_round" />
-
     <TextView
-        android:id="@+id/text_alert"
-        android:layout_width="350dp"
+        android:id="@+id/textBagDrop"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="백드랍 모드 화면!!!!"
+        android:text="@string/bagdrop_text"
         android:textAlignment="center"
-        android:textSize="20sp"
-        app:layout_constraintBottom_toBottomOf="@+id/imageViewl"
-        app:layout_constraintEnd_toEndOf="@+id/imageViewl"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/imageViewl"
-        app:layout_constraintTop_toTopOf="@+id/imageViewl"
-        app:layout_constraintVertical_bias="0.078"
-        tools:ignore="TextSizeCheck" />
-
-    <TextView
-        android:id="@+id/alert_status"
-        android:layout_width="350dp"
-        android:layout_height="wrap_content"
-        android:text="@string/alertStatus"
-        android:textAlignment="center"
-        android:textColor="@color/light_black"
-        android:textSize="23sp"
-        app:layout_constraintBottom_toBottomOf="@+id/imageViewl"
-        app:layout_constraintEnd_toEndOf="@+id/imageViewl"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/imageViewl"
-        app:layout_constraintTop_toTopOf="@+id/imageViewl"
-        app:layout_constraintVertical_bias="0.536" />
-
-    <TextView
-        android:id="@+id/find_distance"
-        android:layout_width="350dp"
-        android:layout_height="wrap_content"
-        android:text="@string/bag_distance"
-        android:textAlignment="center"
-        android:textColor="@color/light_black"
-        android:textSize="25sp"
+        android:textColor="@color/orange_500"
+        android:textSize="49sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="@+id/imageViewl"
-        app:layout_constraintEnd_toEndOf="@+id/imageViewl"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/imageViewl"
-        app:layout_constraintTop_toTopOf="@+id/imageViewl"
-        app:layout_constraintVertical_bias="0.898" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.47" />
+
+    <LinearLayout
+        android:id="@+id/linear_connect"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/background_orange"
+        android:gravity="center_vertical"
+        android:padding="7dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.58">
+
+        <ImageView
+            android:id="@+id/icon_connect"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:importantForAccessibility="no"
+            app:srcCompat="@drawable/bagdrop_not_checked" />
+
+        <TextView
+            android:layout_width="105dp"
+            android:layout_height="wrap_content"
+            android:text="@string/text_connect"
+            android:textColor="@android:color/background_light"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="20dp"
+            android:layout_height="wrap_content"
+            android:text="@string/textTo"
+            android:textColor="@android:color/background_light"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/checkConnect"
+            android:layout_width="130dp"
+            android:layout_height="wrap_content"
+            android:text="@string/text_checkConnect"
+            android:textColor="@android:color/background_light"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:layout_marginStart="10dp"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linear_weight"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/background_orange"
+        android:gravity="center_vertical"
+        android:padding="7dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.67">
+
+        <ImageView
+            android:id="@+id/icon_weight"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:importantForAccessibility="no"
+            app:srcCompat="@drawable/bagdrop_not_checked"/>
+
+        <TextView
+            android:layout_width="105dp"
+            android:layout_height="wrap_content"
+            android:text="@string/text_weight"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="20dp"
+            android:layout_height="wrap_content"
+            android:text="@string/textTo"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/checkWeight"
+            android:layout_width="130dp"
+            android:layout_height="wrap_content"
+            android:text="@string/text_checkWeight"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:layout_marginStart="10dp"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linear_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/background_orange"
+        android:gravity="center_vertical"
+        android:padding="7dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.76">
+
+        <ImageView
+            android:id="@+id/icon_time"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:importantForAccessibility="no"
+            app:srcCompat="@drawable/bagdrop_not_checked"/>
+
+        <TextView
+            android:layout_width="105dp"
+            android:layout_height="wrap_content"
+            android:text="@string/text_time"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="20dp"
+            android:layout_height="wrap_content"
+            android:text="@string/textTo"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/checkTime"
+            android:layout_width="130dp"
+            android:layout_height="wrap_content"
+            android:text="@string/text_checkTime"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:layout_marginStart="10dp"/>
+    </LinearLayout>
 
     <Button
-        android:id="@+id/alertBtn"
+        android:id="@+id/bagdrop_btn"
         android:layout_width="284dp"
         android:layout_height="59dp"
         android:background="@drawable/button_round"
-        android:text="@string/alert_Btn"
+        app:backgroundTint="@null"
+        android:text="@string/btn_bagdrop"
         android:textSize="20sp"
         android:textStyle="bold"
-        app:backgroundTint="@null"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"

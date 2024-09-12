@@ -75,9 +75,9 @@
             android:id="@+id/overlay_ignore"
             android:layout_width="100dp"
             android:layout_height="wrap_content"
-            android:backgroundTint="@color/red_500"
             android:layout_marginStart="20dp"
+            android:backgroundTint="@color/red_500"
             android:text="@string/overlayBtn_ignore"
-            tools:ignore="ButtonStyle" />
+            tools:ignore="ButtonStyle,TextContrastCheck" />
     </LinearLayout>
 </LinearLayout>

@@ -74,7 +74,6 @@
         </LinearLayout>
 
         <ImageView
-            android:id="@+id/bag_img"
             android:layout_width="0dp"
             android:layout_height="280dp"
             app:layout_constraintBottom_toBottomOf="parent"

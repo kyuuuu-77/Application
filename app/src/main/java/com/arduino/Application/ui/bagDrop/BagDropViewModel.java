@@ -6,41 +6,41 @@ import androidx.lifecycle.ViewModel;
 
 public class BagDropViewModel extends ViewModel {
 
-    private final MutableLiveData<String> ignoreTextLiveData = new MutableLiveData<>();
-    private final MutableLiveData<String> alertTextLiveData = new MutableLiveData<>();
-    private final MutableLiveData<String> alertStatusLiveData = new MutableLiveData<>();
-    private final MutableLiveData<String> distanceLiveData = new MutableLiveData<>();
+    private final MutableLiveData<String> connectTextLiveData = new MutableLiveData<>();
+    private final MutableLiveData<String> weightTextLiveData = new MutableLiveData<>();
+    private final MutableLiveData<String> timeTextLiveData = new MutableLiveData<>();
+    private final MutableLiveData<String> bagDropBtnTextLiveData = new MutableLiveData<>();
 
-    // 무시 텍스트
-    public LiveData<String> getIgnoreTextLiveData() {
-        return ignoreTextLiveData;
+    // 캐리어 연결 여부 텍스트
+    public LiveData<String> getConnectTextLiveData() {
+        return connectTextLiveData;
     }
-    public void setIgnoreText(String text) {
-        ignoreTextLiveData.setValue(text);
-    }
-
-    // 도난방지 텍스트
-    public LiveData<String> getAlertTextLiveData() {
-        return alertTextLiveData;
-    }
-    public void setAlertText(String text) {
-        alertTextLiveData.setValue(text);
+    public void setConnectText(String connect) {
+        connectTextLiveData.setValue(connect);
     }
 
-    // 도난방지 상태 텍스트
-    public LiveData<String> getAlertStatusLiveData() {
-        return alertStatusLiveData;
+    // 무게 측정 여부 텍스트
+    public LiveData<String> getWeightTextLiveData() {
+        return weightTextLiveData;
     }
-    public void setAlertStatus(String status) {
-        alertStatusLiveData.setValue(status);
+    public void setWeightText(String weight) {
+        weightTextLiveData.setValue(weight);
     }
 
-    // 캐리어 거리 텍스트
-    public LiveData<String> getDistanceLiveData() {
-        return distanceLiveData;
+    // 도착 예정시각 텍스트
+    public LiveData<String> getTimeTextLiveData() {
+        return timeTextLiveData;
     }
-    public void setDistance(String bag_distance) {
-        distanceLiveData.setValue(bag_distance);
+    public void setTimeText(String time) {
+        timeTextLiveData.setValue(time);
+    }
+
+    // 백드랍 모드 버튼 텍스트
+    public LiveData<String> getBagDropBtnTextLiveData() {
+        return bagDropBtnTextLiveData;
+    }
+    public void setBagDropBtnText(String btnText) {
+        bagDropBtnTextLiveData.setValue(btnText);
     }
 
 }
