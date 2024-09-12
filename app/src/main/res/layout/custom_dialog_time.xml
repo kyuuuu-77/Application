@@ -38,7 +38,7 @@
                 android:layout_marginStart="8dp"
                 android:textSize="23sp"
                 android:textColor="@android:color/black"
-                android:text="도착 예정시각 설정" />
+                android:text="@string/dialogTime_main" />
         </LinearLayout>
 
         <LinearLayout
@@ -57,12 +57,13 @@
                     android:id="@+id/hour_spinner"
                     android:layout_width="50dp"
                     android:layout_height="30dp"
-                    android:background="@drawable/background_spinner" />
+                    android:background="@drawable/background_spinner"
+                    tools:ignore="TouchTargetSizeCheck,TextSizeCheck" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="시"
+                    android:text="@string/dialogTime_hour"
                     android:textStyle="bold"
                     android:textSize="20sp"
                     android:textColor="@color/white"
@@ -77,12 +78,13 @@
                     android:id="@+id/minute_spinner"
                     android:layout_width="50dp"
                     android:layout_height="30dp"
-                    android:background="@drawable/background_spinner" />
+                    android:background="@drawable/background_spinner"
+                    tools:ignore="TouchTargetSizeCheck,TextSizeCheck" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="분"
+                    android:text="@string/dialogTime_min"
                     android:textStyle="bold"
                     android:textSize="20sp"
                     android:textColor="@color/white"
@@ -101,7 +103,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="선택된 시간 : "
+                android:text="@string/dialogTime_selectedTime"
                 android:textStyle="bold"
                 android:textSize="20sp"
                 android:textColor="@color/white"/>
@@ -110,7 +112,7 @@
                 android:id="@+id/selectedHour"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="hh 시"
+                android:text="@string/dialogTime_setHour"
                 android:textStyle="bold"
                 android:textSize="28sp"
                 android:textColor="@color/white"/>
@@ -120,7 +122,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
-                android:text="mm 분"
+                android:text="@string/dialogTime_setMin"
                 android:textStyle="bold"
                 android:textSize="28sp"
                 android:textColor="@color/white"/>
@@ -147,7 +149,7 @@
                 android:layout_marginStart="10dp"
                 android:backgroundTint="@color/red_500"
                 android:text="@string/dialog_cancel"
-                tools:ignore="ButtonStyle" />
+                tools:ignore="ButtonStyle,TextContrastCheck" />
         </LinearLayout>
     </LinearLayout>
 

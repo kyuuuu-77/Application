@@ -43,7 +43,7 @@
     <!-- 백드랍 모드 화면 -->
     <string name="textTo"><![CDATA[->]]></string>
     <string name="timeBtn_text">시각 설정</string>
-    <string name="bagdrop_text">비활성화</string>
+    <string name="bagdrop_text">백드랍 비활성화</string>
     <string name="text_connect">캐리어 연결</string>
     <string name="text_weight">무게 측정</string>
     <string name="text_time">도착 예정시각</string>
@@ -85,4 +85,13 @@
     <string name="dialog_retry">다시시도</string>
     <string name="dialog_okay">확인</string>
     <string name="dialog_cancel">취소</string>
+
+    <!-- 다이얼로그 (시간 설정) 화면 -->
+    <string name="dialogTime_main">도착 예정시각 설정</string>
+    <string name="dialogTime_hour">시</string>
+    <string name="dialogTime_min">분</string>
+    <string name="dialogTime_selectedTime">선택된 시간 :</string>
+    <string name="dialogTime_setHour">hh시</string>
+    <string name="dialogTime_setMin">mm분</string>
+
 </resources>

@@ -121,14 +121,15 @@
         android:layout_width="220dp"
         android:layout_height="wrap_content"
         android:text="@string/auto_search_text"
-        android:textSize="25sp"
         android:textAlignment="center"
+        android:textSize="25sp"
         app:layout_constraintBottom_toBottomOf="@+id/imageViewl"
         app:layout_constraintEnd_toEndOf="@+id/imageViewl"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="@+id/imageViewl"
         app:layout_constraintTop_toTopOf="@+id/imageViewl"
-        app:layout_constraintVertical_bias="0.351" />
+        app:layout_constraintVertical_bias="0.351"
+        tools:ignore="TextSizeCheck" />
 
     <ImageView
         android:id="@+id/security_icon"
@@ -176,14 +177,15 @@
         android:layout_width="220dp"
         android:layout_height="wrap_content"
         android:text="@string/info_text"
-        android:textSize="25sp"
         android:textAlignment="center"
+        android:textSize="25sp"
         app:layout_constraintBottom_toBottomOf="@+id/imageViewl"
         app:layout_constraintEnd_toEndOf="@+id/imageViewl"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="@+id/imageViewl"
         app:layout_constraintTop_toTopOf="@+id/imageViewl"
-        app:layout_constraintVertical_bias="0.959" />
+        app:layout_constraintVertical_bias="0.959"
+        tools:ignore="TextSizeCheck" />
 
     <Button
         android:id="@+id/reset"

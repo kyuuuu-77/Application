@@ -1008,6 +1008,16 @@ public class MainActivity extends AppCompatActivity {
         return setHourMin;
     }
 
+    // 백드랍 모드를 체크하는 메서드
+    public boolean checkBagDrop() {
+        return backDropMode;
+    }
+
+    // 백드랍 모드를 설정하는 메서드
+    public void setBagDrop(boolean onOff) {
+        backDropMode = onOff;
+    }
+
     // 알람을 띄우는 메서드
     private void createNotif(String channel_id, String big, String summary) {
         NotificationManager manager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);

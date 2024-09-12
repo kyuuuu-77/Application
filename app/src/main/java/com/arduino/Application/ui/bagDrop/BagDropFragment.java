@@ -2,6 +2,7 @@ package com.arduino.Application.ui.bagDrop;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
@@ -31,11 +32,12 @@ import java.util.List;
 
 public class BagDropFragment extends Fragment {
 
-    // 리니어 레이아웃, 버튼, 이미지 뷰 및 텍스트 뷰 초기화
+    // 리니어 레이아웃, 텍스트 뷰, 이미지 뷰, 아이콘, 버튼, Drawable 초기화
     LinearLayout linearConnect;
     LinearLayout linearWeight;
     LinearLayout linearTime;
-    
+
+    TextView bagDropText;
     TextView checkConnect;
     TextView checkWeight;
     TextView checkTime;
@@ -49,11 +51,14 @@ public class BagDropFragment extends Fragment {
 
     Drawable layout_indigo;
     Drawable layout_orange;
+    Drawable Btn_blue;
+    Drawable Btn_red;
 
     private FragmentBagdropBinding binding;
     private BagDropViewModel bagDropViewModel;
 
     private int arriveTime = -1;
+    private boolean bagDropMode = false;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -64,11 +69,12 @@ public class BagDropFragment extends Fragment {
 
         Log.d("BagDrop Fragment", "BagDrop Fragment-onCreatedView()");
 
-        // 리니어 레이아웃, 버튼, 이미지 뷰 및 텍스트 뷰 선언
+        // 리니어 레이아웃, 텍스트 뷰, 이미지 뷰, 아이콘, 버튼, Drawable 선언
         linearConnect = root.findViewById(R.id.linear_connect);
         linearWeight = root.findViewById(R.id.linear_weight);
         linearTime = root.findViewById(R.id.linear_time);
 
+        bagDropText = root.findViewById(R.id.textBagDrop);
         checkConnect = root.findViewById(R.id.checkConnect);
         checkWeight = root.findViewById(R.id.checkWeight);
         checkTime = root.findViewById(R.id.checkTime);
@@ -82,8 +88,11 @@ public class BagDropFragment extends Fragment {
 
         layout_indigo = ContextCompat.getDrawable(requireContext(), R.drawable.background_indigo);
         layout_orange = ContextCompat.getDrawable(requireContext(), R.drawable.background_orange);
+        Btn_blue = ContextCompat.getDrawable(requireContext(), R.drawable.button_round);
+        Btn_red = ContextCompat.getDrawable(requireContext(), R.drawable.button_round_off);
 
         // ViewModel 선언
+        bagDropViewModel.getBagDropTextLiveData().observe(getViewLifecycleOwner(), text -> bagDropText.setText(text));
         bagDropViewModel.getConnectTextLiveData().observe(getViewLifecycleOwner(), connect -> checkConnect.setText(connect));
         bagDropViewModel.getWeightTextLiveData().observe(getViewLifecycleOwner(), rssi -> checkWeight.setText(rssi));
         bagDropViewModel.getTimeTextLiveData().observe(getViewLifecycleOwner(), time -> checkTime.setText(time));
@@ -91,14 +100,27 @@ public class BagDropFragment extends Fragment {
 
         // 버튼 이벤트 리스너
         // 시각 설정 버튼
-        timeBtn.setOnClickListener(view -> {
-            // 시간을 설정하는 동작
-            showCustomDialog();
-        });
+        timeBtn.setOnClickListener(view -> showCustomDialog());
 
         // 백드랍 모드 시작 버튼
         bagDropBtn.setOnClickListener(view -> {
-            Toast.makeText(getActivity(), "백드랍 모드가 시작됩니다!", Toast.LENGTH_SHORT).show();
+            checkBagDrop();
+
+            if (bagDropMode) {      // 백드랍 모드 켜짐 -> 꺼짐
+                setBagDrop(false);
+                bagDropBtn.setBackground(Btn_blue);
+                bagDropViewModel.setBagDropBtnText("백드랍 모드 시작");
+                bagDropViewModel.setBagDropText("백드랍 비활성화");
+                bagDropText.setTextColor(Color.parseColor("#FF9800"));
+                Toast.makeText(getActivity(), "백드랍 모드가 중지됩니다.", Toast.LENGTH_SHORT).show();
+            } else {                // 백드랍 모드 꺼짐 -> 켜짐
+                setBagDrop(true);
+                bagDropBtn.setBackground(Btn_red);
+                bagDropViewModel.setBagDropBtnText("백드랍 모드 중지");
+                bagDropViewModel.setBagDropText("백드랍 활성화");
+                bagDropText.setTextColor(Color.parseColor("#3F51B5"));
+                Toast.makeText(getActivity(), "백드랍 모드가 시작됩니다!", Toast.LENGTH_SHORT).show();
+            }
         });
         return root;
     }
@@ -112,17 +134,17 @@ public class BagDropFragment extends Fragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
         builder.setView(dialogView);
 
-        // 다이얼로그 안에 이미지, 텍스트 뷰, 버튼 초기화 및 선언
+        // 커스텀 다이얼로그의 버튼, 텍스트 뷰 초기화 및 선언
         Button checkBtn = dialogView.findViewById(R.id.confirm);
         Button cancelBtn = dialogView.findViewById(R.id.cancel);
         TextView textHour = dialogView.findViewById(R.id.selectedHour);
         TextView textMin = dialogView.findViewById(R.id.selectedMin);
 
-        // 시간과 분을 선택할 수 있는 Spinner
+        // 시간과 분을 선택하는 스피너
         final Spinner hourSpinner = dialogView.findViewById(R.id.hour_spinner);
         final Spinner minuteSpinner = dialogView.findViewById(R.id.minute_spinner);
 
-        // 시간과 분을 위한 리스트 설정
+        // 리스트 설정
         List<String> hours = new ArrayList<>();
         for (int i = 0; i < 24; i++) {
             hours.add(String.format("%d", i));
@@ -132,11 +154,17 @@ public class BagDropFragment extends Fragment {
             minutes.add(String.format("%d", i));
         }
 
-        // Adapter 설정
+        // 어뎁터 설정 (시간)
         ArrayAdapter<String> hourAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, hours);
         hourAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         hourSpinner.setAdapter(hourAdapter);
 
+        // 어뎁터 설정 (분)
+        ArrayAdapter<String> minuteAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, minutes);
+        minuteAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        minuteSpinner.setAdapter(minuteAdapter);
+
+        // 아이템 선택 리스너 (시간)
         hourSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @SuppressLint("SetTextI18n")
             @Override
@@ -144,12 +172,11 @@ public class BagDropFragment extends Fragment {
                 String selectedHour = hourSpinner.getSelectedItem().toString();
                 textHour.setText(selectedHour + "시");
             }
-
             @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-            }
+            public void onNothingSelected(AdapterView<?> parent) {}
         });
 
+        // 아이템 선택 리스너 (분)
         minuteSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @SuppressLint("SetTextI18n")
             @Override
@@ -157,20 +184,15 @@ public class BagDropFragment extends Fragment {
                 String selectedMin = minuteSpinner.getSelectedItem().toString();
                 textMin.setText(selectedMin + "분");
             }
-
             @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-            }
+            public void onNothingSelected(AdapterView<?> parent) {}
         });
-
-        ArrayAdapter<String> minuteAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, minutes);
-        minuteAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        minuteSpinner.setAdapter(minuteAdapter);
 
         AlertDialog dialog = builder.create();
         dialog.setCancelable(false);
         dialog.show();
 
+        // 확인 버튼을 누르면 -> 설정 시각 전달
         checkBtn.setOnClickListener(v -> {
             int hour = Integer.parseInt((String) hourSpinner.getSelectedItem());
             int min = Integer.parseInt((String) minuteSpinner.getSelectedItem());
@@ -183,9 +205,11 @@ public class BagDropFragment extends Fragment {
                 linearTime.setBackground(layout_indigo);
                 iconTime.setImageResource(R.drawable.bagdrop_checked);
             }
+            checkCanUseBagDrop();
 
             dialog.dismiss();
         });
+        // 취소 버튼을 누르면 -> 저장 안하고 종료
         cancelBtn.setOnClickListener(v -> dialog.dismiss());
     }
 
@@ -217,11 +241,37 @@ public class BagDropFragment extends Fragment {
         return -1;
     }
 
-    // 시간 설정을 저장하는 메서드
+    // 시간 설정을 하는 메서드
     private void setTime(int hour, int min) {
         MainActivity mainActivity = (MainActivity) getActivity();
         if (mainActivity != null) {
             mainActivity.setTime(hour, min);
+        }
+    }
+
+    // 백드랍 모드를 체크하는 메서드
+    private void checkBagDrop() {
+        MainActivity mainActivity = (MainActivity) getActivity();
+        if (mainActivity != null) {
+            bagDropMode = mainActivity.checkBagDrop();
+        }
+    }
+
+    // 백드랍 모드를 설정하는 메서드
+    private void setBagDrop(boolean onOff) {
+        MainActivity mainActivity = (MainActivity) getActivity();
+        if (mainActivity != null) {
+            mainActivity.setBagDrop(onOff);
+        }
+    }
+
+    // 백드랍 모드 설정 가능여부 체크
+    private void checkCanUseBagDrop() {
+        if (checkConnection() == 9 && checkWeight() != 0 && arriveTime != -1) {
+            Toast.makeText(getActivity(), "백드랍 모드를 사용할 수 있습니다!", Toast.LENGTH_SHORT).show();
+            bagDropBtn.setEnabled(true);
+        } else {
+            bagDropBtn.setEnabled(false);
         }
     }
 
@@ -256,8 +306,9 @@ public class BagDropFragment extends Fragment {
             iconWeight.setImageResource(R.drawable.bagdrop_not_checked);
         }
 
-        arriveTime = checkTime();
         // 도착 예정시각 설정 확인
+        checkTime();
+
         if (arriveTime != -1) {
             // 도착 시각을 설정했으면
             bagDropViewModel.setTimeText(arriveTime / 100 + "시 " + arriveTime % 100 + "분");
@@ -269,6 +320,24 @@ public class BagDropFragment extends Fragment {
             linearTime.setBackground(layout_orange);
             iconTime.setImageResource(R.drawable.bagdrop_not_checked);
         }
+
+        // 백드랍 모드 확인
+        checkBagDrop();
+        if (bagDropMode) {
+            // 백드랍 모드가 켜져 있으면
+            bagDropBtn.setBackground(Btn_red);
+            bagDropViewModel.setBagDropBtnText("백드랍 모드 중지");
+            bagDropViewModel.setBagDropText("백드랍 활성화");
+            bagDropText.setTextColor(Color.parseColor("#3F51B5"));
+        } else {
+            // 백드랍 모드가 꺼져 있으면
+            bagDropBtn.setBackground(Btn_blue);
+            bagDropViewModel.setBagDropBtnText("백드랍 모드 시작");
+            bagDropViewModel.setBagDropText("백드랍 비활성화");
+            bagDropText.setTextColor(Color.parseColor("#FF9800"));
+        }
+
+        checkCanUseBagDrop();
     }
 
     @Override

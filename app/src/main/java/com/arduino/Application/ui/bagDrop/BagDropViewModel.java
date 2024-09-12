@@ -6,10 +6,19 @@ import androidx.lifecycle.ViewModel;
 
 public class BagDropViewModel extends ViewModel {
 
+    private final MutableLiveData<String> bagDropTextLiveData = new MutableLiveData<>();
     private final MutableLiveData<String> connectTextLiveData = new MutableLiveData<>();
     private final MutableLiveData<String> weightTextLiveData = new MutableLiveData<>();
     private final MutableLiveData<String> timeTextLiveData = new MutableLiveData<>();
     private final MutableLiveData<String> bagDropBtnTextLiveData = new MutableLiveData<>();
+
+    // 백드랍 모드 활성화 여부 텍스트
+    public LiveData<String> getBagDropTextLiveData() {
+        return bagDropTextLiveData;
+    }
+    public void setBagDropText(String text) {
+        bagDropTextLiveData.setValue(text);
+    }
 
     // 캐리어 연결 여부 텍스트
     public LiveData<String> getConnectTextLiveData() {

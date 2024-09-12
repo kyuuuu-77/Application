@@ -11,7 +11,6 @@
         android:layout_height="240dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.126"
@@ -43,7 +42,6 @@
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:background="@drawable/bagdrop_time"
-            app:backgroundTint="@null"
             tools:ignore="SpeakableTextPresentCheck" />
     </LinearLayout>
 
@@ -54,14 +52,15 @@
         android:text="@string/bagdrop_text"
         android:textAlignment="center"
         android:textColor="@color/orange_500"
-        android:textSize="49sp"
+        android:textSize="48sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.47" />
+        app:layout_constraintVertical_bias="0.478"
+        tools:ignore="TextContrastCheck" />
 
     <LinearLayout
         android:id="@+id/linear_connect"
@@ -82,7 +81,8 @@
             android:layout_width="25dp"
             android:layout_height="25dp"
             android:importantForAccessibility="no"
-            app:srcCompat="@drawable/bagdrop_not_checked" />
+            app:srcCompat="@drawable/bagdrop_not_checked"
+            tools:ignore="ImageContrastCheck" />
 
         <TextView
             android:layout_width="105dp"
@@ -90,7 +90,8 @@
             android:text="@string/text_connect"
             android:textColor="@android:color/background_light"
             android:textSize="18sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            tools:ignore="TextContrastCheck,TextSizeCheck" />
 
         <TextView
             android:layout_width="20dp"
@@ -98,17 +99,19 @@
             android:text="@string/textTo"
             android:textColor="@android:color/background_light"
             android:textSize="18sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            tools:ignore="TextSizeCheck,TextContrastCheck" />
 
         <TextView
             android:id="@+id/checkConnect"
             android:layout_width="130dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
             android:text="@string/text_checkConnect"
             android:textColor="@android:color/background_light"
             android:textSize="20sp"
             android:textStyle="bold"
-            android:layout_marginStart="10dp"/>
+            tools:ignore="TextSizeCheck,TextContrastCheck" />
     </LinearLayout>
 
     <LinearLayout
@@ -130,7 +133,8 @@
             android:layout_width="25dp"
             android:layout_height="25dp"
             android:importantForAccessibility="no"
-            app:srcCompat="@drawable/bagdrop_not_checked"/>
+            app:srcCompat="@drawable/bagdrop_not_checked"
+            tools:ignore="ImageContrastCheck" />
 
         <TextView
             android:layout_width="105dp"
@@ -138,7 +142,8 @@
             android:text="@string/text_weight"
             android:textColor="@color/white"
             android:textSize="18sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            tools:ignore="TextContrastCheck" />
 
         <TextView
             android:layout_width="20dp"
@@ -146,17 +151,19 @@
             android:text="@string/textTo"
             android:textColor="@color/white"
             android:textSize="18sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            tools:ignore="TextSizeCheck,TextContrastCheck" />
 
         <TextView
             android:id="@+id/checkWeight"
             android:layout_width="130dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
             android:text="@string/text_checkWeight"
             android:textColor="@color/white"
             android:textSize="20sp"
             android:textStyle="bold"
-            android:layout_marginStart="10dp"/>
+            tools:ignore="TextContrastCheck,TextSizeCheck" />
     </LinearLayout>
 
     <LinearLayout
@@ -178,7 +185,8 @@
             android:layout_width="25dp"
             android:layout_height="25dp"
             android:importantForAccessibility="no"
-            app:srcCompat="@drawable/bagdrop_not_checked"/>
+            app:srcCompat="@drawable/bagdrop_not_checked"
+            tools:ignore="ImageContrastCheck" />
 
         <TextView
             android:layout_width="105dp"
@@ -186,7 +194,8 @@
             android:text="@string/text_time"
             android:textColor="@color/white"
             android:textSize="18sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            tools:ignore="TextContrastCheck,TextSizeCheck" />
 
         <TextView
             android:layout_width="20dp"
@@ -194,17 +203,19 @@
             android:text="@string/textTo"
             android:textColor="@color/white"
             android:textSize="18sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            tools:ignore="TextContrastCheck,TextSizeCheck" />
 
         <TextView
             android:id="@+id/checkTime"
             android:layout_width="130dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
             android:text="@string/text_checkTime"
             android:textColor="@color/white"
             android:textSize="20sp"
             android:textStyle="bold"
-            android:layout_marginStart="10dp"/>
+            tools:ignore="TextContrastCheck,TextSizeCheck" />
     </LinearLayout>
 
     <Button
