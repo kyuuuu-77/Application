@@ -29,6 +29,7 @@ import com.arduino.Application.databinding.FragmentBagdropBinding;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class BagDropFragment extends Fragment {
 
@@ -92,11 +93,25 @@ public class BagDropFragment extends Fragment {
         Btn_red = ContextCompat.getDrawable(requireContext(), R.drawable.button_round_off);
 
         // ViewModel 선언
-        bagDropViewModel.getBagDropTextLiveData().observe(getViewLifecycleOwner(), text -> bagDropText.setText(text));
+        bagDropViewModel.getBagDropTextLiveData().observe(getViewLifecycleOwner(), text -> {
+            if (Objects.equals(text, "백드랍 활성화")) {
+                bagDropText.setTextColor(Color.parseColor("#3F51B5"));
+            } else if(Objects.equals(text, "백드랍 비활성화")) {
+                bagDropText.setTextColor(Color.parseColor("#FF9800"));
+            }
+            bagDropText.setText(text);
+        });
         bagDropViewModel.getConnectTextLiveData().observe(getViewLifecycleOwner(), connect -> checkConnect.setText(connect));
         bagDropViewModel.getWeightTextLiveData().observe(getViewLifecycleOwner(), rssi -> checkWeight.setText(rssi));
         bagDropViewModel.getTimeTextLiveData().observe(getViewLifecycleOwner(), time -> checkTime.setText(time));
-        bagDropViewModel.getBagDropBtnTextLiveData().observe(getViewLifecycleOwner(), btnText -> bagDropBtn.setText(btnText));
+        bagDropViewModel.getBagDropBtnTextLiveData().observe(getViewLifecycleOwner(), btnText -> {
+            if (Objects.equals(btnText, "백드랍 모드 시작")) {
+                bagDropBtn.setBackground(Btn_blue);
+            } else if (Objects.equals(btnText, "백드랍 모드 중지")) {
+                bagDropBtn.setBackground(Btn_red);
+            }
+            bagDropBtn.setText(btnText);
+        });
 
         // 버튼 이벤트 리스너
         // 시각 설정 버튼
@@ -108,17 +123,13 @@ public class BagDropFragment extends Fragment {
 
             if (bagDropMode) {      // 백드랍 모드 켜짐 -> 꺼짐
                 setBagDrop(false);
-                bagDropBtn.setBackground(Btn_blue);
                 bagDropViewModel.setBagDropBtnText("백드랍 모드 시작");
                 bagDropViewModel.setBagDropText("백드랍 비활성화");
-                bagDropText.setTextColor(Color.parseColor("#FF9800"));
                 Toast.makeText(getActivity(), "백드랍 모드가 중지됩니다.", Toast.LENGTH_SHORT).show();
             } else {                // 백드랍 모드 꺼짐 -> 켜짐
                 setBagDrop(true);
-                bagDropBtn.setBackground(Btn_red);
                 bagDropViewModel.setBagDropBtnText("백드랍 모드 중지");
                 bagDropViewModel.setBagDropText("백드랍 활성화");
-                bagDropText.setTextColor(Color.parseColor("#3F51B5"));
                 Toast.makeText(getActivity(), "백드랍 모드가 시작됩니다!", Toast.LENGTH_SHORT).show();
             }
         });
@@ -328,13 +339,11 @@ public class BagDropFragment extends Fragment {
             bagDropBtn.setBackground(Btn_red);
             bagDropViewModel.setBagDropBtnText("백드랍 모드 중지");
             bagDropViewModel.setBagDropText("백드랍 활성화");
-            bagDropText.setTextColor(Color.parseColor("#3F51B5"));
         } else {
             // 백드랍 모드가 꺼져 있으면
             bagDropBtn.setBackground(Btn_blue);
             bagDropViewModel.setBagDropBtnText("백드랍 모드 시작");
             bagDropViewModel.setBagDropText("백드랍 비활성화");
-            bagDropText.setTextColor(Color.parseColor("#FF9800"));
         }
 
         checkCanUseBagDrop();

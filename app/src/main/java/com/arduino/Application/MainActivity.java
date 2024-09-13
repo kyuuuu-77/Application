@@ -38,6 +38,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.widget.Toolbar;
 
+import com.arduino.Application.ui.bagDrop.BagDropViewModel;
 import com.arduino.Application.ui.find.FindViewModel;
 import com.arduino.Application.ui.home.HomeViewModel;
 import com.arduino.Application.ui.info.InfoViewModel;
@@ -60,6 +61,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.arduino.Application.databinding.ActivityMainBinding;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -105,6 +107,7 @@ public class MainActivity extends AppCompatActivity {
     private HomeViewModel viewModel_home;
     private FindViewModel viewModel_find;
     private WeightViewModel viewModel_weight;
+    private BagDropViewModel viewModel_bagDrop;
     private InfoViewModel viewModel_info;
 
     // 프로그램 동작을 위한 전역 변수
@@ -118,6 +121,7 @@ public class MainActivity extends AppCompatActivity {
     private boolean isFirstRssi = true;
     private boolean ignoreSecurity = false;
     private boolean backDropMode = false;
+    private boolean bleAlreadyChecked = false;
     private final double[] weight = {0.0, 0.0};   // weight, set
     private String data;
     private String deviceName = null;
@@ -181,6 +185,7 @@ public class MainActivity extends AppCompatActivity {
         viewModel_home = new ViewModelProvider(this).get(HomeViewModel.class);
         viewModel_weight = new ViewModelProvider(this).get(WeightViewModel.class);
         viewModel_find = new ViewModelProvider(this).get(FindViewModel.class);
+        viewModel_bagDrop = new ViewModelProvider(this).get(BagDropViewModel.class);
         viewModel_info = new ViewModelProvider(this).get(InfoViewModel.class);
 
         // 윈도우 생성
@@ -601,7 +606,16 @@ public class MainActivity extends AppCompatActivity {
                     checkPermission();
                 }
                 runOnUiThread(() -> {
-                    if (isSuitcase){        // 스마트 캐리어일 때
+                    if (backDropMode) {     // 백드롭 모드일 때
+                        bleAlreadyChecked = false;
+                        viewModel_home.setHomeText("스마트 캐리어에 연결됨");
+                        Toast.makeText(getApplicationContext(), "스마트 캐리어에 다시 연결됨", Toast.LENGTH_SHORT).show();
+                        bagDropHandler.removeCallbacks(bagDropRunnable);
+                        backDropMode = false;
+                        viewModel_bagDrop.setBagDropText("백드랍 비활성화");
+                        viewModel_bagDrop.setBagDropBtnText("백드랍 모드 시작");
+                        Toast.makeText(MainActivity.this, "캐리어와 다시 연결되었으므로 백드랍 모드를 종료합니다.", Toast.LENGTH_SHORT).show();
+                    } else if (isSuitcase){        // 스마트 캐리어일 때
                         viewModel_home.setHomeText("스마트 캐리어에 연결됨");
                         Toast.makeText(getApplicationContext(), "스마트 캐리어에 연결됨", Toast.LENGTH_SHORT).show();
                         alreadyConnected = true;
@@ -624,7 +638,18 @@ public class MainActivity extends AppCompatActivity {
                 });
                 bluetoothGatt.discoverServices();
             } else if (newState == BluetoothGatt.STATE_DISCONNECTED) {      // 블루투스 디바이스와 연결이 끊긴 경우
-                if (mBluetoothAdapter.isEnabled() && alreadyConnected) {
+                if (backDropMode) {
+                    if (!bleAlreadyChecked) {
+                        bleAlreadyChecked = true;
+                        handler_RSSI.removeCallbacks(runnable_RSSI);
+                        bluetoothGatt.disconnect();
+                        runOnUiThread(() -> {
+                            viewModel_home.setHomeText("백드랍 모드 사용중");
+                            Toast.makeText(getApplicationContext(), "백드랍 모드가 계속 동작중입니다!", Toast.LENGTH_SHORT).show();
+                            createNotif("bagdrop", "백드랍 모드 동작중", "백드랍 모드가 동작중입니다.\n도착 예정시각까지 캐리어와 연결을 끊습니다.");
+                        });
+                    }
+                } else if (mBluetoothAdapter.isEnabled() && alreadyConnected) {
                     handler_RSSI.removeCallbacks(runnable_RSSI);
                     bluetoothGatt.disconnect();
                     runOnUiThread(() -> {
@@ -1016,7 +1041,52 @@ public class MainActivity extends AppCompatActivity {
     // 백드랍 모드를 설정하는 메서드
     public void setBagDrop(boolean onOff) {
         backDropMode = onOff;
+
+        if (backDropMode) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                checkPermission();
+            }
+            bluetoothGatt.disconnect();     // 블루투스 연결을 끊고
+            bagDropHandler.postDelayed(bagDropRunnable, 10000);     // 핸들러로 동작
+        } else {
+            bluetoothGatt.connect();
+            bagDropHandler.removeCallbacks(bagDropRunnable);
+        }
     }
+
+    private final Handler bagDropHandler = new Handler();
+    private final Runnable bagDropRunnable = new Runnable() {
+        @Override
+        public void run() {
+            // 현재 시각 불러오기
+            Calendar calendar = Calendar.getInstance();
+            int currentHour = calendar.get(Calendar.HOUR_OF_DAY);
+            int currentMin = calendar.get(Calendar.MINUTE);
+            int setHour = setHourMin / 100;
+            int setMin = setHourMin % 100;
+
+            int currentTime = currentHour * 60 + currentMin;
+            int setTime = setHour * 60 + setMin;
+            int remain;
+
+            if (currentTime > setTime) {        // 혹시나 도착이 다음날이면 -> 도착 0:05 , 현재 17:50
+                remain = currentTime - setTime + 1440;
+            } else {
+                remain = setTime - currentTime;
+            }
+
+            if (remain <= 10) {
+                if (bluetoothGatt != null) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                        checkPermission();
+                    }
+                    Log.d("연결 시도", "캐리어를 찾는중 (10초마다 반복)...");
+                    bluetoothGatt.connect();
+                }
+            }
+            bagDropHandler.postDelayed(this, 10000);        // 10초마다 반복 동작
+        }
+    };
 
     // 알람을 띄우는 메서드
     private void createNotif(String channel_id, String big, String summary) {
@@ -1068,7 +1138,7 @@ public class MainActivity extends AppCompatActivity {
         startLeScan();
     }
 
-    protected void onDestroy(){
+    protected void onDestroy() {
         super.onDestroy();
         Log.d("MainActivity", "MainActivity-onDestroy()");
 
