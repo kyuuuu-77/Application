@@ -1040,12 +1040,14 @@ public class MainActivity extends AppCompatActivity {
 
     // 설정을 초기화 하는 메서드
     public void resetSettings() {
+        // 자동검색, 도난방지, 방해금지, 무게 옵션, 무게 측정값, 시각 설정 초기화
         onAutoSearch = true;
         security = false;
         ignoreSecurity = false;
         weight[0] = 0;
         weight[1] = 0;
-        viewModel_weight.setWeightNow("-- Kg");
+        setHourMin = -1;
+        viewModel_weight.setWeightNow("-- Kg"); 
         viewModel_weight.setWeightInfo("무게 초과 여부 표시");
     }
 
@@ -1086,6 +1088,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    // 백드랍 모드의 동작을 동작시키는 핸들러
     private final Handler bagDropHandler = new Handler();
     private final Runnable bagDropRunnable = new Runnable() {
         @Override
