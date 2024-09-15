@@ -38,7 +38,7 @@
     <string name="weight">-- Kg</string>
     <string name="weight_set">허용 무게를 설정하세요</string>
     <string name="weight_info">무게 초과 여부 표시</string>
-    <string name="measureBtn">무게 측정 시작!</string>
+    <string name="measureBtn">무게 측정 시작</string>
 
     <!-- 백드랍 모드 화면 -->
     <string name="textTo"><![CDATA[->]]></string>

@@ -324,7 +324,7 @@ public class BagDropFragment extends Fragment {
         }
         
         // 캐리어 무게 측정 여부 확인
-        if (checkWeight() != 0 || checkWeight() != -1) {
+        if (checkWeight() != 0 && checkWeight() != -1) {
             // 무게 측정결과가 0이나 -1이 아니라면 -> 한마디로 무게를 측정했으면
             double weightTmp = checkWeight();
             bagDropViewModel.setWeightText(weightTmp + " Kg");

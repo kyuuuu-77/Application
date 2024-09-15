@@ -661,6 +661,7 @@ public class MainActivity extends AppCompatActivity {
                         Toast.makeText(getApplicationContext(), "연결된 디바이스는 스마트 캐리어가 아닙니다.", Toast.LENGTH_SHORT).show();
                         window.setStatusBarColor(ContextCompat.getColor(getApplicationContext(), R.color.green_500));
                         toolbar.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.green_500));
+                        viewModel_home.setConnectBtn("연결");
                         BLE_status = -1;
                     }
                     deviceName = gatt.getDevice().getName();
@@ -690,8 +691,18 @@ public class MainActivity extends AppCompatActivity {
                         window.setStatusBarColor(ContextCompat.getColor(getApplicationContext(), R.color.green_500));
                         toolbar.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.green_500));
                         BLE_status = newState;
+                        rssiSignal = false;
                         deviceName = null;
+                        security = false;
+                        viewModel_home.setConnectBtn("연결");
+                        viewModel_find.setAlertStatus("도난방지 꺼짐");
+                        viewModel_find.setAlertBtnText("도난방지 사용불가");
+                        viewModel_find.setDistance("캐리어와의 거리");
+                        viewModel_weight.setWeightBtn("무게 측정 불가");
                         viewModel_info.setdeviceName("BLE: ");
+                        viewModel_info.setRssi("RSSI 측정 불가");
+                        // 연결이 끊겼을 때 info 페이지 고치기
+                        // 백드랍 모드도..
                     });
                     reconnectHandler.postDelayed(reconnectRunnable, 5000);
                     alreadyConnected = false;

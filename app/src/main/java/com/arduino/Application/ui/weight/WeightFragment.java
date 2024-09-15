@@ -28,6 +28,8 @@ import com.arduino.Application.R;
 import com.arduino.Application.databinding.FragmentWeightBinding;
 import com.google.android.material.navigation.NavigationView;
 
+import java.util.Objects;
+
 public class WeightFragment extends Fragment {
 
     // 버튼 요소 및 텍스트 뷰 초기화
@@ -35,9 +37,12 @@ public class WeightFragment extends Fragment {
     private TextView weightSet;
     private TextView weightInfo;
     private Button mBtnWeight;
+    private Button menuBtn;
 
     Drawable Btn_blue;
     Drawable Btn_red;
+    Drawable menu_blue;
+    Drawable menu_red;
 
     // 앱서랍 선언
     private DrawerLayout drawerLayout;
@@ -70,10 +75,13 @@ public class WeightFragment extends Fragment {
         weightSet = root.findViewById(R.id.weightSet);          // 허용 무게 텍스트 뷰
         weightInfo = root.findViewById(R.id.weightInfo);     // 초과 무게 텍스트 뷰
         mBtnWeight = root.findViewById(R.id.weight_btn);            // 무게 측정 시작 버튼
+        menuBtn = root.findViewById(R.id.menu);             // 무게 설정 메뉴 버튼
         Button resetBtn = root.findViewById(R.id.reset_button);        // 무게 설정 초기화 버튼
 
         Btn_blue = ContextCompat.getDrawable(requireContext(), R.drawable.button_round);
         Btn_red = ContextCompat.getDrawable(requireContext(), R.drawable.button_round_off);
+        menu_blue = ContextCompat.getDrawable(requireContext(), R.drawable.weight_menu_on);
+        menu_red = ContextCompat.getDrawable(requireContext(), R.drawable.weight_menu_off);
 
         // DrawerLayout과 NavigationView 설정
         drawerLayout = root.findViewById(R.id.drawer_layout_weight_fragment);
@@ -87,7 +95,28 @@ public class WeightFragment extends Fragment {
             weightSet.setText("허용 무게 : " + selected_weight + " Kg");
         });
         weightViewModel.getWeightInfoLiveData().observe(getViewLifecycleOwner(), info -> weightInfo.setText(info));
-        weightViewModel.getWeightBtnLiveData().observe(getViewLifecycleOwner(), btn -> mBtnWeight.setText(btn));
+        weightViewModel.getWeightBtnLiveData().observe(getViewLifecycleOwner(), btn -> {
+            if (Objects.equals(btn, "무게 측정 불가")) {      // 무게를 측정할 수 없는 경우
+                menuBtn.setBackground(menu_red);
+                menuBtn.setEnabled(false);
+                mBtnWeight.setBackground(Btn_red);
+                mBtnWeight.setEnabled(false);
+            } else if (Objects.equals(btn, "무게 측정 시작")) {       // 무게 측정 시작
+                menuBtn.setBackground(menu_blue);
+                menuBtn.setEnabled(true);
+                mBtnWeight.setBackground(Btn_blue);
+                mBtnWeight.setEnabled(true);
+            } else if (Objects.equals(btn, "무게 측정 실패")) {       // 무게 측정 실패
+                mBtnWeight.setBackground(Btn_red);
+                mBtnWeight.setEnabled(true);
+            } else {        // 무게 다시 측정
+                menuBtn.setBackground(menu_blue);
+                menuBtn.setEnabled(true);
+                mBtnWeight.setBackground(Btn_blue);
+                mBtnWeight.setEnabled(true);
+            }
+            mBtnWeight.setText(btn);
+        });
 
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
@@ -128,10 +157,10 @@ public class WeightFragment extends Fragment {
 
         if (mainActivity != null) {
             weight[0] = mainActivity.measureWeight(maxSet);
-            mBtnWeight.setBackground(Btn_blue);
+            weightViewModel.setWeightBtn("무게 다시 측정");
             if (weight[0] == -1) {
                 showCustomDialog(2);
-                mBtnWeight.setBackground(Btn_red);
+                weightViewModel.setWeightBtn("무게 측정 실패");
             } else {
                 if (weight[0] > 32.0) {
                     showCustomDialog(3);
@@ -171,7 +200,11 @@ public class WeightFragment extends Fragment {
     private void updateWeight() {
         if (weight != null && weight[0] != 0 && weight[0] != -1) {
             double maxSet = weight[1];
-            mBtnWeight.setBackground(Btn_blue);
+            if (mBluetoothAdapter.isEnabled() && checkBLE() == 2) {
+                weightViewModel.setWeightBtn("무게 다시 측정");
+            } else {
+                weightViewModel.setWeightBtn("무게 측정 불가");
+            }
             if (weight[0] > 32.0) {             // 32kg을 초과한 경우
                 showCustomDialog(3);
                 weightNow.setTextColor(ContextCompat.getColor(requireActivity(), R.color.red_500));
@@ -180,8 +213,18 @@ public class WeightFragment extends Fragment {
             } else {                            // 무게를 초과하지 않은 경우
                 weightNow.setTextColor(ContextCompat.getColor(requireActivity(), R.color.indigo_500));
             }
-        } else if (weight != null && weight[0] == -1){  // 무게 측정 실패한 경우
-            mBtnWeight.setBackground(Btn_red);
+        } else if (weight != null && weight[0] == -1) {  // 무게 측정 실패한 경우
+            weightViewModel.setWeightBtn("무게 측정 실패");
+        }
+    }
+
+    // BLE 연결 여부를 체크하는 메서드
+    private int checkBLE() {
+        MainActivity mainActivity = (MainActivity) getActivity();
+        if (mainActivity != null) {
+            return mainActivity.checkBLE();
+        } else {
+            return -1;
         }
     }
 
@@ -287,10 +330,16 @@ public class WeightFragment extends Fragment {
 
         if (!mBluetoothAdapter.isEnabled()) {
             showCustomDialog(1);
-            mBtnWeight.setEnabled(false);
-            mBtnWeight.setBackground(Btn_red);
+            menuBtn.setEnabled(false);
+            menuBtn.setBackground(menu_red);
+            weightViewModel.setWeightBtn("무게 측정 불가");
+        } else if (checkBLE() == 2) {
+            menuBtn.setEnabled(true);
+            weightViewModel.setWeightBtn("무게 측정 시작");
         } else {
-            mBtnWeight.setEnabled(true);
+            menuBtn.setEnabled(false);
+            menuBtn.setBackground(menu_red);
+            weightViewModel.setWeightBtn("무게 측정 불가");
         }
         if (weight[1] == 0) {
             mBtnWeight.setEnabled(false);
