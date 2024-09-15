@@ -2,7 +2,6 @@ package com.arduino.Application.ui.bagDrop;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
@@ -108,9 +107,9 @@ public class BagDropFragment extends Fragment {
         });
         bagDropViewModel.getBagDropTextLiveData().observe(getViewLifecycleOwner(), text -> {
             if (Objects.equals(text, "백드랍 활성화")) {
-                bagDropText.setTextColor(Color.parseColor("#3F51B5"));
+                bagDropText.setTextColor(ContextCompat.getColor(requireActivity(), R.color.indigo_500));
             } else if(Objects.equals(text, "백드랍 비활성화")) {
-                bagDropText.setTextColor(Color.parseColor("#FF9800"));
+                bagDropText.setTextColor(ContextCompat.getColor(requireActivity(), R.color.orange_500));
             }
             bagDropText.setText(text);
         });
@@ -325,8 +324,8 @@ public class BagDropFragment extends Fragment {
         }
         
         // 캐리어 무게 측정 여부 확인
-        if (checkWeight() != 0) {
-            // 무게 측정결과가 0이 아니라면 -> 한마디로 무게를 측정했으면
+        if (checkWeight() != 0 || checkWeight() != -1) {
+            // 무게 측정결과가 0이나 -1이 아니라면 -> 한마디로 무게를 측정했으면
             double weightTmp = checkWeight();
             bagDropViewModel.setWeightText(weightTmp + " Kg");
             linearWeight.setBackground(layout_indigo);

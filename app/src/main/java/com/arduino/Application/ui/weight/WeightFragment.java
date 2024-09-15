@@ -3,7 +3,6 @@ package com.arduino.Application.ui.weight;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
@@ -137,11 +136,11 @@ public class WeightFragment extends Fragment {
             } else {
                 if (weight[0] > 32.0) {
                     showCustomDialog(3);
-                    weightNow.setTextColor(Color.parseColor("#F44336"));
+                    weightNow.setTextColor(ContextCompat.getColor(requireActivity(), R.color.red_500));
                 } else if (weight[0] > maxSet) {
-                    weightNow.setTextColor(Color.parseColor("#F57C00"));
+                    weightNow.setTextColor(ContextCompat.getColor(requireActivity(), R.color.orange_500));
                 } else {
-                    weightNow.setTextColor(Color.parseColor("#3F51B5"));
+                    weightNow.setTextColor(ContextCompat.getColor(requireActivity(), R.color.indigo_500));
                 }
             }
         }
@@ -164,7 +163,7 @@ public class WeightFragment extends Fragment {
         lastCheckedBaggage = null;
 
         weightViewModel.setWeightNow("-- Kg");
-        weightNow.setTextColor(Color.parseColor("#3F51B5"));
+        weightNow.setTextColor(ContextCompat.getColor(requireActivity(), R.color.indigo_500));
         weightViewModel.setWeightSet("15kg");
         weightViewModel.setWeightInfo("무게 초과 여부 표시");
     }
@@ -176,11 +175,11 @@ public class WeightFragment extends Fragment {
             mBtnWeight.setBackground(Btn_blue);
             if (weight[0] > 32.0) {             // 32kg을 초과한 경우
                 showCustomDialog(3);
-                weightNow.setTextColor(Color.parseColor("#F44336"));
+                weightNow.setTextColor(ContextCompat.getColor(requireActivity(), R.color.red_500));
             } else if (weight[0] > maxSet) {    // 허용 무게를 초과한 경우
-                weightNow.setTextColor(Color.parseColor("#F57C00"));
+                weightNow.setTextColor(ContextCompat.getColor(requireActivity(), R.color.orange_500));
             } else {                            // 무게를 초과하지 않은 경우
-                weightNow.setTextColor(Color.parseColor("#3F51B5"));
+                weightNow.setTextColor(ContextCompat.getColor(requireActivity(), R.color.indigo_500));
             }
         } else if (weight != null && weight[0] == -1){  // 무게 측정 실패한 경우
             mBtnWeight.setBackground(Btn_red);

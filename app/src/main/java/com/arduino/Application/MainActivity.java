@@ -19,7 +19,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.graphics.PixelFormat;
 import android.net.Uri;
 import android.os.Build;
@@ -50,6 +49,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
+import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -247,13 +247,12 @@ public class MainActivity extends AppCompatActivity {
     public void BT_on() {
         if (mBluetoothAdapter == null) {
             Toast.makeText(getApplicationContext(), "블루투스를 지원하지 않는 기종입니다.", Toast.LENGTH_SHORT).show();
-            viewModel_home.setBluetoothStatus("지원하지 않음");
+            viewModel_home.setBluetoothStatus("블루투스 사용 불가능");
         } else {
             if (mBluetoothAdapter.isEnabled()) {
                 Toast.makeText(getApplicationContext(), "블루투스가 이미 활성화되어 있습니다", Toast.LENGTH_SHORT).show();
                 viewModel_home.setBluetoothStatus("블루투스 활성화");
             } else {
-                viewModel_home.setBluetoothStatus("블루투스 활성화 중");
                 checkPermission();
                 Intent intentBluetoothEnable = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
                 startActivityForResult(intentBluetoothEnable, BT_REQUEST_ENABLE);
@@ -266,14 +265,13 @@ public class MainActivity extends AppCompatActivity {
     public void BT_on_Legacy() {
         if (mBluetoothAdapter == null) {
             Toast.makeText(getApplicationContext(), "블루투스를 지원하지 않는 기종입니다", Toast.LENGTH_SHORT).show();
-            viewModel_home.setBluetoothStatus("지원하지 않음");
+            viewModel_home.setBluetoothStatus("블루투스 사용 불가능");
         } else {
             if (mBluetoothAdapter.isEnabled()) {
                 Toast.makeText(getApplicationContext(), "블루투스가 이미 활성화되어 있습니다", Toast.LENGTH_SHORT).show();
                 viewModel_home.setBluetoothStatus("블루투스 활성화");
             } else {
                 mBluetoothAdapter.enable();
-                viewModel_home.setBluetoothStatus("블루투스 활성화 중");
             }
         }
     }
@@ -283,15 +281,8 @@ public class MainActivity extends AppCompatActivity {
     public void BT_off() {
         if (mBluetoothAdapter.isEnabled()) {
             checkPermission();
-            // 안드로이드 정책 관리 변경으로 API 33이상부터 사용자의 퍼미션 없이 블루투스를 끄는 것이 불가능해짐
-            // 즉, 이전처럼 BluetoothAdapter.disable()을 사용할 수 없다는 것
-            // Intent를 통한 새로운 방식을 사용
             Intent intentBluetoothDisable = new Intent("android.bluetooth.adapter.action.REQUEST_DISABLE");
             startActivityForResult(intentBluetoothDisable, BT_REQUEST_DISABLE);
-            BLE_status = 0;
-            deviceName = null;
-            viewModel_info.setdeviceName("BLE: ");
-            stopRSSIMeasurement();          // RSSI 측정 중지
         } else {
             Toast.makeText(getApplicationContext(), "블루투스가 이미 비활성화되어 있습니다.", Toast.LENGTH_SHORT).show();
         }
@@ -311,28 +302,44 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    // 블루투스 활성화 시 동작 수행 메서드
+    // 블루투스 조작 및 오버레이 권한 요청시 동작 수행 메서드
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == BT_REQUEST_ENABLE) {         // 블루투스 활성화의 경우
             if (resultCode == RESULT_OK) {
-                Toast.makeText(getApplicationContext(), "블루투스 활성화", Toast.LENGTH_SHORT).show();
                 onAutoSearch = true;
+                viewModel_home.setBluetoothStatus("블루투스 활성화");
+                viewModel_home.setHomeText("캐리어에 연결되지 않음");
                 viewModel_home.setBtBtn("블루투스 끄기");
+                viewModel_home.setConnectBtn("연결");
+                Toast.makeText(getApplicationContext(), "블루투스 활성화", Toast.LENGTH_SHORT).show();
                 setUIColor();
             } else if (resultCode == RESULT_CANCELED) {
+                viewModel_home.setBluetoothStatus("블루투스 비활성화");
+                viewModel_home.setBtBtn("블루투스 켜기");
+                viewModel_home.setConnectBtn("연결 불가");
                 Toast.makeText(getApplicationContext(), "취소됨", Toast.LENGTH_SHORT).show();
             }
         } else if (requestCode == BT_REQUEST_DISABLE) {     // 블루투스 비활성화의 경우
             if (resultCode == RESULT_OK) {
-                Toast.makeText(getApplicationContext(), "블루투스 비활성화", Toast.LENGTH_SHORT).show();
                 viewModel_home.setBluetoothStatus("블루투스 비활성화");
                 viewModel_home.setHomeText("캐리어에 연결되지 않음");
                 viewModel_home.setBtBtn("블루투스 켜기");
+                viewModel_home.setConnectBtn("연결 불가");
                 onAutoSearch = false;
                 BLE_status = 0;
+                Toast.makeText(getApplicationContext(), "블루투스 비활성화", Toast.LENGTH_SHORT).show();
+
+                BLE_status = 0;
+                deviceName = null;
+                viewModel_info.setdeviceName("BLE: ");
+                stopRSSIMeasurement();          // RSSI 측정 중지
+
                 setUIColor();
             } else if (resultCode == RESULT_CANCELED) {
+                viewModel_home.setBluetoothStatus("블루투스 활성화");
+                viewModel_home.setBtBtn("블루투스 끄기");
+                viewModel_home.setConnectBtn("연결");
                 Toast.makeText(getApplicationContext(), "취소됨", Toast.LENGTH_SHORT).show();
             }
         }
@@ -539,7 +546,6 @@ public class MainActivity extends AppCompatActivity {
                 .setNegativeButton("취소", (dialog, which) -> {
                     isDialogShowing = false;
                     dialog.dismiss();
-                    Toast.makeText(getApplicationContext(), "취소되었습니다.", Toast.LENGTH_SHORT).show();
                     stopLeScan();
                     onAutoSearch = false;
                 })
@@ -646,15 +652,15 @@ public class MainActivity extends AppCompatActivity {
                         checkDialog = true;
                         reconnectHandler.removeCallbacks(reconnectRunnable);
                         createNotif("connect", "캐리어와 연결됨", "스마트 캐리어와 연결되었습니다!");
-                        window.setStatusBarColor(Color.parseColor("#3F51B5"));
-                        toolbar.setBackgroundColor(Color.parseColor("#3F51B5"));
+                        window.setStatusBarColor(ContextCompat.getColor(getApplicationContext(), R.color.indigo_500));
+                        toolbar.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.indigo_500));
                         viewModel_home.setConnectBtn("연결됨");
                         BLE_status = newState;
                     } else {        // 스마트 캐리어가 아닐때
                         viewModel_home.setHomeText("잘못된 디바이스에 연결됨");
                         Toast.makeText(getApplicationContext(), "연결된 디바이스는 스마트 캐리어가 아닙니다.", Toast.LENGTH_SHORT).show();
-                        window.setStatusBarColor(Color.parseColor("#4CAF50"));
-                        toolbar.setBackgroundColor(Color.parseColor("#4CAF50"));
+                        window.setStatusBarColor(ContextCompat.getColor(getApplicationContext(), R.color.green_500));
+                        toolbar.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.green_500));
                         BLE_status = -1;
                     }
                     deviceName = gatt.getDevice().getName();
@@ -665,6 +671,7 @@ public class MainActivity extends AppCompatActivity {
                 if (backDropMode) {
                     if (!bleAlreadyChecked) {
                         bleAlreadyChecked = true;
+                        security = false;
                         handler_RSSI.removeCallbacks(runnable_RSSI);
                         bluetoothGatt.disconnect();
                         runOnUiThread(() -> {
@@ -680,8 +687,8 @@ public class MainActivity extends AppCompatActivity {
                         viewModel_home.setHomeText("캐리어와 연결이 끊어졌습니다");
                         Toast.makeText(getApplicationContext(), "디바이스와의 연결이 끊어졌습니다", Toast.LENGTH_SHORT).show();
                         createNotif("disconnect", "캐리어와 연결 끊김", "스마트 캐리어와 연결이 끊겼습니다.");
-                        window.setStatusBarColor(Color.parseColor("#FF9800"));
-                        toolbar.setBackgroundColor(Color.parseColor("#FF9800"));
+                        window.setStatusBarColor(ContextCompat.getColor(getApplicationContext(), R.color.green_500));
+                        toolbar.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.green_500));
                         BLE_status = newState;
                         deviceName = null;
                         viewModel_info.setdeviceName("BLE: ");
@@ -807,7 +814,7 @@ public class MainActivity extends AppCompatActivity {
 
     // 배터리 정보를 확인하는 메서드
     public int checkBattery() {
-        if (writeCharacteristic != null) {
+        if (writeCharacteristic != null && checkBLE() == BluetoothGatt.STATE_CONNECTED) {
             // 데이터 초기화
             data = null;
             sendData("menu 4");
@@ -1026,14 +1033,14 @@ public class MainActivity extends AppCompatActivity {
     public void setUIColor() {
         runOnUiThread(() -> {
             if (BLE_status == BluetoothGatt.STATE_CONNECTED) {      // 페어링이 된 경우
-                window.setStatusBarColor(Color.parseColor("#3F51B5"));
-                toolbar.setBackgroundColor(Color.parseColor("#3F51B5"));
+                window.setStatusBarColor(ContextCompat.getColor(getApplicationContext(), R.color.indigo_500));
+                toolbar.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.indigo_500));
             } else if (mBluetoothAdapter.isEnabled()) {             // 블루투스가 켜져 있는 경우
-                window.setStatusBarColor(Color.parseColor("#4CAF50"));
-                toolbar.setBackgroundColor(Color.parseColor("#4CAF50"));
+                window.setStatusBarColor(ContextCompat.getColor(getApplicationContext(), R.color.green_500));
+                toolbar.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.green_500));
             } else if (!mBluetoothAdapter.isEnabled()) {            // 블루투스가 꺼져 있는 경우
-                window.setStatusBarColor(Color.parseColor("#FF9800"));
-                toolbar.setBackgroundColor(Color.parseColor("#FF9800"));
+                window.setStatusBarColor(ContextCompat.getColor(getApplicationContext(), R.color.orange_500));
+                toolbar.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.orange_500));
             }
         });
     }
@@ -1166,16 +1173,7 @@ public class MainActivity extends AppCompatActivity {
 
         Log.d("MainActivity", "MainActivity-onResume()");
 
-        if (BLE_status == BluetoothGatt.STATE_CONNECTED) {
-            window.setStatusBarColor(Color.parseColor("#3F51B5"));
-            toolbar.setBackgroundColor(Color.parseColor("#3F51B5"));
-        } else if (mBluetoothAdapter.isEnabled()) {
-            window.setStatusBarColor(Color.parseColor("#4CAF50"));
-            toolbar.setBackgroundColor(Color.parseColor("#4CAF50"));
-        } else if (!mBluetoothAdapter.isEnabled()) {
-            window.setStatusBarColor(Color.parseColor("#FF9800"));
-            toolbar.setBackgroundColor(Color.parseColor("#FF9800"));
-        }
+        setUIColor();
 
         startLeScan();
     }

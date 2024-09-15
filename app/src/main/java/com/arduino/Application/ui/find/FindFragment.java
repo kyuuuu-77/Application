@@ -2,7 +2,6 @@ package com.arduino.Application.ui.find;
 
 import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.SystemClock;
@@ -84,13 +83,13 @@ public class FindFragment extends Fragment {
         findViewModel.getAlertStatusLiveData().observe(getViewLifecycleOwner(), status -> alertStatus.setText(status));
         findViewModel.getDistanceLiveData().observe(getViewLifecycleOwner(), bag_distance -> {
             if (Objects.equals(bag_distance, "캐리어와 떨어져 있음")) {
-                distance.setTextColor(Color.parseColor("#F57C00"));
+                distance.setTextColor(ContextCompat.getColor(requireActivity(), R.color.orange_500));
             } else if (Objects.equals(bag_distance, "캐리어와 멂")) {
-                distance.setTextColor(Color.parseColor("#D32F2F"));
+                distance.setTextColor(ContextCompat.getColor(requireActivity(), R.color.red_500));
             } else if (Objects.equals(bag_distance, "캐리어와 매우 가까움")) {
-                distance.setTextColor(Color.parseColor("#1976D2"));
+                distance.setTextColor(ContextCompat.getColor(requireActivity(), R.color.blue_500));
             } else if (Objects.equals(bag_distance, "캐리어와 가까움")) {
-                distance.setTextColor(Color.parseColor("#388E3C"));
+                distance.setTextColor(ContextCompat.getColor(requireActivity(), R.color.green_500));
             } else {
                 distance.setTextColor(ContextCompat.getColor(requireActivity(), R.color.black));
             }

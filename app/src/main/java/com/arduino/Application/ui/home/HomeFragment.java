@@ -43,6 +43,8 @@ public class HomeFragment extends Fragment {
 
     Window window;
 
+    HomeViewModel homeViewModel;
+
     private BluetoothAdapter mBluetoothAdapter;
 
     private FragmentHomeBinding binding;
@@ -50,8 +52,7 @@ public class HomeFragment extends Fragment {
     @SuppressLint("SetTextI18n")
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        HomeViewModel homeViewModel =
-                new ViewModelProvider(requireActivity()).get(HomeViewModel.class);
+        homeViewModel = new ViewModelProvider(requireActivity()).get(HomeViewModel.class);
 
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
@@ -82,57 +83,64 @@ public class HomeFragment extends Fragment {
         // ViewModel 선언
         homeViewModel.getBluetoothStatusLiveData().observe(getViewLifecycleOwner(), bluetoothStatus -> mTvBT_Status.setText(bluetoothStatus));
         homeViewModel.getHomeTextLiveData().observe(getViewLifecycleOwner(), text -> homeText.setText(text));
-        homeViewModel.getBtBtnLiveData().observe(getViewLifecycleOwner(), text -> mBtnBT.setText(text));
+        homeViewModel.getBtBtnLiveData().observe(getViewLifecycleOwner(), text -> {
+            if (Objects.equals(text, "블루투스 사용불가")) {
+                mBtnBT.setBackground(Btn_red);
+                mBtnBT.setEnabled(false);
+            } else if (Objects.equals(text, "블루투스 켜기")) {      // 블루투스 켜기 버튼 구성
+                mBtnBT.setBackground(Btn_blue);
+            } else {        // 블루투스 끄기 버튼 구성
+                mBtnBT.setBackground(Btn_red);
+            }
+            mBtnBT.setText(text);
+        });
         homeViewModel.getconnectBtnLiveData().observe(getViewLifecycleOwner(), text -> {
-            connectText.setText(text);
-            if (Objects.equals(text, "연결됨")) {
+            if (Objects.equals(text, "연결됨")) {          // 블루투스 디바이스와 페어링 된 경우 (연결됨)
                 mBtnBT_Connect.setEnabled(false);
                 mBtnBT_Connect.setBackground(connect_fin);
+            } else if (Objects.equals(text, "연결")) {    // 블루투스가 켜져 있는 경우 (연결)
+                mBtnBT_Connect.setEnabled(true);
+                mBtnBT_Connect.setBackground(connect_blue);
+            } else {                                         // 블루투스가 꺼진 경우 (연결 불가)
+                mBtnBT_Connect.setEnabled(false);
+                mBtnBT_Connect.setBackground(connect_red);
             }
+            connectText.setText(text);
         });
 
         // 버튼 이벤트 리스너들
-        // 블루투스 버튼
+        // 블루투스 전원 버튼
         mBtnBT.setOnClickListener(view -> {
-            if (!mBluetoothAdapter.isEnabled()) {        // 블루투스가 꺼져있는 경우
+            if (!mBluetoothAdapter.isEnabled()) {        // 블루투스가 꺼져있는 경우 -> 켜기
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                     BT_on();
                     setUIColor();
-                    if (mBluetoothAdapter.isEnabled()) {
-                        mBtnBT.setBackground(Btn_red);
-                    } else {
-                        mBtnBT.setBackground(Btn_blue);
-                    }
+                    // 블루투스 전원 버튼 구성 필요 -> 메인 액티비티
                 } else {    // 레거시
                     BT_on_Legacy();
                     homeViewModel.setBtBtn("블루투스 끄기");
-                    mBtnBT.setBackground(Btn_red);
-                    mBtnBT_Connect.setEnabled(true);
-                    mBtnBT_Connect.setBackground(connect_blue);
+                    homeViewModel.setConnectBtn("연결");
                 }
-            } else {        // 블루투스가 켜져있는 경우
+            } else {        // 블루투스가 켜져있는 경우 -> 끄기
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                     BT_off();
                     setUIColor();
-                    if (!mBluetoothAdapter.isEnabled()) {
-                        mBtnBT.setBackground(Btn_blue);
-                    }
+                    // 블루투스 전원 버튼 구성 필요 -> 메인 액티비티
                 } else {    // 레거시
                     BT_off_Legacy();
                     homeViewModel.setBtBtn("블루투스 켜기");
-                    mBtnBT.setBackground(Btn_blue);
-                    mBtnBT_Connect.setEnabled(false);
-                    mBtnBT_Connect.setBackground(connect_red);
+                    homeViewModel.setConnectBtn("연결 불가");
                 }
             }
         });
 
-        // 연결 버튼
+        // 연결(페어링) 버튼
         mBtnBT_Connect.setOnClickListener(view -> listPairedDevices());
 
         return root;
     }
 
+    // 블루투스를 켜는 메서드
     @SuppressLint("NewApi")
     private void BT_on() {
         MainActivity mainActivity = (MainActivity) getActivity();
@@ -141,6 +149,7 @@ public class HomeFragment extends Fragment {
         }
     }
 
+    // 블루투스를 켜는 메서드 (레거시)
     private void BT_on_Legacy() {
         MainActivity mainActivity = (MainActivity) getActivity();
         if (mainActivity != null) {
@@ -148,6 +157,7 @@ public class HomeFragment extends Fragment {
         }
     }
 
+    // 블루투스를 끄는 메서드
     @SuppressLint("NewApi")
     private void BT_off() {
         MainActivity mainActivity = (MainActivity) getActivity();
@@ -156,6 +166,7 @@ public class HomeFragment extends Fragment {
         }
     }
 
+    // 블루투스를 끄는 메서드 (레거시)
     private void BT_off_Legacy() {
         MainActivity mainActivity = (MainActivity) getActivity();
         if (mainActivity != null) {
@@ -163,6 +174,7 @@ public class HomeFragment extends Fragment {
         }
     }
 
+    // 페어링 가능한 디바이스 리스트를 보여주는 메서드 -> 연결 수행
     @SuppressLint("NewApi")
     private void listPairedDevices() {
         MainActivity mainActivity = (MainActivity) getActivity();
@@ -171,6 +183,7 @@ public class HomeFragment extends Fragment {
         }
     }
 
+    // BLE 연결 상태를 확인하는 메서드
     private int checkBLE() {
         MainActivity mainActivity = (MainActivity) getActivity();
         if (mainActivity != null) {
@@ -180,6 +193,7 @@ public class HomeFragment extends Fragment {
         }
     }
 
+    // 상단바와 툴바의 색상을 변경하는 메서드
     private void setUIColor() {
         MainActivity mainActivity = (MainActivity) getActivity();
         if (mainActivity != null) {
@@ -191,35 +205,23 @@ public class HomeFragment extends Fragment {
         super.onResume();
         Log.d("Home Fragment", "Home Fragment-onResume()");
 
-        if (mBluetoothAdapter == null) {
-            mTvBT_Status.setText("블루투스 지원하지 않음");
-            mBtnBT.setEnabled(false);
-            mBtnBT.setText("블루투스 사용불가");
-            mBtnBT.setBackground(Btn_red);
-            mBtnBT_Connect.setEnabled(false);
-            mBtnBT_Connect.setBackground(connect_red);
+        if (mBluetoothAdapter == null) {        // 블루투스를 지원하지 않는 경우
+            homeViewModel.setBluetoothStatus("블루투스 사용 불가능");
+            homeViewModel.setBtBtn("블루투스 사용불가");
+            homeViewModel.setConnectBtn("연결 불가");
         } else {
             if (checkBLE() == 2) {     // 블루투스가 켜져 있고 페어링 까지 된 경우
-                mTvBT_Status.setText("블루투스 활성화");
-                mBtnBT.setText("블루투스 끄기");
-                mBtnBT.setBackground(Btn_red);
-                mBtnBT_Connect.setEnabled(false);
-                mBtnBT_Connect.setBackground(connect_fin);
-                connectText.setText("연결됨");
+                homeViewModel.setBluetoothStatus("블루투스 활성화");
+                homeViewModel.setBtBtn("블루투스 끄기");
+                homeViewModel.setConnectBtn("연결됨");
             } else if (mBluetoothAdapter.isEnabled()) {     // 블루투스가 켜져 있는 경우
-                mTvBT_Status.setText("블루투스 활성화");
-                mBtnBT.setText("블루투스 끄기");
-                mBtnBT.setBackground(Btn_red);
-                mBtnBT_Connect.setEnabled(true);
-                mBtnBT_Connect.setBackground(connect_blue);
-                connectText.setText("연결");
+                homeViewModel.setBluetoothStatus("블루투스 활성화");
+                homeViewModel.setBtBtn("블루투스 끄기");
+                homeViewModel.setConnectBtn("연결");
             } else {        // 블루투스가 꺼져 있는 경우
-                mTvBT_Status.setText("블루투스 비활성화");
-                mBtnBT.setText("블루투스 켜기");
-                mBtnBT.setBackground(Btn_blue);
-                mBtnBT_Connect.setEnabled(false);
-                mBtnBT_Connect.setBackground(connect_red);
-                connectText.setText("연결");
+                homeViewModel.setBluetoothStatus("블루투스 비활성화");
+                homeViewModel.setBtBtn("블루투스 켜기");
+                homeViewModel.setConnectBtn("연결 불가");
             }
         }
     }
