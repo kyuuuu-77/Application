@@ -111,8 +111,8 @@ public class FindFragment extends Fragment {
         // 버튼 이벤트 리스너
         // 도난방지 무시 버튼
         ignoreBtn.setOnClickListener(view -> {
-            Fragment_ignoreAlert();
-            Fragment_checkIgnore();
+            ignoreAlert();
+            checkIgnore();
         });
 
         // 벨 울리는 버튼
@@ -125,12 +125,12 @@ public class FindFragment extends Fragment {
         // 도난방지 버튼
         securityBtn.setOnClickListener(view -> {
             if (security) {     // 도난방지가 켜져있는 경우
-                Fragment_security_OFF();
+                security_OFF();
                 securityBtn.setText("도난방지 켜기");
                 securityBtn.setBackground(Btn_blue);
                 Toast.makeText(getActivity(), "도난방지를 사용하지 않습니다.", Toast.LENGTH_SHORT).show();
             } else {            // 도난방지가 꺼져있는 경우
-                Fragment_security_ON();
+                security_ON();
                 securityBtn.setText("도난방지 끄기");
                 securityBtn.setBackground(Btn_red);
                 Toast.makeText(getActivity(), "도난방지를 사용합니다.", Toast.LENGTH_SHORT).show();
@@ -168,7 +168,7 @@ public class FindFragment extends Fragment {
     }
 
     // BLE 연결 여부를 체크하는 메서드
-    private int Fragment_checkBLE() {
+    private int checkBLE() {
         MainActivity mainActivity = (MainActivity) getActivity();
         if (mainActivity != null) {
             return mainActivity.checkBLE();
@@ -178,7 +178,7 @@ public class FindFragment extends Fragment {
     }
 
     // 도난방지 여부를 체크하는 메서드
-    private void Fragment_checkSecurity() {
+    private void checkSecurity() {
         MainActivity mainActivity = (MainActivity) getActivity();
         if (mainActivity != null) {
             security = mainActivity.checkSecurity();
@@ -186,7 +186,7 @@ public class FindFragment extends Fragment {
     }
 
     // 도난방지를 켜는 메서드
-    private void Fragment_security_ON() {
+    private void security_ON() {
         MainActivity mainActivity = (MainActivity) getActivity();
         if (mainActivity != null) {
             security = mainActivity.security_ON();
@@ -194,7 +194,7 @@ public class FindFragment extends Fragment {
     }
 
     // 도난방지를 끄는 메서드
-    private void Fragment_security_OFF() {
+    private void security_OFF() {
         MainActivity mainActivity = (MainActivity) getActivity();
         if (mainActivity != null) {
             security = mainActivity.security_OFF();
@@ -202,7 +202,7 @@ public class FindFragment extends Fragment {
     }
 
     // 도난방지 경고 무시 설정 메서드
-    private void Fragment_ignoreAlert() {
+    private void ignoreAlert() {
         MainActivity mainActivity = (MainActivity) getActivity();
         if (mainActivity != null) {
             mainActivity.ignoreAlert();
@@ -210,7 +210,7 @@ public class FindFragment extends Fragment {
     }
 
     // 도난방지 무시 여부 체크 메서드
-    private void Fragment_checkIgnore() {
+    private void checkIgnore() {
         MainActivity mainActivity = (MainActivity) getActivity();
         if (mainActivity != null) {
             mainActivity.checkIgnore();
@@ -285,8 +285,8 @@ public class FindFragment extends Fragment {
         super.onResume();
         Log.d("Find Fragment", "Find Fragment-onResume()");
 
-        Fragment_checkSecurity();
-        Fragment_checkIgnore();
+        checkSecurity();
+        checkIgnore();
 
         if (!mBluetoothAdapter.isEnabled()) {
             showCustomDialog(1);
@@ -294,7 +294,7 @@ public class FindFragment extends Fragment {
             bellBtn.setBackground(find_red);
             securityBtn.setEnabled(false);
             securityBtn.setBackground(Btn_red);
-        } else if (Fragment_checkBLE() == 2) {
+        } else if (checkBLE() == 2) {
             bellBtn.setEnabled(true);
             bellBtn.setBackground(find_blue);
             securityBtn.setEnabled(true);

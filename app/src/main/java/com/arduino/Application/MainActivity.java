@@ -377,6 +377,7 @@ public class MainActivity extends AppCompatActivity {
             overlayBtnCheck.setOnClickListener(v -> {       // 확인을 누를 경우
                 if (Settings.canDrawOverlays(MainActivity.this)) {
                     Toast.makeText(this, "캐리어를 계속 확인합니다.", Toast.LENGTH_SHORT).show();
+                    ringBell(false);
                     removeOverlay();
                 } else {
                     checkOverlayPermission();
@@ -388,6 +389,7 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(this, "도난방지 경고를 무시합니다.", Toast.LENGTH_SHORT).show();
                     ignoreSecurity = true;
                     viewModel_find.setIgnoreText("무시");
+                    ringBell(false);
                     removeOverlay();
                 } else {
                     checkOverlayPermission();
@@ -762,6 +764,7 @@ public class MainActivity extends AppCompatActivity {
                         } else {
                             viewModel_find.setDistance("캐리어와 멂");
                             if (!ignoreSecurity) {
+                                ringBell(true);
                                 showOverlay();
                             }
                         }
@@ -777,6 +780,7 @@ public class MainActivity extends AppCompatActivity {
                         } else {
                             viewModel_find.setDistance("캐리어와 멂");
                             if (!ignoreSecurity) {
+                                ringBell(true);
                                 showOverlay();
                             }
                         }
@@ -1159,7 +1163,7 @@ public class MainActivity extends AppCompatActivity {
 
         Log.d("MainActivity", "MainActivity-onResume()");
 
-        if (BLE_status == BluetoothGatt.STATE_CONNECTED){
+        if (BLE_status == BluetoothGatt.STATE_CONNECTED) {
             window.setStatusBarColor(Color.parseColor("#3F51B5"));
             toolbar.setBackgroundColor(Color.parseColor("#3F51B5"));
         } else if (mBluetoothAdapter.isEnabled()) {
@@ -1169,6 +1173,7 @@ public class MainActivity extends AppCompatActivity {
             window.setStatusBarColor(Color.parseColor("#FF9800"));
             toolbar.setBackgroundColor(Color.parseColor("#FF9800"));
         }
+
         startLeScan();
     }
 

@@ -187,27 +187,6 @@ public class WeightFragment extends Fragment {
         }
     }
 
-    @SuppressLint("SetTextI18n")
-    public void onResume() {
-        super.onResume();
-        Log.d("Weight Fragment", "Weight Fragment-onResume()");
-
-        weight = checkWeightSetting();
-
-        if (!mBluetoothAdapter.isEnabled()) {
-            showCustomDialog(1);
-            mBtnWeight.setEnabled(false);
-            mBtnWeight.setBackground(Btn_red);
-        } else {
-            mBtnWeight.setEnabled(true);
-        }
-        if (weight[1] == 0) {
-            mBtnWeight.setEnabled(false);
-        }
-
-        updateWeight();
-    }
-
     // 커스텀 다이얼로그를 표시하는 메서드
     private void showCustomDialog(int status) {
         LayoutInflater inflater = LayoutInflater.from(getContext());
@@ -300,6 +279,25 @@ public class WeightFragment extends Fragment {
                 return true;
             });
         }
+    }
+
+    public void onResume() {
+        super.onResume();
+        Log.d("Weight Fragment", "Weight Fragment-onResume()");
+
+        weight = checkWeightSetting();
+
+        if (!mBluetoothAdapter.isEnabled()) {
+            showCustomDialog(1);
+            mBtnWeight.setEnabled(false);
+            mBtnWeight.setBackground(Btn_red);
+        } else {
+            mBtnWeight.setEnabled(true);
+        }
+        if (weight[1] == 0) {
+            mBtnWeight.setEnabled(false);
+        }
+        updateWeight();
     }
 
     @Override

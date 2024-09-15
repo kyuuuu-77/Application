@@ -96,15 +96,15 @@ public class HomeFragment extends Fragment {
         mBtnBT.setOnClickListener(view -> {
             if (!mBluetoothAdapter.isEnabled()) {        // 블루투스가 꺼져있는 경우
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                    Fragment_BT_on();
-                    Fragment_setUIColor();
+                    BT_on();
+                    setUIColor();
                     if (mBluetoothAdapter.isEnabled()) {
                         mBtnBT.setBackground(Btn_red);
                     } else {
                         mBtnBT.setBackground(Btn_blue);
                     }
                 } else {    // 레거시
-                    Fragment_BT_on_Legacy();
+                    BT_on_Legacy();
                     homeViewModel.setBtBtn("블루투스 끄기");
                     mBtnBT.setBackground(Btn_red);
                     mBtnBT_Connect.setEnabled(true);
@@ -112,13 +112,13 @@ public class HomeFragment extends Fragment {
                 }
             } else {        // 블루투스가 켜져있는 경우
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                    Fragment_BT_off();
-                    Fragment_setUIColor();
+                    BT_off();
+                    setUIColor();
                     if (!mBluetoothAdapter.isEnabled()) {
                         mBtnBT.setBackground(Btn_blue);
                     }
                 } else {    // 레거시
-                    Fragment_BT_off_Legacy();
+                    BT_off_Legacy();
                     homeViewModel.setBtBtn("블루투스 켜기");
                     mBtnBT.setBackground(Btn_blue);
                     mBtnBT_Connect.setEnabled(false);
@@ -128,9 +128,63 @@ public class HomeFragment extends Fragment {
         });
 
         // 연결 버튼
-        mBtnBT_Connect.setOnClickListener(view -> Fragment_listPairedDevices());
+        mBtnBT_Connect.setOnClickListener(view -> listPairedDevices());
 
         return root;
+    }
+
+    @SuppressLint("NewApi")
+    private void BT_on() {
+        MainActivity mainActivity = (MainActivity) getActivity();
+        if (mainActivity != null) {
+            mainActivity.BT_on();
+        }
+    }
+
+    private void BT_on_Legacy() {
+        MainActivity mainActivity = (MainActivity) getActivity();
+        if (mainActivity != null) {
+            mainActivity.BT_on_Legacy();
+        }
+    }
+
+    @SuppressLint("NewApi")
+    private void BT_off() {
+        MainActivity mainActivity = (MainActivity) getActivity();
+        if (mainActivity != null) {
+            mainActivity.BT_off();
+        }
+    }
+
+    private void BT_off_Legacy() {
+        MainActivity mainActivity = (MainActivity) getActivity();
+        if (mainActivity != null) {
+            mainActivity.BT_off_Legacy();
+        }
+    }
+
+    @SuppressLint("NewApi")
+    private void listPairedDevices() {
+        MainActivity mainActivity = (MainActivity) getActivity();
+        if (mainActivity != null) {
+            mainActivity.listPairedDevices();
+        }
+    }
+
+    private int checkBLE() {
+        MainActivity mainActivity = (MainActivity) getActivity();
+        if (mainActivity != null) {
+            return mainActivity.checkBLE();
+        } else {
+            return 0;
+        }
+    }
+
+    private void setUIColor() {
+        MainActivity mainActivity = (MainActivity) getActivity();
+        if (mainActivity != null) {
+            mainActivity.setUIColor();
+        }
     }
 
     public void onResume(){
@@ -145,7 +199,7 @@ public class HomeFragment extends Fragment {
             mBtnBT_Connect.setEnabled(false);
             mBtnBT_Connect.setBackground(connect_red);
         } else {
-            if (Fragment_checkBLE() == 2) {     // 블루투스가 켜져 있고 페어링 까지 된 경우
+            if (checkBLE() == 2) {     // 블루투스가 켜져 있고 페어링 까지 된 경우
                 mTvBT_Status.setText("블루투스 활성화");
                 mBtnBT.setText("블루투스 끄기");
                 mBtnBT.setBackground(Btn_red);
@@ -167,60 +221,6 @@ public class HomeFragment extends Fragment {
                 mBtnBT_Connect.setBackground(connect_red);
                 connectText.setText("연결");
             }
-        }
-    }
-
-    @SuppressLint("NewApi")
-    private void Fragment_BT_on() {
-        MainActivity mainActivity = (MainActivity) getActivity();
-        if (mainActivity != null) {
-            mainActivity.BT_on();
-        }
-    }
-
-    private void Fragment_BT_on_Legacy() {
-        MainActivity mainActivity = (MainActivity) getActivity();
-        if (mainActivity != null) {
-            mainActivity.BT_on_Legacy();
-        }
-    }
-
-    @SuppressLint("NewApi")
-    private void Fragment_BT_off() {
-        MainActivity mainActivity = (MainActivity) getActivity();
-        if (mainActivity != null) {
-            mainActivity.BT_off();
-        }
-    }
-
-    private void Fragment_BT_off_Legacy() {
-        MainActivity mainActivity = (MainActivity) getActivity();
-        if (mainActivity != null) {
-            mainActivity.BT_off_Legacy();
-        }
-    }
-
-    @SuppressLint("NewApi")
-    private void Fragment_listPairedDevices() {
-        MainActivity mainActivity = (MainActivity) getActivity();
-        if (mainActivity != null) {
-            mainActivity.listPairedDevices();
-        }
-    }
-
-    private int Fragment_checkBLE() {
-        MainActivity mainActivity = (MainActivity) getActivity();
-        if (mainActivity != null) {
-            return mainActivity.checkBLE();
-        } else {
-            return 0;
-        }
-    }
-
-    private void Fragment_setUIColor() {
-        MainActivity mainActivity = (MainActivity) getActivity();
-        if (mainActivity != null) {
-            mainActivity.setUIColor();
         }
     }
 
