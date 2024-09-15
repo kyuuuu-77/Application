@@ -49,7 +49,6 @@ public class HomeFragment extends Fragment {
 
     private FragmentHomeBinding binding;
 
-    @SuppressLint("SetTextI18n")
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         homeViewModel = new ViewModelProvider(requireActivity()).get(HomeViewModel.class);
@@ -115,7 +114,6 @@ public class HomeFragment extends Fragment {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                     BT_on();
                     setUIColor();
-                    // 블루투스 전원 버튼 구성 필요 -> 메인 액티비티
                 } else {    // 레거시
                     BT_on_Legacy();
                     homeViewModel.setBtBtn("블루투스 끄기");
@@ -125,7 +123,6 @@ public class HomeFragment extends Fragment {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                     BT_off();
                     setUIColor();
-                    // 블루투스 전원 버튼 구성 필요 -> 메인 액티비티
                 } else {    // 레거시
                     BT_off_Legacy();
                     homeViewModel.setBtBtn("블루투스 켜기");

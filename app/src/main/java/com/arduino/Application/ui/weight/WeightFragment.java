@@ -122,7 +122,6 @@ public class WeightFragment extends Fragment {
         return root;
     }
 
-    @SuppressLint("SetTextI18n")
     private void measureWeight() {
         MainActivity mainActivity = (MainActivity) getActivity();
         double maxSet = weight[1];

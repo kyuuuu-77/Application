@@ -10,8 +10,9 @@ public class FindViewModel extends ViewModel {
     private final MutableLiveData<String> alertTextLiveData = new MutableLiveData<>();
     private final MutableLiveData<String> alertStatusLiveData = new MutableLiveData<>();
     private final MutableLiveData<String> distanceLiveData = new MutableLiveData<>();
+    private final MutableLiveData<String> alertBtnTextLiveData = new MutableLiveData<>();
 
-    // 무시 텍스트
+    // 알림 버튼 텍스트
     public LiveData<String> getIgnoreTextLiveData() {
         return ignoreTextLiveData;
     }
@@ -41,6 +42,14 @@ public class FindViewModel extends ViewModel {
     }
     public void setDistance(String bag_distance) {
         distanceLiveData.setValue(bag_distance);
+    }
+
+    // 도난방지 버튼 텍스트
+    public LiveData<String> getAlertBtntextLiveData() {
+        return alertBtnTextLiveData;
+    }
+    public void setAlertBtnText(String btnText) {
+        alertBtnTextLiveData.setValue(btnText);
     }
 
 }

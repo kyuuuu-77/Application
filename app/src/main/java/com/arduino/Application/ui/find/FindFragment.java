@@ -44,6 +44,8 @@ public class FindFragment extends Fragment {
     Drawable ignore_blue;
     Drawable ignore_red;
 
+    FindViewModel findViewModel;
+
     private boolean security = false;       // security
 
     private BluetoothAdapter mBluetoothAdapter;
@@ -52,8 +54,7 @@ public class FindFragment extends Fragment {
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        FindViewModel findViewModel =
-                new ViewModelProvider(requireActivity()).get(FindViewModel.class);
+        findViewModel = new ViewModelProvider(requireActivity()).get(FindViewModel.class);
 
         binding = FragmentFindBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
@@ -103,6 +104,17 @@ public class FindFragment extends Fragment {
             }
             textIgnore.setText(ignore);
         });
+        findViewModel.getAlertBtntextLiveData().observe(getViewLifecycleOwner(), btnText -> {
+            if (Objects.equals(btnText, "도난방지 사용불가")) {
+                securityBtn.setBackground(Btn_red);
+                securityBtn.setEnabled(false);
+            } else if (Objects.equals(btnText, "도난방지 켜기")) {       // 도난방지 켜기
+                securityBtn.setBackground(Btn_blue);
+            } else {        // 도난방지 끄기
+                securityBtn.setBackground(Btn_red);
+            }
+            securityBtn.setText(btnText);
+        });
 
         // 블루투스 어뎁터 초기화
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -116,7 +128,7 @@ public class FindFragment extends Fragment {
 
         // 벨 울리는 버튼
         bellBtn.setOnClickListener(view -> {
-            textAlert.setText("벨 울리기 시도중...");
+            findViewModel.setAlertText("벨 울리기 시도중...");
             Toast.makeText(getActivity(), "벨 울리기 시도중...", Toast.LENGTH_SHORT).show();
             ringBell(true);
         });
@@ -125,13 +137,11 @@ public class FindFragment extends Fragment {
         securityBtn.setOnClickListener(view -> {
             if (security) {     // 도난방지가 켜져있는 경우
                 security_OFF();
-                securityBtn.setText("도난방지 켜기");
-                securityBtn.setBackground(Btn_blue);
+                findViewModel.setAlertBtnText("도난방지 켜기");
                 Toast.makeText(getActivity(), "도난방지를 사용하지 않습니다.", Toast.LENGTH_SHORT).show();
             } else {            // 도난방지가 꺼져있는 경우
                 security_ON();
-                securityBtn.setText("도난방지 끄기");
-                securityBtn.setBackground(Btn_red);
+                findViewModel.setAlertBtnText("도난방지 끄기");
                 Toast.makeText(getActivity(), "도난방지를 사용합니다.", Toast.LENGTH_SHORT).show();
             }
         });
@@ -147,10 +157,8 @@ public class FindFragment extends Fragment {
                 int status = mainActivity.ringBell(true);
                 if (status == 1) {  // 벨 울리기 성공한 경우
                     showCustomDialog(3);
-                    Toast.makeText(getActivity(), "벨을 울리고 있습니다.", Toast.LENGTH_SHORT).show();
                 } else {    // 벨 울리기 실패한 경우
                     showCustomDialog(2);
-                    Toast.makeText(getActivity(), "벨을 울리지 못했습니다.", Toast.LENGTH_SHORT).show();
                 }
             } else {    // 벨 울리기 멈춤
                 while (true) {
@@ -272,7 +280,10 @@ public class FindFragment extends Fragment {
         dialog.setCancelable(false);
         dialog.show();
 
-        retryBtn.setOnClickListener(v -> dialog.dismiss());
+        retryBtn.setOnClickListener(v -> {
+            ringBell(true);
+            dialog.dismiss();
+        });
         checkBtn.setOnClickListener(v -> {
             ringBell(false);
             dialog.dismiss();
@@ -291,25 +302,21 @@ public class FindFragment extends Fragment {
             showCustomDialog(1);
             bellBtn.setEnabled(false);
             bellBtn.setBackground(find_red);
-            securityBtn.setEnabled(false);
-            securityBtn.setBackground(Btn_red);
+            findViewModel.setAlertBtnText("도난방지 사용불가");
         } else if (checkBLE() == 2) {
             bellBtn.setEnabled(true);
             bellBtn.setBackground(find_blue);
             securityBtn.setEnabled(true);
             if (security) {     // 도난방지가 켜져있는 경우
-                securityBtn.setText("도난방지 끄기");
-                securityBtn.setBackground(Btn_red);
+                findViewModel.setAlertBtnText("도난방지 끄기");
             } else {            // 도난방지가 꺼져있는 경우
-                securityBtn.setText("도난방지 켜기");
-                securityBtn.setBackground(Btn_blue);
+                findViewModel.setAlertBtnText("도난방지 켜기");
             }
         } else {
             showCustomDialog(0);
             bellBtn.setEnabled(false);
             bellBtn.setBackground(find_red);
-            securityBtn.setEnabled(false);
-            securityBtn.setBackground(Btn_red);
+            findViewModel.setAlertBtnText("도난방지 사용불가");
         }
     }
 
