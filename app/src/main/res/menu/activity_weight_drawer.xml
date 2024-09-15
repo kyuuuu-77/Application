@@ -12,9 +12,9 @@
             android:title="@string/checked_baggage" />
     </group>
 
-    <!-- 무게 옵션 (기본적으로 숨김) -->
+    <!-- 기내 수하물 무게 선택 -->
     <group
-        android:id="@+id/weight_group"
+        android:id="@+id/weight_group_carryon"
         android:checkableBehavior="single"
         android:visible="false">
         <item
@@ -26,6 +26,13 @@
         <item
             android:id="@+id/weight_10"
             android:title="@string/weight_10" />
+    </group>
+
+    <!-- 위탁 수하물 무게 선택 -->
+    <group
+        android:id="@+id/weight_group_checked"
+        android:checkableBehavior="single"
+        android:visible="false">
         <item
             android:id="@+id/weight_15"
             android:title="@string/weight_15" />

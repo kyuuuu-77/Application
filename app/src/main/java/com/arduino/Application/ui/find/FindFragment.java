@@ -119,7 +119,7 @@ public class FindFragment extends Fragment {
         bellBtn.setOnClickListener(view -> {
             textAlert.setText("벨 울리기 시도중...");
             Toast.makeText(getActivity(), "벨 울리기 시도중...", Toast.LENGTH_SHORT).show();
-            ringBell(1);
+            ringBell(true);
         });
 
         // 도난방지 버튼
@@ -141,11 +141,11 @@ public class FindFragment extends Fragment {
     }
 
     // 벨을 울리는 메서드
-    private void ringBell(int onOff) {
+    private void ringBell(boolean onOff) {
         MainActivity mainActivity = (MainActivity) getActivity();
         if (mainActivity != null) {
-            if (onOff == 1) {   // 벨 울리기 동작
-                int status = mainActivity.ringBell();
+            if (onOff) {   // 벨 울리기 동작
+                int status = mainActivity.ringBell(true);
                 if (status == 1) {  // 벨 울리기 성공한 경우
                     showCustomDialog(3);
                     Toast.makeText(getActivity(), "벨을 울리고 있습니다.", Toast.LENGTH_SHORT).show();
@@ -153,9 +153,9 @@ public class FindFragment extends Fragment {
                     showCustomDialog(2);
                     Toast.makeText(getActivity(), "벨을 울리지 못했습니다.", Toast.LENGTH_SHORT).show();
                 }
-            } else if (onOff == 0) {    // 벨 울리기 멈춤
+            } else {    // 벨 울리기 멈춤
                 while (true) {
-                    int status = mainActivity.ringBell();
+                    int status = mainActivity.ringBell(false);
                     if (status != 2) {
                         SystemClock.sleep(5000);
                         Toast.makeText(getActivity(), "벨 중지에 실패했습니다. 5초후에 다시 시도합니다.", Toast.LENGTH_SHORT).show();
@@ -275,7 +275,7 @@ public class FindFragment extends Fragment {
 
         retryBtn.setOnClickListener(v -> dialog.dismiss());
         checkBtn.setOnClickListener(v -> {
-            ringBell(0);
+            ringBell(false);
             dialog.dismiss();
         });
         cancelBtn.setOnClickListener(v -> dialog.dismiss());

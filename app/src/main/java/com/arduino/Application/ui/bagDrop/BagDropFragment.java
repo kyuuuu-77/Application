@@ -34,10 +34,12 @@ import java.util.Objects;
 public class BagDropFragment extends Fragment {
 
     // 리니어 레이아웃, 텍스트 뷰, 이미지 뷰, 아이콘, 버튼, Drawable 초기화
+    LinearLayout linearRemain;
     LinearLayout linearConnect;
     LinearLayout linearWeight;
     LinearLayout linearTime;
 
+    TextView remainTime;
     TextView bagDropText;
     TextView checkConnect;
     TextView checkWeight;
@@ -71,10 +73,12 @@ public class BagDropFragment extends Fragment {
         Log.d("BagDrop Fragment", "BagDrop Fragment-onCreatedView()");
 
         // 리니어 레이아웃, 텍스트 뷰, 이미지 뷰, 아이콘, 버튼, Drawable 선언
+        linearRemain = root.findViewById(R.id.remain_time);
         linearConnect = root.findViewById(R.id.linear_connect);
         linearWeight = root.findViewById(R.id.linear_weight);
         linearTime = root.findViewById(R.id.linear_time);
 
+        remainTime = root.findViewById(R.id.time_left);
         bagDropText = root.findViewById(R.id.textBagDrop);
         checkConnect = root.findViewById(R.id.checkConnect);
         checkWeight = root.findViewById(R.id.checkWeight);
@@ -93,6 +97,15 @@ public class BagDropFragment extends Fragment {
         Btn_red = ContextCompat.getDrawable(requireContext(), R.drawable.button_round_off);
 
         // ViewModel 선언
+        bagDropViewModel.getRemainTimeTextLiveData().observe(getViewLifecycleOwner(), time -> {
+            if (Objects.equals(time, "null")) {
+                linearRemain.setVisibility(View.INVISIBLE);
+                checkBagDrop();
+            } else {
+                linearRemain.setVisibility(View.VISIBLE);
+                remainTime.setText(time);
+            }
+        });
         bagDropViewModel.getBagDropTextLiveData().observe(getViewLifecycleOwner(), text -> {
             if (Objects.equals(text, "백드랍 활성화")) {
                 bagDropText.setTextColor(Color.parseColor("#3F51B5"));
@@ -126,6 +139,7 @@ public class BagDropFragment extends Fragment {
                 bagDropViewModel.setBagDropBtnText("백드랍 모드 시작");
                 bagDropViewModel.setBagDropText("백드랍 비활성화");
                 Toast.makeText(getActivity(), "백드랍 모드가 중지됩니다.", Toast.LENGTH_SHORT).show();
+                linearRemain.setVisibility(View.INVISIBLE);
             } else {                // 백드랍 모드 꺼짐 -> 켜짐
                 setBagDrop(true);
                 bagDropViewModel.setBagDropBtnText("백드랍 모드 중지");
@@ -133,6 +147,12 @@ public class BagDropFragment extends Fragment {
                 Toast.makeText(getActivity(), "백드랍 모드가 시작됩니다!", Toast.LENGTH_SHORT).show();
             }
         });
+
+        if (!bagDropMode) {
+            linearRemain.setVisibility(View.INVISIBLE);
+        } else {
+            linearRemain.setVisibility(View.VISIBLE);
+        }
         return root;
     }
 

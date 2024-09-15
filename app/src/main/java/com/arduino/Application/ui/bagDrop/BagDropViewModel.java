@@ -6,11 +6,20 @@ import androidx.lifecycle.ViewModel;
 
 public class BagDropViewModel extends ViewModel {
 
+    private final MutableLiveData<String> remainTimeTextLiveData = new MutableLiveData<>();
     private final MutableLiveData<String> bagDropTextLiveData = new MutableLiveData<>();
     private final MutableLiveData<String> connectTextLiveData = new MutableLiveData<>();
     private final MutableLiveData<String> weightTextLiveData = new MutableLiveData<>();
     private final MutableLiveData<String> timeTextLiveData = new MutableLiveData<>();
     private final MutableLiveData<String> bagDropBtnTextLiveData = new MutableLiveData<>();
+
+    // 남은 시간 텍스트
+    public LiveData<String> getRemainTimeTextLiveData() {
+        return remainTimeTextLiveData;
+    }
+    public void setRemainTimeText(String time) {
+        remainTimeTextLiveData.setValue(time);
+    }
 
     // 백드랍 모드 활성화 여부 텍스트
     public LiveData<String> getBagDropTextLiveData() {

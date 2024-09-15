@@ -133,6 +133,7 @@ public class MainActivity extends AppCompatActivity {
     // 윈도우 및 툴바 관련 변수
     Window window;
     Toolbar toolbar;
+    Menu appMenu;
 
     // 오버레이
     private static final int REQUEST_OVERLAY_PERMISSION = 1;
@@ -166,6 +167,8 @@ public class MainActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
+
+        appMenu = navigationView.getMenu();
 
         // 필요 퍼미션 리스트 배열
         String[] permission_list = {
@@ -541,6 +544,27 @@ public class MainActivity extends AppCompatActivity {
                 .setCancelable(false).show();
     }
 
+    // 백드랍 모드의 다이얼로그 메서드
+    private void showBagDropDialog() {
+        ringBell(true);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("캐리어가 근처에 있습니다!")
+                .setMessage("캐리어에 벨이 울리고 있습니다.\n캐리어를 육안으로 확인한 후 확인 버튼을 누르세요.")
+                .setPositiveButton("확인", (dialog, which) -> {
+                    ringBell(false);
+                    runOnUiThread(() -> {
+                        viewModel_home.setHomeText("스마트 캐리어에 연결됨");
+                        backDropMode = false;
+                        viewModel_bagDrop.setBagDropText("백드랍 비활성화");
+                        viewModel_bagDrop.setBagDropBtnText("백드랍 모드 시작");
+                        viewModel_bagDrop.setRemainTimeText("null");
+                        createNotif("bagdrop", "백드랍 모드 종료", "스마트 캐리어와 연결되었습니다!\n이제 백드랍 모드를 종료합니다.");
+                        Toast.makeText(MainActivity.this, "캐리어와 다시 연결되었으므로 백드랍 모드를 종료합니다.", Toast.LENGTH_SHORT).show();
+                    });
+                })
+                .setCancelable(false).show();
+    }
+
     // Handler로 1초마다 RSSI 측정하는 Handler와 Runnable
     private final Handler handler_RSSI = new Handler();
     private final Runnable runnable_RSSI = new Runnable() {
@@ -607,14 +631,12 @@ public class MainActivity extends AppCompatActivity {
                 }
                 runOnUiThread(() -> {
                     if (backDropMode) {     // 백드롭 모드일 때
-                        bleAlreadyChecked = false;
-                        viewModel_home.setHomeText("스마트 캐리어에 연결됨");
-                        Toast.makeText(getApplicationContext(), "스마트 캐리어에 다시 연결됨", Toast.LENGTH_SHORT).show();
                         bagDropHandler.removeCallbacks(bagDropRunnable);
-                        backDropMode = false;
-                        viewModel_bagDrop.setBagDropText("백드랍 비활성화");
-                        viewModel_bagDrop.setBagDropBtnText("백드랍 모드 시작");
-                        Toast.makeText(MainActivity.this, "캐리어와 다시 연결되었으므로 백드랍 모드를 종료합니다.", Toast.LENGTH_SHORT).show();
+                        appMenu.findItem(R.id.nav_find).setEnabled(true);
+                        appMenu.findItem(R.id.nav_weight).setEnabled(true);
+                        appMenu.findItem(R.id.nav_info).setEnabled(true);
+                        bleAlreadyChecked = false;
+                        showBagDropDialog();
                     } else if (isSuitcase){        // 스마트 캐리어일 때
                         viewModel_home.setHomeText("스마트 캐리어에 연결됨");
                         Toast.makeText(getApplicationContext(), "스마트 캐리어에 연결됨", Toast.LENGTH_SHORT).show();
@@ -918,9 +940,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // 벨 울리는 메서드
-    public int ringBell() {
+    public int ringBell(boolean onOff) {
         if (writeCharacteristic != null) {      // 통신이 가능할 때
-            if (data == null | !Objects.equals(data, "ring_suc")) {      // 벨 울리기를 해제할 때
+            if (onOff) {      // 벨 울리기 시작
                 // 데이터 값 초기화
                 data = null;
                 sendData("menu 1");
@@ -964,16 +986,16 @@ public class MainActivity extends AppCompatActivity {
 
     // 연결 상태를 전달하는 메서드
     public int checkConnection() {
-        if (mBluetoothAdapter == null){
+        if (mBluetoothAdapter == null) {        // 블루투스를 지원하지 않는 디바이스
             viewModel_info.setInfoText("블루투스를 지원 X");
             return -2;
-        } else if (!mBluetoothAdapter.isEnabled()){     // 블루투스가 꺼져 있음
+        } else if (!mBluetoothAdapter.isEnabled()) {     // 블루투스가 꺼져 있음
             viewModel_info.setInfoText("블루투스가 꺼짐");
             return -1;
         } else if (bluetoothGatt == null) {     // 캐리어에 연결되어 있지 않음
             viewModel_info.setInfoText("연결되지 않음");
             return 0;
-        } else if (writeCharacteristic == null || readCharacteristic == null){      // 연결이 되어 있으나 송수신 불가
+        } else if (writeCharacteristic == null || readCharacteristic == null) {      // 연결이 되어 있으나 송수신 불가
             viewModel_info.setInfoText("송수신 불가능");
             return 1;
         } else {    // 캐리어에 연결되어 있음 <- 수정 필요
@@ -993,7 +1015,7 @@ public class MainActivity extends AppCompatActivity {
 
     // 무게 설정을 전달하는 메서드
     public double[] checkWeightSetting() {
-        return weight;  // weight, set
+        return weight;      // weight, set
     }
 
     // 상단바와 툴바의 색상을 변경하는 메서드
@@ -1048,9 +1070,15 @@ public class MainActivity extends AppCompatActivity {
             }
             bluetoothGatt.disconnect();     // 블루투스 연결을 끊고
             bagDropHandler.postDelayed(bagDropRunnable, 10000);     // 핸들러로 동작
+            appMenu.findItem(R.id.nav_find).setEnabled(false);
+            appMenu.findItem(R.id.nav_weight).setEnabled(false);
+            appMenu.findItem(R.id.nav_info).setEnabled(false);
         } else {
             bluetoothGatt.connect();
             bagDropHandler.removeCallbacks(bagDropRunnable);
+            appMenu.findItem(R.id.nav_find).setEnabled(true);
+            appMenu.findItem(R.id.nav_weight).setEnabled(true);
+            appMenu.findItem(R.id.nav_info).setEnabled(true);
         }
     }
 
@@ -1070,9 +1098,16 @@ public class MainActivity extends AppCompatActivity {
             int remain;
 
             if (currentTime > setTime) {        // 혹시나 도착이 다음날이면 -> 도착 0:05 , 현재 17:50
-                remain = currentTime - setTime + 1440;
+                remain = setTime + 1440 - currentTime;
             } else {
                 remain = setTime - currentTime;
+            }
+
+            if (remain/60 > 0) {
+                viewModel_bagDrop.setRemainTimeText(remain/60 + "시간 " + remain%60 + "분");
+
+            } else {
+                viewModel_bagDrop.setRemainTimeText(remain%60 + "분");
             }
 
             if (remain <= 10) {
@@ -1108,9 +1143,8 @@ public class MainActivity extends AppCompatActivity {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), channel_id)
                 .setSmallIcon(R.drawable.splash)
                 .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.splash))
-                .setStyle(new NotificationCompat.BigPictureStyle()
-                        .setBigContentTitle(big)
-                        .setSummaryText(summary));
+                .setContentTitle(big).setContentText(summary).setStyle(new NotificationCompat.BigTextStyle().bigText(summary))
+                .setPriority(NotificationCompat.PRIORITY_HIGH);
         builder.setContentIntent(contentIntent);
         NotificationManagerCompat m = NotificationManagerCompat.from(getApplicationContext());
 

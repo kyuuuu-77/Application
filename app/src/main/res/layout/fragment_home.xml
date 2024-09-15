@@ -52,7 +52,7 @@
 
     <TextView
         android:id="@+id/BT_Status"
-        android:layout_width="170dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:backgroundTint="#319EF2"
         android:text="@string/BT_status"
@@ -71,8 +71,10 @@
         android:layout_height="wrap_content"
         android:backgroundTint="#319EF2"
         android:textAlignment="center"
-        android:textSize="22sp"
+        android:textSize="25sp"
         android:text="@string/homeText"
+        android:textStyle="bold"
+        android:textColor="@color/black"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"

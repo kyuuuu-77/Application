@@ -272,7 +272,13 @@ public class WeightFragment extends Fragment {
                 Menu menu = navigationView.getMenu();
 
                  if (itemId == R.id.carryon_baggage || itemId == R.id.checked_baggage) {
-                    menu.setGroupVisible(R.id.weight_group, true);
+                     if (itemId == R.id.carryon_baggage) {      // 기내 수하물을 선택한 경우
+                         menu.setGroupVisible(R.id.weight_group_carryon, true);
+                         menu.setGroupVisible(R.id.weight_group_checked, false);
+                     } else {       // 위탁 수하물을 선택한 경우
+                         menu.setGroupVisible(R.id.weight_group_carryon, false);
+                         menu.setGroupVisible(R.id.weight_group_checked, true);
+                     }
 
                     if (lastCheckedBaggage != null) {
                         lastCheckedBaggage.setChecked(false);
