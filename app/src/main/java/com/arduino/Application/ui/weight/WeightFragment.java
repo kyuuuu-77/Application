@@ -304,7 +304,7 @@ public class WeightFragment extends Fragment {
                     }
                     item.setChecked(true);
                     lastCheckedBaggage = item;
-                } else if (itemId == R.id.weight_5||itemId == R.id.weight_7 || itemId == R.id.weight_10 ||
+                } else if (itemId == R.id.weight_5 ||itemId == R.id.weight_7 || itemId == R.id.weight_10 ||
                         itemId == R.id.weight_15 ||itemId == R.id.weight_20 || itemId == R.id.weight_23 ||
                         itemId == R.id.weight_32) {
                      weightViewModel.setWeightSet((String) item.getTitle());

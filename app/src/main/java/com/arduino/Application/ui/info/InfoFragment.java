@@ -130,7 +130,7 @@ public class InfoFragment extends Fragment {
         // 버튼 이벤트 리스너
         // 설정 초기화 버튼
         mBtn_charge.setOnClickListener(view -> {
-            // 자동 검색, 도난방지, 도난방지 무시, 무게설정 초기화
+            // 자동 검색, 도난방지, 도난방지 무시, 무게설정, 도착 시각 초기화
             resetSettings();
             checkAll();
             Toast.makeText(getActivity(), "설정 초기화 완료!", Toast.LENGTH_SHORT).show();
