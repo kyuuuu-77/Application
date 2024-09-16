@@ -142,23 +142,8 @@ public class InfoFragment extends Fragment {
     // 배터리 상태를 확인하는 메서드
     private void checkBattery() {
         MainActivity mainActivity = (MainActivity) getActivity();
-        int battery_data = -1;
         if (mainActivity != null) {
-            battery_data = mainActivity.checkBattery();
-        }
-        switch (battery_data) {
-            case 0:     // 방전중일 경우
-                infoViewModel.setBatteryText("정상");
-                break;
-            case 1:     // 충전중일 경우
-                infoViewModel.setBatteryText("충전중");
-                break;
-            case 2:     // 완충된 경우
-                infoViewModel.setBatteryText("충전됨");
-                break;
-            default:    // 정보 취득에 실패한 경우
-                infoViewModel.setBatteryText("정보없음");
-                break;
+            mainActivity.checkBattery();
         }
     }
 

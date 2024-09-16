@@ -879,7 +879,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // 배터리 정보를 확인하는 메서드
-    public int checkBattery() {
+    public void checkBattery() {
         if (writeCharacteristic != null && checkBLE() == BluetoothGatt.STATE_CONNECTED) {
             // 데이터 초기화
             data = null;
@@ -887,17 +887,33 @@ public class MainActivity extends AppCompatActivity {
 
             checkData();
 
-            // 배터리 정보를 받지 못했으면
-            if (data == null) {
-                Toast.makeText(getApplicationContext(), "배터리 정보 취득 실패", Toast.LENGTH_SHORT).show();
-                return -1;
-            } else {
-                return Integer.parseInt(data.trim());
-            }
-
+            runOnUiThread(() -> {
+                // 배터리 정보를 받지 못했으면
+                if (data == null) {
+                    viewModel_info.setBatteryText("정보없음");
+                    Toast.makeText(getApplicationContext(), "배터리 정보 취득 실패", Toast.LENGTH_SHORT).show();
+                } else {
+                    switch (Integer.parseInt(data.trim())) {
+                        case 0:     // 방전중일 경우
+                            viewModel_info.setBatteryText("정상");
+                            break;
+                        case 1:     // 충전중일 경우
+                            viewModel_info.setBatteryText("충전중");
+                            break;
+                        case 2:     // 완충된 경우
+                            viewModel_info.setBatteryText("충전됨");
+                            break;
+                        default:    // 정보 취득에 실패한 경우
+                            viewModel_info.setBatteryText("정보없음");
+                            break;
+                    }
+                }
+            });
         } else {
-            Toast.makeText(getApplicationContext(), "배터리 정보 취득 실패", Toast.LENGTH_SHORT).show();
-            return -1;
+            runOnUiThread(() -> {
+                viewModel_info.setBatteryText("정보없음");
+                Toast.makeText(getApplicationContext(), "배터리 정보 취득 실패", Toast.LENGTH_SHORT).show();
+            });
         }
     }
 
@@ -973,6 +989,7 @@ public class MainActivity extends AppCompatActivity {
         checkSecurity();
 
         security = true;
+        createNotif("security", "도난방지 동작", "도난방지 모드가 동작합니다.\n캐리어와 멀어지는 경우 알림을 받을 수 있습니다.");
         Toast.makeText(getApplicationContext(), "도난방지가 켜졌습니다.", Toast.LENGTH_SHORT).show();
         return security;
     }
@@ -982,6 +999,7 @@ public class MainActivity extends AppCompatActivity {
         checkSecurity();
 
         security = false;
+        createNotif("security", "도난방지 동작 안함", "도난방지 모드가 동작하지 않습니다.\n캐리어와 멀어지는 경우 알림을 받을 수 없습니다.");
         Toast.makeText(getApplicationContext(), "도난방지가 꺼졌습니다.", Toast.LENGTH_SHORT).show();
         return security;
     }
