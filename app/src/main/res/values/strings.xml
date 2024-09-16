@@ -9,7 +9,7 @@
     <string name="action_appInfo">앱 정보</string>
     <string name="splash_name">Suitcase Genie</string>
     <string name="weight_popup">Notification</string>
-    <string name="app_version">v2024.09.03/12</string>
+    <string name="app_version">v2024.09.16/16</string>
 
     <!-- 네비게이션 바 -->
     <string name="menu_home">메인 화면</string>

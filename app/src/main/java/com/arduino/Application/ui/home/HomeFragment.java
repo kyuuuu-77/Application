@@ -113,20 +113,14 @@ public class HomeFragment extends Fragment {
             if (!mBluetoothAdapter.isEnabled()) {        // 블루투스가 꺼져있는 경우 -> 켜기
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                     BT_on();
-                    setUIColor();
                 } else {    // 레거시
                     BT_on_Legacy();
-                    homeViewModel.setBtBtn("블루투스 끄기");
-                    homeViewModel.setConnectBtn("연결");
                 }
             } else {        // 블루투스가 켜져있는 경우 -> 끄기
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                     BT_off();
-                    setUIColor();
                 } else {    // 레거시
                     BT_off_Legacy();
-                    homeViewModel.setBtBtn("블루투스 켜기");
-                    homeViewModel.setConnectBtn("연결 불가");
                 }
             }
         });
@@ -187,14 +181,6 @@ public class HomeFragment extends Fragment {
             return mainActivity.checkBLE();
         } else {
             return 0;
-        }
-    }
-
-    // 상단바와 툴바의 색상을 변경하는 메서드
-    private void setUIColor() {
-        MainActivity mainActivity = (MainActivity) getActivity();
-        if (mainActivity != null) {
-            mainActivity.setUIColor();
         }
     }
 

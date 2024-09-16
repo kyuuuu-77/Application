@@ -135,11 +135,11 @@ public class FindFragment extends Fragment {
 
         // 도난방지 버튼
         securityBtn.setOnClickListener(view -> {
-            if (security) {     // 도난방지가 켜져있는 경우
+            if (security) {     // 도난방지가 켜져있는 경우 -> 끄기
                 security_OFF();
                 findViewModel.setAlertBtnText("도난방지 켜기");
                 Toast.makeText(getActivity(), "도난방지를 사용하지 않습니다.", Toast.LENGTH_SHORT).show();
-            } else {            // 도난방지가 꺼져있는 경우
+            } else {            // 도난방지가 꺼져있는 경우 -> 켜기
                 security_ON();
                 findViewModel.setAlertBtnText("도난방지 끄기");
                 Toast.makeText(getActivity(), "도난방지를 사용합니다.", Toast.LENGTH_SHORT).show();
