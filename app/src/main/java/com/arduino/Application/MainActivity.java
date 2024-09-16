@@ -507,7 +507,7 @@ public class MainActivity extends AppCompatActivity {
     // 주변의 BLE 디바이스를 스캔
     public void startLeScan() {
         if (mBluetoothAdapter == null || !mBluetoothAdapter.isEnabled()){
-            Toast.makeText(this, "블루투스가 꺼져 있어 자동 검색을 수행할 수 없습니다.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "블루투스가 꺼져있어 자동 검색을 수행할 수 없습니다.", Toast.LENGTH_SHORT).show();
             return;
         }
         bluetoothLeScanner = mBluetoothAdapter.getBluetoothLeScanner();
@@ -587,7 +587,7 @@ public class MainActivity extends AppCompatActivity {
         }
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("캐리어가 근처에 있습니다!")
-                .setMessage("캐리어에 벨이 울리고 있습니다.\n캐리어를 육안으로 확인한 후 확인 버튼을 누르세요.")
+                .setMessage("캐리어에 알람이 울리고 있습니다.\n캐리어를 육안으로 확인한 후 확인 버튼을 누르세요.")
                 .setPositiveButton("확인", (dialog, which) -> {
                     ringBell(false);
                     runOnUiThread(() -> {
