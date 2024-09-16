@@ -113,9 +113,36 @@ public class BagDropFragment extends Fragment {
             }
             bagDropText.setText(text);
         });
-        bagDropViewModel.getConnectTextLiveData().observe(getViewLifecycleOwner(), connect -> checkConnect.setText(connect));
-        bagDropViewModel.getWeightTextLiveData().observe(getViewLifecycleOwner(), rssi -> checkWeight.setText(rssi));
-        bagDropViewModel.getTimeTextLiveData().observe(getViewLifecycleOwner(), time -> checkTime.setText(time));
+        bagDropViewModel.getConnectTextLiveData().observe(getViewLifecycleOwner(), connect -> {
+            if (Objects.equals(connect, "연결됨")) {   // 블루투스에 연결된 경우
+                linearConnect.setBackground(layout_indigo);
+                iconConnect.setImageResource(R.drawable.bagdrop_checked);
+            } else {        // 블루투스에 연결되지 않은 경우
+                linearConnect.setBackground(layout_orange);
+                iconConnect.setImageResource(R.drawable.bagdrop_not_checked);
+            }
+            checkConnect.setText(connect);
+        });
+        bagDropViewModel.getWeightTextLiveData().observe(getViewLifecycleOwner(), weight -> {
+            if (Objects.equals(weight, "측정되지 않음")) {    // 무게가 측정되지 않은 경우
+                linearWeight.setBackground(layout_orange);
+                iconWeight.setImageResource(R.drawable.bagdrop_not_checked);
+            } else {        // 무게가 측정된 경우
+                linearWeight.setBackground(layout_indigo);
+                iconWeight.setImageResource(R.drawable.bagdrop_checked);
+            }
+            checkWeight.setText(weight);
+        });
+        bagDropViewModel.getTimeTextLiveData().observe(getViewLifecycleOwner(), time -> {
+            if (Objects.equals(time, "설정되지 않음")) {      // 시간이 설정되지 않은 경우
+                linearTime.setBackground(layout_orange);
+                iconTime.setImageResource(R.drawable.bagdrop_not_checked);
+            } else {        // 시간이 설정된 경우
+                linearTime.setBackground(layout_indigo);
+                iconTime.setImageResource(R.drawable.bagdrop_checked);
+            }
+            checkTime.setText(time);
+        });
         bagDropViewModel.getBagDropBtnTextLiveData().observe(getViewLifecycleOwner(), btnText -> {
             if (Objects.equals(btnText, "백드랍 모드 시작")) {
                 bagDropBtn.setBackground(Btn_blue);
@@ -232,8 +259,6 @@ public class BagDropFragment extends Fragment {
 
             if (arriveTime != -1) {
                 bagDropViewModel.setTimeText(arriveTime / 100 + "시 " + arriveTime % 100 + "분");
-                linearTime.setBackground(layout_indigo);
-                iconTime.setImageResource(R.drawable.bagdrop_checked);
             }
             checkCanUseBagDrop();
 
@@ -314,13 +339,9 @@ public class BagDropFragment extends Fragment {
         if (checkConnection() == 9) {
             // 캐리어 연결되어 있으면
             bagDropViewModel.setConnectText("연결됨");
-            linearConnect.setBackground(layout_indigo);
-            iconConnect.setImageResource(R.drawable.bagdrop_checked);
         } else {
             // 캐리어 연결되지 않았으면
             bagDropViewModel.setConnectText("연결되지 않음");
-            linearConnect.setBackground(layout_orange);
-            iconConnect.setImageResource(R.drawable.bagdrop_not_checked);
         }
         
         // 캐리어 무게 측정 여부 확인
@@ -328,12 +349,9 @@ public class BagDropFragment extends Fragment {
             // 무게 측정결과가 0이나 -1이 아니라면 -> 한마디로 무게를 측정했으면
             double weightTmp = checkWeight();
             bagDropViewModel.setWeightText(weightTmp + " Kg");
-            linearWeight.setBackground(layout_indigo);
-            iconWeight.setImageResource(R.drawable.bagdrop_checked);
         } else {
             // 무게를 측정하지 않았으면
             bagDropViewModel.setWeightText("측정되지 않음");
-            iconWeight.setImageResource(R.drawable.bagdrop_not_checked);
         }
 
         // 도착 예정시각 설정 확인
@@ -342,25 +360,19 @@ public class BagDropFragment extends Fragment {
         if (arriveTime != -1) {
             // 도착 시각을 설정했으면
             bagDropViewModel.setTimeText(arriveTime / 100 + "시 " + arriveTime % 100 + "분");
-            linearTime.setBackground(layout_indigo);
-            iconTime.setImageResource(R.drawable.bagdrop_checked);
         } else {
             // 도착 시각을 설정하지 않았으면
             bagDropViewModel.setTimeText("설정되지 않음");
-            linearTime.setBackground(layout_orange);
-            iconTime.setImageResource(R.drawable.bagdrop_not_checked);
         }
 
         // 백드랍 모드 확인
         checkBagDrop();
         if (bagDropMode) {
             // 백드랍 모드가 켜져 있으면
-            bagDropBtn.setBackground(Btn_red);
             bagDropViewModel.setBagDropBtnText("백드랍 모드 중지");
             bagDropViewModel.setBagDropText("백드랍 활성화");
         } else {
             // 백드랍 모드가 꺼져 있으면
-            bagDropBtn.setBackground(Btn_blue);
             bagDropViewModel.setBagDropBtnText("백드랍 모드 시작");
             bagDropViewModel.setBagDropText("백드랍 비활성화");
         }

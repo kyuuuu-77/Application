@@ -18,6 +18,8 @@ import com.arduino.Application.MainActivity;
 import com.arduino.Application.R;
 import com.arduino.Application.databinding.FragmentInfoBinding;
 
+import java.util.Objects;
+
 public class InfoFragment extends Fragment {
 
     // 버튼, 텍스트뷰 및 아이콘 초기화
@@ -36,18 +38,13 @@ public class InfoFragment extends Fragment {
     ImageView Security_icon;
     ImageView BT_icon;
 
-    private FragmentInfoBinding binding;
+    InfoViewModel infoViewModel;
 
-    // Info 변수
-    private boolean rssiSignal = false;     // rssiSignal
-    private boolean autoSearch = false;     // onAutoSearch
-    private boolean security = false;       // security
-    private int connection = -2;            // connection
+    private FragmentInfoBinding binding;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        InfoViewModel infoViewModel =
-                new ViewModelProvider(requireActivity()).get(InfoViewModel.class);
+        infoViewModel = new ViewModelProvider(requireActivity()).get(InfoViewModel.class);
 
         binding = FragmentInfoBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
@@ -72,15 +69,68 @@ public class InfoFragment extends Fragment {
 
         // ViewModel 선언
         infoViewModel.getdeviceNameLiveData().observe(getViewLifecycleOwner(), name -> deviceName.setText(name));
-        infoViewModel.getRssiLiveData().observe(getViewLifecycleOwner(), rssi -> rssiTextView.setText(rssi));
-        infoViewModel.getAutoSearchLiveData().observe(getViewLifecycleOwner(), search -> auto_search_status.setText(search));
-        infoViewModel.getSecurityLiveData().observe(getViewLifecycleOwner(), security -> security_status.setText(security));
-        infoViewModel.getInfoTextLiveData().observe(getViewLifecycleOwner(), text -> infoText.setText(text));
+        infoViewModel.getbatteryTextLiveData().observe(getViewLifecycleOwner(), batt -> {
+            switch (batt) {
+                case "정상":     // 방전중일 경우
+                    Bat_icon.setImageResource(R.drawable.info_bat_normal);
+                    break;
+                case "충전중":     // 충전중일 경우
+                    Bat_icon.setImageResource(R.drawable.info_bat_charging);
+                    break;
+                case "충전됨":     // 완충된 경우
+                    Bat_icon.setImageResource(R.drawable.info_bat_full);
+                    break;
+                case "정보없음":    // 정보 취득에 실패한 경우
+                    Bat_icon.setImageResource(R.drawable.info_bat_unknown);
+                    break;
+            }
+            battText.setText(batt);
+        });
+        infoViewModel.getRssiLiveData().observe(getViewLifecycleOwner(), rssi -> {
+            if (Objects.equals(rssi, "RSSI 측정 불가")) {       // rssi 값을 측정할 수 없는 경우
+                RSSI_icon.setImageResource(R.drawable.info_rssi_off);
+            } else {    // rssi 값을 측정하고 있는 경우
+                RSSI_icon.setImageResource(R.drawable.info_rssi_on);
+            }
+            rssiTextView.setText(rssi);
+        });
+        infoViewModel.getAutoSearchLiveData().observe(getViewLifecycleOwner(), search -> {
+            if (Objects.equals(search, "자동 검색 사용중")) {      // 자동 검색이 켜져 있으면
+                Search_icon.setImageResource(R.drawable.info_search_on);
+            } else {        // 자동 검색이 꺼져 있으면
+                Search_icon.setImageResource(R.drawable.info_search_off);
+            }
+            auto_search_status.setText(search);
+        });
+        infoViewModel.getSecurityLiveData().observe(getViewLifecycleOwner(), security -> {
+            if (Objects.equals(security, "도난방지 켜짐")) {      // 도난 방지가 켜져 있으면
+                Security_icon.setImageResource(R.drawable.info_security_on);
+            } else {        // 도난 방지가 꺼져 있으면
+                Security_icon.setImageResource(R.drawable.info_security_off);
+            }
+            security_status.setText(security);
+        });
+        infoViewModel.getInfoTextLiveData().observe(getViewLifecycleOwner(), text -> {
+            switch (text) {
+                case "블루투스를 지원 X":
+                case "블루투스가 꺼짐":
+                    BT_icon.setImageResource(R.drawable.info_bt_off);
+                    break;
+                case "연결되지 않음":
+                case "송수신 불가능":
+                    BT_icon.setImageResource(R.drawable.info_bt_on);
+                    break;
+                case "정상적으로 연결됨":
+                    BT_icon.setImageResource(R.drawable.info_bt_connect);
+                    break;
+            }
+            infoText.setText(text);
+        });
 
         // 버튼 이벤트 리스너
         // 설정 초기화 버튼
         mBtn_charge.setOnClickListener(view -> {
-            // 자동 검색, 도난방지, 도난방지 무시, 무게설정, 초기화
+            // 자동 검색, 도난방지, 도난방지 무시, 무게설정 초기화
             resetSettings();
             checkAll();
             Toast.makeText(getActivity(), "설정 초기화 완료!", Toast.LENGTH_SHORT).show();
@@ -98,20 +148,16 @@ public class InfoFragment extends Fragment {
         }
         switch (battery_data) {
             case 0:     // 방전중일 경우
-                battText.setText("정상");
-                Bat_icon.setImageResource(R.drawable.info_bat_normal);
+                infoViewModel.setBatteryText("정상");
                 break;
             case 1:     // 충전중일 경우
-                battText.setText("충전중");
-                Bat_icon.setImageResource(R.drawable.info_bat_charging);
+                infoViewModel.setBatteryText("충전중");
                 break;
             case 2:     // 완충된 경우
-                battText.setText("충전됨");
-                Bat_icon.setImageResource(R.drawable.info_bat_full);
+                infoViewModel.setBatteryText("충전됨");
                 break;
             default:    // 정보 취득에 실패한 경우
-                battText.setText("정보없음");
-                Bat_icon.setImageResource(R.drawable.info_bat_unknown);
+                infoViewModel.setBatteryText("정보없음");
                 break;
         }
     }
@@ -120,12 +166,7 @@ public class InfoFragment extends Fragment {
     private void checkRssi() {
         MainActivity mainActivity = (MainActivity) getActivity();
         if (mainActivity != null) {
-            rssiSignal = mainActivity.checkRssi();
-        }
-        if (rssiSignal) {
-            RSSI_icon.setImageResource(R.drawable.info_rssi_on);
-        } else {
-            RSSI_icon.setImageResource(R.drawable.info_rssi_off);
+            mainActivity.checkRssi();
         }
     }
 
@@ -133,12 +174,7 @@ public class InfoFragment extends Fragment {
     private void checkAutoSearch() {
         MainActivity mainActivity = (MainActivity) getActivity();
         if (mainActivity != null) {
-            autoSearch = mainActivity.checkAutoSearch();
-        }
-        if (autoSearch) {
-            Search_icon.setImageResource(R.drawable.info_search_on);
-        } else {
-            Search_icon.setImageResource(R.drawable.info_search_off);
+            mainActivity.checkAutoSearch();
         }
     }
 
@@ -146,12 +182,7 @@ public class InfoFragment extends Fragment {
     private void checkSecurity() {
         MainActivity mainActivity = (MainActivity) getActivity();
         if (mainActivity != null) {
-            security = mainActivity.checkSecurity();
-        }
-        if (security) {
-            Security_icon.setImageResource(R.drawable.info_security_on);
-        } else {
-            Security_icon.setImageResource(R.drawable.info_security_off);
+            mainActivity.checkSecurity();
         }
     }
 
@@ -159,20 +190,7 @@ public class InfoFragment extends Fragment {
     private void checkConnection() {
         MainActivity mainActivity = (MainActivity) getActivity();
         if (mainActivity != null) {
-            connection = mainActivity.checkConnection();
-        }
-        switch (connection) {
-            case -2:
-            case -1:
-                BT_icon.setImageResource(R.drawable.info_bt_off);
-                break;
-            case 0:
-            case 1:
-                BT_icon.setImageResource(R.drawable.info_bt_on);
-                break;
-            case 9:
-                BT_icon.setImageResource(R.drawable.info_bt_connect);
-                break;
+            mainActivity.checkConnection();
         }
     }
 

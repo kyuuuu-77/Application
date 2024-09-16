@@ -296,6 +296,7 @@ public class MainActivity extends AppCompatActivity {
             BLE_status = 0;
             deviceName = null;
             viewModel_info.setdeviceName("BLE: ");
+            viewModel_info.setInfoText("블루투스가 꺼짐");
             stopRSSIMeasurement();          // RSSI 측정 중지
         } else {
             Toast.makeText(getApplicationContext(), "블루투스가 이미 비활성화되어 있습니다.", Toast.LENGTH_SHORT).show();
@@ -326,6 +327,7 @@ public class MainActivity extends AppCompatActivity {
                 viewModel_home.setHomeText("캐리어에 연결되지 않음");
                 viewModel_home.setBtBtn("블루투스 켜기");
                 viewModel_home.setConnectBtn("연결 불가");
+                viewModel_info.setInfoText("블루투스가 꺼짐");
                 onAutoSearch = false;
                 BLE_status = 0;
                 Toast.makeText(getApplicationContext(), "블루투스 비활성화", Toast.LENGTH_SHORT).show();
@@ -694,6 +696,8 @@ public class MainActivity extends AppCompatActivity {
                         rssiSignal = false;
                         deviceName = null;
                         security = false;
+
+                        // 뷰모델 초기화
                         viewModel_home.setConnectBtn("연결");
                         viewModel_find.setAlertStatus("도난방지 꺼짐");
                         viewModel_find.setAlertBtnText("도난방지 사용불가");
@@ -701,6 +705,8 @@ public class MainActivity extends AppCompatActivity {
                         viewModel_weight.setWeightBtn("무게 측정 불가");
                         viewModel_info.setdeviceName("BLE: ");
                         viewModel_info.setRssi("RSSI 측정 불가");
+                        viewModel_info.setInfoText("연결되지 않음");
+                        viewModel_bagDrop.setConnectText("연결되지 않음");
                         // 연결이 끊겼을 때 info 페이지 고치기
                         // 백드랍 모드도..
                     });
@@ -885,25 +891,23 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    // RSSI 측정 여부를 전달하는 메서드
-    public boolean checkRssi() {
+    // RSSI 측정 여부를 확인하는 메서드
+    public void checkRssi() {
         if (!rssiSignal) {
             viewModel_info.setRssi("RSSI 측정 불가");
         }
-        return rssiSignal;
     }
 
-    // 자동 검색 여부를 전달하는 메서드
-    public boolean checkAutoSearch() {
+    // 자동 검색 여부를 확인하는 메서드
+    public void checkAutoSearch() {
         if (onAutoSearch){
             viewModel_info.setAutoSearch("자동 검색 사용중");
         } else {
             viewModel_info.setAutoSearch("자동 검색 꺼짐");
         }
-        return onAutoSearch;
     }
 
-    // 도난방지 여부를 전달하는 메서드
+    // 도난방지 여부를 확인하는 메서드
     public boolean checkSecurity() {
         if (security){
             viewModel_find.setAlertStatus("도난방지 켜짐");
@@ -1020,9 +1024,11 @@ public class MainActivity extends AppCompatActivity {
         } else if (writeCharacteristic == null || readCharacteristic == null) {      // 연결이 되어 있으나 송수신 불가
             viewModel_info.setInfoText("송수신 불가능");
             return 1;
-        } else {    // 캐리어에 연결되어 있음 <- 수정 필요
+        } else if (checkBLE() == BluetoothGatt.STATE_CONNECTED) {    // 캐리어에 제대로 연결되어 있음
             viewModel_info.setInfoText("정상적으로 연결됨");
             return 9;
+        } else {    // 그 외의 경우
+            return 0;
         }
     }
 

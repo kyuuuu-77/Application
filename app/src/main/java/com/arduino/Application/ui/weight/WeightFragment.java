@@ -128,8 +128,7 @@ public class WeightFragment extends Fragment {
         });
 
         // 메뉴 버튼 클릭 이벤트 리스너 설정
-        Button menuButton = root.findViewById(R.id.menu);
-        menuButton.setOnClickListener(view -> {
+        menuBtn.setOnClickListener(view -> {
             if (drawerLayout != null) {
                 if (drawerLayout.isDrawerOpen(GravityCompat.END)) {
                     drawerLayout.closeDrawer(GravityCompat.END);
