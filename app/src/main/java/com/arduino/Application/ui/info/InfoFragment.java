@@ -1,6 +1,8 @@
 package com.arduino.Application.ui.info;
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,16 +16,19 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.airbnb.lottie.LottieAnimationView;
 import com.arduino.Application.MainActivity;
 import com.arduino.Application.R;
 import com.arduino.Application.databinding.FragmentInfoBinding;
 
 import java.util.Objects;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class InfoFragment extends Fragment {
 
     // 버튼, 텍스트뷰 및 아이콘 초기화
-    Button mBtn_charge;
+    Button mBtn_reset;
 
     TextView deviceName;
     TextView battText;
@@ -52,7 +57,7 @@ public class InfoFragment extends Fragment {
         Log.d("Info Fragment", "Info Fragment-onCreatedView()");
 
         // 버튼, 텍스트뷰 및 아이콘 선언
-        mBtn_charge = root.findViewById(R.id.reset);
+        mBtn_reset = root.findViewById(R.id.reset);
 
         deviceName = root.findViewById(R.id.ble_device);
         battText = root.findViewById(R.id.batteryText);
@@ -129,7 +134,7 @@ public class InfoFragment extends Fragment {
 
         // 버튼 이벤트 리스너
         // 설정 초기화 버튼
-        mBtn_charge.setOnClickListener(view -> {
+        mBtn_reset.setOnClickListener(view -> {
             // 자동 검색, 도난방지, 도난방지 무시, 무게설정, 도착 시각 초기화
             resetSettings();
             checkAll();
@@ -200,7 +205,36 @@ public class InfoFragment extends Fragment {
         super.onResume();
         Log.d("Info Fragment", "Info Fragment-onResume()");
 
-        checkAll();
+        View root = binding.getRoot();
+
+        // 로딩 애니메이션 (로티 애니메이션) 및 비동기 처리 구문
+        LottieAnimationView lottieView = root.findViewById(R.id.lottieView);
+        View loadingOverlay = root.findViewById(R.id.loading_overlay);
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+        Handler handler = new Handler(Looper.getMainLooper());
+
+        handler.post(() -> {
+            loadingOverlay.setVisibility(View.VISIBLE);
+            lottieView.setVisibility(View.VISIBLE);
+            lottieView.playAnimation();
+            mBtn_reset.setEnabled(false);
+        });
+        executorService.execute(() -> {
+            // 백그라운드 작업 처리
+            checkAll();
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                handler.post(() -> Toast.makeText(getActivity(), "데이터 로드중 에러 발생", Toast.LENGTH_SHORT).show());
+            }
+
+            handler.post(() -> {
+                loadingOverlay.setVisibility(View.GONE);
+                lottieView.cancelAnimation();
+                lottieView.setVisibility(View.GONE);
+                mBtn_reset.setEnabled(true);
+            });
+        });
     }
 
     @Override

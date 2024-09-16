@@ -937,50 +937,60 @@ public class MainActivity extends AppCompatActivity {
             double tmp_weight = Double.parseDouble(data);
             weight[0] = tmp_weight;
             weight[1] = maxSet;
-            viewModel_weight.setWeightNow(String.format("%.1f", weight[0]) +" Kg");
+            runOnUiThread(() -> viewModel_weight.setWeightNow(String.format("%.1f", weight[0]) +" Kg"));
 
-            if (weight[0] > 32){                    // 32kg 초과시
-                viewModel_weight.setWeightInfo("32Kg을 초과했습니다.");
-            } else if (weight[0] > weight[1]){      // 허용무게 초과시
-                viewModel_weight.setWeightInfo(String.format("%.1f", weight[0]-weight[1]) + " Kg  초과했습니다.");
-            } else {                                // 무게 초과하지 않은 경우
-                viewModel_weight.setWeightInfo("허용 무게를 초과하지 않았습니다.");
-            }
+            runOnUiThread(() -> {
+                if (weight[0] > 32) {                    // 32kg 초과시
+                    viewModel_weight.setWeightInfo("32Kg을 초과했습니다.");
+                } else if (weight[0] > weight[1]) {      // 허용무게 초과시
+                    viewModel_weight.setWeightInfo(String.format("%.1f", weight[0] - weight[1]) + " Kg  초과했습니다.");
+                } else {                                // 무게 초과하지 않은 경우
+                    viewModel_weight.setWeightInfo("허용 무게를 초과하지 않았습니다.");
+                }
+            });
 
-            viewModel_weight.setWeightBtn("무게 다시 측정");
+            runOnUiThread(() -> viewModel_weight.setWeightBtn("무게 다시 측정"));
             return weight[0];
         } else {
-            viewModel_weight.setWeightInfo("무게 측정에 실패하였습니다.");
-            viewModel_weight.setWeightBtn("무게 측정 실패");
+            runOnUiThread(() -> {
+                viewModel_weight.setWeightInfo("무게 측정에 실패하였습니다.");
+                viewModel_weight.setWeightBtn("무게 측정 실패");
+            });
             return -1;
         }
     }
 
     // RSSI 측정 여부를 확인하는 메서드
     public void checkRssi() {
-        if (!rssiSignal) {
-            viewModel_info.setRssi("RSSI 측정 불가");
-        }
+        runOnUiThread(() -> {
+            if (!rssiSignal) {
+                viewModel_info.setRssi("RSSI 측정 불가");
+            }
+        });
     }
 
     // 자동 검색 여부를 확인하는 메서드
     public void checkAutoSearch() {
-        if (onAutoSearch){
-            viewModel_info.setAutoSearch("자동 검색 사용중");
-        } else {
-            viewModel_info.setAutoSearch("자동 검색 꺼짐");
-        }
+        runOnUiThread(() -> {
+            if (onAutoSearch) {
+                viewModel_info.setAutoSearch("자동 검색 사용중");
+            } else {
+                viewModel_info.setAutoSearch("자동 검색 꺼짐");
+            }
+        });
     }
 
     // 도난방지 여부를 확인하는 메서드
     public boolean checkSecurity() {
-        if (security){
-            viewModel_find.setAlertStatus("도난방지 켜짐");
-            viewModel_info.setSecurity("도난방지 켜짐");
-        } else {
-            viewModel_find.setAlertStatus("도난방지 꺼짐");
-            viewModel_info.setSecurity("도난방지 꺼짐");
-        }
+        runOnUiThread(() -> {
+            if (security) {
+                viewModel_find.setAlertStatus("도난방지 켜짐");
+                viewModel_info.setSecurity("도난방지 켜짐");
+            } else {
+                viewModel_find.setAlertStatus("도난방지 꺼짐");
+                viewModel_info.setSecurity("도난방지 꺼짐");
+            }
+        });
         return security;
     }
 
@@ -1083,19 +1093,19 @@ public class MainActivity extends AppCompatActivity {
     // 연결 상태를 전달하는 메서드
     public int checkConnection() {
         if (mBluetoothAdapter == null) {        // 블루투스를 지원하지 않는 디바이스
-            viewModel_info.setInfoText("블루투스를 지원 X");
+            runOnUiThread(() -> viewModel_info.setInfoText("블루투스를 지원 X"));
             return -2;
         } else if (!mBluetoothAdapter.isEnabled()) {     // 블루투스가 꺼져 있음
-            viewModel_info.setInfoText("블루투스가 꺼짐");
+            runOnUiThread(() -> viewModel_info.setInfoText("블루투스가 꺼짐"));
             return -1;
         } else if (bluetoothGatt == null) {     // 캐리어에 연결되어 있지 않음
-            viewModel_info.setInfoText("연결되지 않음");
+            runOnUiThread(() -> viewModel_info.setInfoText("연결되지 않음"));
             return 0;
         } else if (writeCharacteristic == null || readCharacteristic == null) {      // 연결이 되어 있으나 송수신 불가
-            viewModel_info.setInfoText("송수신 불가능");
+            runOnUiThread(() -> viewModel_info.setInfoText("송수신 불가능"));
             return 1;
         } else if (checkBLE() == BluetoothGatt.STATE_CONNECTED) {    // 캐리어에 제대로 연결되어 있음
-            viewModel_info.setInfoText("정상적으로 연결됨");
+            runOnUiThread(() -> viewModel_info.setInfoText("정상적으로 연결됨"));
             return 9;
         } else {    // 그 외의 경우
             return 0;

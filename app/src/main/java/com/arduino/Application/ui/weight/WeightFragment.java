@@ -5,6 +5,8 @@ import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -23,12 +25,15 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.airbnb.lottie.LottieAnimationView;
 import com.arduino.Application.MainActivity;
 import com.arduino.Application.R;
 import com.arduino.Application.databinding.FragmentWeightBinding;
 import com.google.android.material.navigation.NavigationView;
 
 import java.util.Objects;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class WeightFragment extends Fragment {
 
@@ -151,25 +156,54 @@ public class WeightFragment extends Fragment {
     }
 
     private void measureWeight() {
+        // 로딩 애니메이션 (로티 애니메이션) 및 비동기 처리 구문
         MainActivity mainActivity = (MainActivity) getActivity();
-        double maxSet = weight[1];
+        View root = binding.getRoot();
 
+        LottieAnimationView lottieView = root.findViewById(R.id.lottieView);
+        View loadingOverlay = root.findViewById(R.id.loading_overlay);
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+        Handler handler = new Handler(Looper.getMainLooper());
+
+        double maxSet = weight[1];
         if (mainActivity != null) {
-            weight[0] = mainActivity.measureWeight(maxSet);
-            weightViewModel.setWeightBtn("무게 다시 측정");
-            if (weight[0] == -1) {
-                showCustomDialog(2);
-                weightViewModel.setWeightBtn("무게 측정 실패");
-            } else {
-                if (weight[0] > 32.0) {
-                    showCustomDialog(3);
-                    weightNow.setTextColor(ContextCompat.getColor(requireActivity(), R.color.red_500));
-                } else if (weight[0] > maxSet) {
-                    weightNow.setTextColor(ContextCompat.getColor(requireActivity(), R.color.orange_500));
-                } else {
-                    weightNow.setTextColor(ContextCompat.getColor(requireActivity(), R.color.indigo_500));
+            handler.post(() -> {
+                loadingOverlay.setVisibility(View.VISIBLE);
+                lottieView.setVisibility(View.VISIBLE);
+                lottieView.playAnimation();
+                mBtnWeight.setEnabled(false);
+            });
+            executorService.execute(() -> {
+                // 백그라운드 작업 처리
+                weight[0] = mainActivity.measureWeight(maxSet);
+                handler.post(() -> {
+                    if (weight[0] == -1) {
+                        showCustomDialog(2);
+                        weightViewModel.setWeightBtn("무게 측정 실패");
+                    } else {
+                        if (weight[0] > 32.0) {
+                            showCustomDialog(3);
+                            weightNow.setTextColor(ContextCompat.getColor(requireActivity(), R.color.red_500));
+                        } else if (weight[0] > maxSet) {
+                            weightNow.setTextColor(ContextCompat.getColor(requireActivity(), R.color.orange_500));
+                        } else {
+                            weightNow.setTextColor(ContextCompat.getColor(requireActivity(), R.color.indigo_500));
+                        }
+                    }
+                });
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    handler.post(() -> Toast.makeText(getActivity(), "데이터 로드중 에러 발생", Toast.LENGTH_SHORT).show());
                 }
-            }
+
+                handler.post(() -> {
+                    loadingOverlay.setVisibility(View.GONE);
+                    lottieView.cancelAnimation();
+                    lottieView.setVisibility(View.GONE);
+                    mBtnWeight.setEnabled(true);
+                });
+            });
         }
     }
 
