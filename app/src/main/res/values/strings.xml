@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">스마트 캐리어</string>
     <string name="navigation_drawer_open">네비게이션 바 열기</string>
     <string name="navigation_drawer_close">네비게이션 바 닫기</string>
@@ -10,6 +10,7 @@
     <string name="splash_name">Suitcase Genie</string>
     <string name="weight_popup">Notification</string>
     <string name="app_version">v2024.09.16/16</string>
+    <string name="loading" tools:ignore="TypographyEllipsis">로드중...</string>
 
     <!-- 네비게이션 바 -->
     <string name="menu_home">메인 화면</string>
@@ -93,6 +94,5 @@
     <string name="dialogTime_selectedTime">선택된 시간 :</string>
     <string name="dialogTime_setHour">hh시</string>
     <string name="dialogTime_setMin">mm분</string>
-    <string name="loading">로드중...</string>
 
 </resources>
