@@ -93,5 +93,6 @@
     <string name="dialogTime_selectedTime">선택된 시간 :</string>
     <string name="dialogTime_setHour">hh시</string>
     <string name="dialogTime_setMin">mm분</string>
+    <string name="loading">로드중...</string>
 
 </resources>

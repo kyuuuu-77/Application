@@ -1056,14 +1056,14 @@ public class MainActivity extends AppCompatActivity {
 
                 // 벨 울리기 실패
                 if (data == null) {
-                    viewModel_find.setAlertText("벨 울리기 실패\n통신 상태를 확인하세요.");
+                    runOnUiThread(() -> viewModel_find.setAlertText("벨 울리기 실패\n통신 상태를 확인하세요."));
                     return -1;
                 } else if (data.trim().equals("ring_suc")) {   // 벨 울리기 성공
                     data = "ring_suc";
-                    viewModel_find.setAlertText("벨 울리기 성공!");
+                    runOnUiThread(() -> viewModel_find.setAlertText("벨 울리기 성공!"));
                     return 1;
                 } else {    // 잘못된 값을 받은 경우
-                    viewModel_find.setAlertText("벨 울리기 실패\n잘못된 인자값이 전달되었습니다.");
+                    runOnUiThread(() -> viewModel_find.setAlertText("벨 울리기 실패\n잘못된 인자값이 전달되었습니다."));
                     return -1;
                 }
             } else {   // 벨 울리기 중지 동작
@@ -1078,14 +1078,14 @@ public class MainActivity extends AppCompatActivity {
                 else if (data.trim().equals("ring_stop")) {   // 벨 울리기 성공
                     data = null;
 
-                    viewModel_find.setAlertText("도난방지 기능으로\n캐리어를 안전하게 보관하세요!");
+                    runOnUiThread(() -> viewModel_find.setAlertText("도난방지 기능으로\n캐리어를 안전하게 보관하세요!"));
                     return 2;
                 } else {
                     return -1;
                 }
             }
         } else {        // 통신이 불가능할 때
-            viewModel_find.setAlertText("벨 울리기 실패\n통신 상태를 확인하세요.");
+            runOnUiThread(() -> viewModel_find.setAlertText("벨 울리기 실패\n통신 상태를 확인하세요."));
             return -1;
         }
     }

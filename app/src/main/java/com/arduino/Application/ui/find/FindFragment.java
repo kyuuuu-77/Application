@@ -4,6 +4,8 @@ import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.SystemClock;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -19,11 +21,14 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.airbnb.lottie.LottieAnimationView;
 import com.arduino.Application.MainActivity;
 import com.arduino.Application.R;
 import com.arduino.Application.databinding.FragmentFindBinding;
 
 import java.util.Objects;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class FindFragment extends Fragment {
 
@@ -151,26 +156,55 @@ public class FindFragment extends Fragment {
 
     // 벨을 울리는 메서드
     private void ringBell(boolean onOff) {
+        // 로딩 애니메이션 (로티 애니메이션) 및 비동기 처리 구문
         MainActivity mainActivity = (MainActivity) getActivity();
+        View root = binding.getRoot();
+
+        LottieAnimationView lottieView = root.findViewById(R.id.lottieView);
+        View loadingOverlay = root.findViewById(R.id.loading_overlay);
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+        Handler handler = new Handler(Looper.getMainLooper());
+
         if (mainActivity != null) {
-            if (onOff) {   // 벨 울리기 동작
-                int status = mainActivity.ringBell(true);
-                if (status == 1) {  // 벨 울리기 성공한 경우
-                    showCustomDialog(3);
-                } else {    // 벨 울리기 실패한 경우
-                    showCustomDialog(2);
-                }
-            } else {    // 벨 울리기 멈춤
-                while (true) {
-                    int status = mainActivity.ringBell(false);
-                    if (status != 2) {
-                        SystemClock.sleep(5000);
-                        Toast.makeText(getActivity(), "벨 중지에 실패했습니다. 5초후에 다시 시도합니다.", Toast.LENGTH_SHORT).show();
-                    } else {
-                        break;
+            handler.post(() -> {
+                loadingOverlay.setVisibility(View.VISIBLE);
+                lottieView.setVisibility(View.VISIBLE);
+                lottieView.playAnimation();
+                securityBtn.setEnabled(false);
+            });
+            executorService.execute(() -> {
+                // 백그라운드 작업 처리
+                if (onOff) {   // 벨 울리기 동작
+                    int status = mainActivity.ringBell(true);
+                    if (status == 1) {  // 벨 울리기 성공한 경우
+                        handler.post(() -> showCustomDialog(3));
+                    } else {    // 벨 울리기 실패한 경우
+                        handler.post(() -> showCustomDialog(2));
+                    }
+                } else {    // 벨 울리기 멈춤
+                    while (true) {
+                        int status = mainActivity.ringBell(false);
+                        if (status != 2) {
+                            SystemClock.sleep(5000);
+                            Toast.makeText(getActivity(), "벨 중지에 실패했습니다. 5초후에 다시 시도합니다.", Toast.LENGTH_SHORT).show();
+                        } else {
+                            break;
+                        }
                     }
                 }
-            }
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    handler.post(() -> Toast.makeText(getActivity(), "데이터 로드중 에러 발생", Toast.LENGTH_SHORT).show());
+                }
+
+                handler.post(() -> {
+                    loadingOverlay.setVisibility(View.GONE);
+                    lottieView.cancelAnimation();
+                    lottieView.setVisibility(View.GONE);
+                    securityBtn.setEnabled(true);
+                });
+            });
         }
     }
 
