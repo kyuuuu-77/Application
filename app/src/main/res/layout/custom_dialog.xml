@@ -5,10 +5,10 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="16dp"
+    android:padding="16dp"
     app:cardCornerRadius="6dp"
     app:cardElevation="4dp"
-    app:cardBackgroundColor="@color/white"
-    android:padding="16dp">
+    app:cardBackgroundColor="@color/white">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -62,7 +62,18 @@
                 android:layout_marginTop="10dp"
                 android:src="@drawable/baggage_over32"
                 android:layout_gravity="center"
+                android:visibility="visible"
                 tools:ignore="ContentDescription" />
+
+            <com.airbnb.lottie.LottieAnimationView
+                android:id="@+id/dialog_message_lottie"
+                android:layout_width="300dp"
+                android:layout_height="300dp"
+                android:visibility="gone"
+                android:layout_gravity="center"
+                android:layout_marginTop="10dp"
+                app:lottie_autoPlay="false"
+                app:lottie_loop="true"/>
 
             <LinearLayout
                 android:layout_width="match_parent"

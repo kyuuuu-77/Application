@@ -138,10 +138,10 @@
             android:layout_width="284dp"
             android:layout_height="59dp"
             android:background="@drawable/button_round"
-            app:backgroundTint="@null"
             android:text="@string/measureBtn"
             android:textSize="20sp"
             android:textStyle="bold"
+            app:backgroundTint="@null"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
@@ -153,14 +153,14 @@
             android:id="@+id/loading_overlay"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:visibility="gone"
+            android:background="#48000000"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.5"
-            android:visibility="gone"
-            android:background="#48000000">
+            app:layout_constraintVertical_bias="0.5">
 
             <com.airbnb.lottie.LottieAnimationView
                 android:id="@+id/lottieView"

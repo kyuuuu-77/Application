@@ -4,8 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.home.HomeFragment"
-    android:id="@+id/container_home">
+    android:id="@+id/container_home"
+    tools:context=".ui.home.HomeFragment">
 
     <LinearLayout
         android:layout_width="wrap_content"

@@ -276,36 +276,55 @@ public class FindFragment extends Fragment {
         Button checkBtn = dialogView.findViewById(R.id.confirm);
         Button cancelBtn = dialogView.findViewById(R.id.cancel);
 
+        // 로티 애니메이션
+        LottieAnimationView lottieView = dialogView.findViewById(R.id.dialog_message_lottie);
+
         // 텍스트, 이미지, 버튼 설정
         switch (status) {
             case 3:
+                lottieView.setAnimation(R.raw.ring_bell);
+                lottieView.setVisibility(View.VISIBLE);
+                lottieView.playAnimation();
+
                 iconView.setImageResource(R.drawable.dialog_bell);
                 titleView.setText("벨을 울리는 중...");
                 messageTextView.setText("캐리어에서 벨이 울리고 있습니다.\n벨은 하단의 확인 버튼을 누를 때까지 계속 울립니다.");
-                messageImageView.setImageResource(R.drawable.bag_ring);
+                messageImageView.setVisibility(View.GONE);
                 retryBtn.setVisibility(View.GONE);
                 cancelBtn.setVisibility(View.GONE);
                 break;
             case 2:
+                lottieView.setAnimation(R.raw.network_error1);
+                lottieView.setVisibility(View.VISIBLE);
+                lottieView.playAnimation();
+
                 iconView.setImageResource(R.drawable.dialog_bell_error);
                 titleView.setText("벨 울리기 실패!");
                 messageTextView.setText("벨 울리기 동작에 실패했습니다.\n스마트 캐리어와 연결되어 있고 통신 상태가 양호한지 확인 후\n다시 시도하세요.");
-                messageImageView.setImageResource(R.drawable.connection_error);
+                messageImageView.setVisibility(View.GONE);
                 checkBtn.setVisibility(View.GONE);
                 break;
             case 1:
+                lottieView.setAnimation(R.raw.bluetooth_on);
+                lottieView.setVisibility(View.VISIBLE);
+                lottieView.playAnimation();
+
                 iconView.setImageResource(R.drawable.info_bt_off);
                 titleView.setText("도난방지 및 찾기 비활성화");
                 messageTextView.setText("블루투스가 꺼져 있어 도난방지 기능을 사용할 수 없습니다.\n블루투스를 켠 후에 다시 시도하세요.");
-                messageImageView.setImageResource(R.drawable.connection);
+                messageImageView.setVisibility(View.GONE);
                 retryBtn.setVisibility(View.GONE);
                 checkBtn.setVisibility(View.GONE);
                 break;
             case 0:
+                lottieView.setAnimation(R.raw.bluetooth_on);
+                lottieView.setVisibility(View.VISIBLE);
+                lottieView.playAnimation();
+
                 iconView.setImageResource(R.drawable.info_bt_on);
                 titleView.setText("도난방지 및 찾기 비활성화");
                 messageTextView.setText("스마트 캐리어에 연결되지 않아 도난방지 기능을 사용할 수 없습니다.\n연결 후에 다시 시도하세요.");
-                messageImageView.setImageResource(R.drawable.connection);
+                messageImageView.setVisibility(View.GONE);
                 retryBtn.setVisibility(View.GONE);
                 checkBtn.setVisibility(View.GONE);
                 break;

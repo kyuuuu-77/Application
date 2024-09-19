@@ -332,7 +332,7 @@ public class MainActivity extends AppCompatActivity {
             viewModel_home.setHomeText("캐리어에 연결되지 않음");
             viewModel_home.setBtBtn("블루투스 켜기");
             viewModel_home.setConnectBtn("연결 불가");
-            viewModel_info.setdeviceName("BLE: ");
+            viewModel_info.setdeviceName("X");
             viewModel_info.setInfoText("블루투스가 꺼짐");
             Toast.makeText(getApplicationContext(), "블루투스 비활성화", Toast.LENGTH_SHORT).show();
         });
@@ -697,7 +697,7 @@ public class MainActivity extends AppCompatActivity {
             viewModel_find.setDistance("캐리어와의 거리");
             viewModel_weight.setWeightBtn("무게 측정 불가");
             viewModel_bagDrop.setConnectText("연결되지 않음");
-            viewModel_info.setdeviceName("BLE: ");
+            viewModel_info.setdeviceName("X");
             viewModel_info.setRssi("RSSI 측정 불가");
             viewModel_info.setSecurity("도난방지 꺼짐");
             viewModel_info.setInfoText("연결되지 않음");
@@ -741,7 +741,7 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 deviceName = gatt.getDevice().getName();
-                runOnUiThread(() -> viewModel_info.setdeviceName("BLE: " + deviceName));
+                runOnUiThread(() -> viewModel_info.setdeviceName(deviceName));
                 bluetoothGatt.discoverServices();
             } else if (newState == BluetoothGatt.STATE_DISCONNECTED) {      // 블루투스 디바이스와 연결이 끊긴 경우
                 if (backDropMode) {     // 백드랍 모드일 경우

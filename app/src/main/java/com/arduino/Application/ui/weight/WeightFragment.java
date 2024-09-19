@@ -60,6 +60,7 @@ public class WeightFragment extends Fragment {
 
     private BluetoothAdapter mBluetoothAdapter;
 
+    View root;
     private FragmentWeightBinding binding;
 
     WeightViewModel weightViewModel;
@@ -72,7 +73,7 @@ public class WeightFragment extends Fragment {
         weightViewModel = new ViewModelProvider(requireActivity()).get(WeightViewModel.class);
 
         binding = FragmentWeightBinding.inflate(inflater, container, false);
-        View root = binding.getRoot();
+        root = binding.getRoot();
         Log.d("Weight Fragment", "Weight Fragment-onCreateView()");
 
         // 버튼 요소 및 텍스트 뷰 초기화
@@ -158,7 +159,6 @@ public class WeightFragment extends Fragment {
     private void measureWeight() {
         // 로딩 애니메이션 (로티 애니메이션) 및 비동기 처리 구문
         MainActivity mainActivity = (MainActivity) getActivity();
-        View root = binding.getRoot();
 
         LottieAnimationView lottieView = root.findViewById(R.id.lottieView);
         View loadingOverlay = root.findViewById(R.id.loading_overlay);
@@ -233,11 +233,14 @@ public class WeightFragment extends Fragment {
     private void updateWeight() {
         if (weight != null && weight[0] != 0 && weight[0] != -1) {
             double maxSet = weight[1];
-            if (mBluetoothAdapter.isEnabled() && checkBLE() == 2) {
+            if (!mBluetoothAdapter.isEnabled()) {
+                weightViewModel.setWeightBtn("무게 측정 불가");
+            } else if (mBluetoothAdapter.isEnabled() && checkBLE() == 2) {
                 weightViewModel.setWeightBtn("무게 다시 측정");
             } else {
                 weightViewModel.setWeightBtn("무게 측정 불가");
             }
+            
             if (weight[0] > 32.0) {             // 32kg을 초과한 경우
                 showCustomDialog(3);
                 weightNow.setTextColor(ContextCompat.getColor(requireActivity(), R.color.red_500));
@@ -279,6 +282,9 @@ public class WeightFragment extends Fragment {
         Button checkBtn = dialogView.findViewById(R.id.confirm);
         Button cancelBtn = dialogView.findViewById(R.id.cancel);
 
+        // 로티 애니메이션
+        LottieAnimationView lottieView = dialogView.findViewById(R.id.dialog_message_lottie);
+
         // 텍스트, 이미지, 버튼 설정
         switch (status) {
             case 3:
@@ -290,17 +296,25 @@ public class WeightFragment extends Fragment {
                 cancelBtn.setVisibility(View.GONE);
                 break;
             case 2:
+                lottieView.setAnimation(R.raw.network_error1);
+                lottieView.setVisibility(View.VISIBLE);
+                lottieView.playAnimation();
+
                 iconView.setImageResource(R.drawable.dialog_error);
                 titleView.setText("무게 측정 실패!");
-                messageTextView.setText("무게 측정에 실패했습니다.\n스마트 캐리어와 연결되어 있고 통신 상태가 양호한지 확인 후\n다시 시도하세요.");
-                messageImageView.setImageResource(R.drawable.connection_error);
+                messageTextView.setText("무게 측정에 실패했습니다.\n스마트 캐리어와 연결되어 있고 통신 상태가 양호한지 확인 후 다시 시도하세요.");
+                messageImageView.setVisibility(View.GONE);
                 checkBtn.setVisibility(View.GONE);
                 break;
             case 1:
+                lottieView.setAnimation(R.raw.bluetooth_on);
+                lottieView.setVisibility(View.VISIBLE);
+                lottieView.playAnimation();
+
                 iconView.setImageResource(R.drawable.info_bt_off);
                 titleView.setText("무게 측정 비활성화");
                 messageTextView.setText("블루투스가 꺼져 있어 무게 측정을 할 수 없습니다.\n블루투스를 켠 후에 다시 시도하세요.");
-                messageImageView.setImageResource(R.drawable.connection);
+                messageImageView.setVisibility(View.GONE);
                 retryBtn.setVisibility(View.GONE);
                 cancelBtn.setVisibility(View.GONE);
                 break;

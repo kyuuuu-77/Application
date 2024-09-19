@@ -52,6 +52,8 @@
     <string name="text_checkWeight">측정되지 않음</string>
     <string name="text_checkTime">설정되지 않음</string>
     <string name="btn_bagdrop">백드랍 모드 시작</string>
+    <string name="text_leftTime">남은 시간 :</string>
+    <string name="text_hourMin">hh시간 mm분</string>
 
     <!-- 캐리어 정보 화면 -->
     <string name="deviceName">BLE :</string>
