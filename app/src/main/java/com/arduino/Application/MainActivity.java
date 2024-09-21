@@ -16,6 +16,7 @@ import android.bluetooth.le.BluetoothLeScanner;
 import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanResult;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.BitmapFactory;
@@ -29,6 +30,7 @@ import android.provider.Settings;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -411,7 +413,7 @@ public class MainActivity extends AppCompatActivity {
             Button overlayBtnIgnore = overlayView.findViewById(R.id.overlay_ignore);
 
             // 확인 버튼을 누른 경우
-            overlayBtnCheck.setOnClickListener(v -> {       
+            overlayBtnCheck.setOnClickListener(v -> {
                 checkOverlayPermission();
                 if (Settings.canDrawOverlays(MainActivity.this)) {
                     ringBell(false);
@@ -1151,7 +1153,7 @@ public class MainActivity extends AppCompatActivity {
         setHourMin = -1;
         weight[0] = 0;
         weight[1] = 0;
-        
+
         viewModel_weight.setWeightNow("-- Kg");
         viewModel_weight.setWeightInfo("무게 초과 여부 표시");
     }
@@ -1262,6 +1264,57 @@ public class MainActivity extends AppCompatActivity {
         checkAlertPermission();
 
         m.notify(1, builder.build());
+    }
+
+    // toolbar(자동검색,앱정보)
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        //action_setting 버튼이 선택되었을 때
+        if(item.getItemId()==R.id.action_settings){
+            showAutoSearchDialog();
+        }
+        // app_info 버튼이 선택되었을 때
+        if (id == R.id.app_info) {
+            // AlertDialog를 사용하여 팝업창 생성
+            new AlertDialog.Builder(this)
+                    .setTitle("앱 정보")
+                    .setMessage("이 앱은 사용자 정보를 관리하고 다양한 기능을 제공.")
+                    .setPositiveButton("확인", (dialog, which) -> {
+                        // "확인" 버튼을 누르면 다이얼로그 닫힘
+                        dialog.dismiss();
+                    })
+                    .show();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    // 자동검색 팝업창을 띄우는 메서드
+    private void showAutoSearchDialog()
+    {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("자동 검색")
+                .setMessage("자동 검색을 시작하시겠습니까?")
+                .setPositiveButton("시작", new DialogInterface.OnClickListener()
+                {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which)
+                    {
+                        // 실제 자동검색 로직 추가
+                        startAutoSearch();
+                    }
+                })
+                .setNegativeButton("취소", null)
+                .show();
+    }
+
+    // 자동검색 로직을 처리할 메서드
+    private void startAutoSearch()
+    {
+        // 여기에 자동검색 로직을 추가
+        Toast.makeText(this, "자동 검색을 시작합니다...", Toast.LENGTH_SHORT).show();
     }
 
     protected void onResume() {
