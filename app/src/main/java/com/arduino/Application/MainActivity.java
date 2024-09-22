@@ -16,7 +16,7 @@ import android.bluetooth.le.BluetoothLeScanner;
 import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanResult;
 import android.content.Context;
-import android.content.DialogInterface;
+
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.BitmapFactory;
@@ -1271,20 +1271,13 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        //action_setting 버튼이 선택되었을 때
-        if(item.getItemId()==R.id.action_settings){
+        if (id==R.id.action_settings) {
             showAutoSearchDialog();
-        }
-        // app_info 버튼이 선택되었을 때
-        if (id == R.id.app_info) {
-            // AlertDialog를 사용하여 팝업창 생성
+        } else if (id == R.id.app_info) {
             new AlertDialog.Builder(this)
                     .setTitle("앱 정보")
                     .setMessage("이 앱은 사용자 정보를 관리하고 다양한 기능을 제공.")
-                    .setPositiveButton("확인", (dialog, which) -> {
-                        // "확인" 버튼을 누르면 다이얼로그 닫힘
-                        dialog.dismiss();
-                    })
+                    .setPositiveButton("확인", (dialog, which) -> dialog.dismiss())
                     .show();
             return true;
         }
@@ -1292,28 +1285,17 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // 자동검색 팝업창을 띄우는 메서드
-    private void showAutoSearchDialog()
-    {
+    private void showAutoSearchDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("자동 검색")
                 .setMessage("자동 검색을 시작하시겠습니까?")
-                .setPositiveButton("시작", new DialogInterface.OnClickListener()
-                {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which)
-                    {
-                        // 실제 자동검색 로직 추가
-                        startAutoSearch();
-                    }
-                })
+                .setPositiveButton("시작", (dialog, which) -> startAutoSearch())
                 .setNegativeButton("취소", null)
                 .show();
     }
 
     // 자동검색 로직을 처리할 메서드
-    private void startAutoSearch()
-    {
-        // 여기에 자동검색 로직을 추가
+    private void startAutoSearch() {
         Toast.makeText(this, "자동 검색을 시작합니다...", Toast.LENGTH_SHORT).show();
     }
 
