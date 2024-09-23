@@ -363,6 +363,7 @@ public class WeightFragment extends Fragment {
                     }
                     item.setChecked(true);
                     lastCheckedWeight = item;
+                    drawerLayout.closeDrawers();
                 }
                 return true;
             });
