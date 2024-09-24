@@ -245,6 +245,48 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    // toolbar(자동검색,앱정보)
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if (id==R.id.action_settings) {
+            showAutoSearchDialog();
+        } else if (id == R.id.app_info) {
+            String version = getString(R.string.app_version);
+            String date = getString(R.string.app_date);
+            String update = getString(R.string.app_update_log);
+            String message = String.format("애플리케이션 버전 -> %s\n버전 날짜 -> %s\n업데이트 내역 -> %s", version, date, update);
+            new AlertDialog.Builder(this)
+                    .setTitle("앱 정보")
+                    .setMessage(message)
+                    .setPositiveButton("확인", (dialog, which) -> dialog.dismiss())
+                    .show();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    // 자동검색 팝업창을 띄우는 메서드
+    private void showAutoSearchDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("자동 검색")
+                .setMessage("자동 검색을 사용할까요?")
+                .setPositiveButton("사용", (dialog, which) -> {
+                    onAutoSearch = true;
+                    viewModel_info.setAutoSearch("자동 검색 사용중");
+                    Toast.makeText(this, "자동 검색이 켜졌습니다!", Toast.LENGTH_SHORT).show();
+                    dialog.dismiss();
+                })
+                .setNegativeButton("사용안함", ((dialog, which) -> {
+                    onAutoSearch = false;
+                    viewModel_info.setAutoSearch("자동 검색 꺼짐");
+                    Toast.makeText(this, "자동 검색이 꺼집니다.", Toast.LENGTH_SHORT).show();
+                    dialog.dismiss();
+                }))
+                .show();
+    }
+
     // 블루투스를 켜는 메서드 -> SDK 31 이상 (안드로이드 12 이상)
     @RequiresApi(api = Build.VERSION_CODES.S)
     public void BT_on() {
@@ -319,6 +361,7 @@ public class MainActivity extends AppCompatActivity {
             viewModel_home.setHomeText("캐리어에 연결되지 않음");
             viewModel_home.setBtBtn("블루투스 끄기");
             viewModel_home.setConnectBtn("연결");
+            viewModel_info.setAutoSearch("자동 검색 사용중");
             Toast.makeText(getApplicationContext(), "블루투스 활성화", Toast.LENGTH_SHORT).show();
         });
     }
@@ -335,6 +378,7 @@ public class MainActivity extends AppCompatActivity {
             viewModel_home.setBtBtn("블루투스 켜기");
             viewModel_home.setConnectBtn("연결 불가");
             viewModel_info.setdeviceName("X");
+            viewModel_info.setAutoSearch("자동 검색 꺼짐");
             viewModel_info.setInfoText("블루투스가 꺼짐");
             Toast.makeText(getApplicationContext(), "블루투스 비활성화", Toast.LENGTH_SHORT).show();
         });
@@ -574,6 +618,7 @@ public class MainActivity extends AppCompatActivity {
                 .setNegativeButton("취소", (dialog, which) -> {
                     isDialogShowing = false;
                     onAutoSearch = false;
+                    viewModel_info.setAutoSearch("자동 검색 꺼짐");
                     dialog.dismiss();
                     stopLeScan();
                 })
@@ -880,7 +925,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    // 배터리 정보를 확인하는 메서드
+    // 배터리 정보(잔량 및 전압)를 확인하는 메서드
     public void checkBattery() {
         if (writeCharacteristic != null && checkBLE() == BluetoothGatt.STATE_CONNECTED) {
             // 데이터 초기화
@@ -894,26 +939,31 @@ public class MainActivity extends AppCompatActivity {
                 if (data == null) {
                     viewModel_info.setBatteryText("정보없음");
                     Toast.makeText(getApplicationContext(), "배터리 정보 취득 실패", Toast.LENGTH_SHORT).show();
-                } else {
-                    switch (Integer.parseInt(data.trim())) {
-                        case 0:     // 방전중일 경우
-                            viewModel_info.setBatteryText("정상");
-                            break;
-                        case 1:     // 충전중일 경우
-                            viewModel_info.setBatteryText("충전중");
-                            break;
-                        case 2:     // 완충된 경우
-                            viewModel_info.setBatteryText("충전됨");
-                            break;
-                        default:    // 정보 취득에 실패한 경우
-                            viewModel_info.setBatteryText("정보없음");
-                            break;
+                } else {    // 수신 데이터 -> "45" = 배터리 잔량이 45%, "45+" 배터리 잔량이 45%이고 충전중임. "100+" 완충됨
+                    data = data.trim();
+                    if (data.charAt(data.length() - 1) == '+') {      // 충전중이면
+                        viewModel_info.setBatteryText("충전중");
+                    } else {        // 방전중이면
+                        viewModel_info.setBatteryText(data.substring(0, data.length() - 1));
                     }
+                }
+            });
+
+            data = null;
+            sendData("menu 5");
+
+            checkData();
+            runOnUiThread(() -> {
+                if (data == null) {
+                    viewModel_info.setBatteryVolt("NULL");
+                } else {
+                    viewModel_info.setBatteryVolt(data);
                 }
             });
         } else {
             runOnUiThread(() -> {
                 viewModel_info.setBatteryText("정보없음");
+                viewModel_info.setBatteryVolt("NULL");
                 Toast.makeText(getApplicationContext(), "배터리 정보 취득 실패", Toast.LENGTH_SHORT).show();
             });
         }
@@ -1156,6 +1206,7 @@ public class MainActivity extends AppCompatActivity {
 
         viewModel_weight.setWeightNow("-- Kg");
         viewModel_weight.setWeightInfo("무게 초과 여부 표시");
+        viewModel_info.setAutoSearch("자동 검색 꺼짐");
     }
 
     // 시간 설정을 저장하는 메서드
@@ -1264,39 +1315,6 @@ public class MainActivity extends AppCompatActivity {
         checkAlertPermission();
 
         m.notify(1, builder.build());
-    }
-
-    // toolbar(자동검색,앱정보)
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-
-        if (id==R.id.action_settings) {
-            showAutoSearchDialog();
-        } else if (id == R.id.app_info) {
-            new AlertDialog.Builder(this)
-                    .setTitle("앱 정보")
-                    .setMessage("이 앱은 사용자 정보를 관리하고 다양한 기능을 제공.")
-                    .setPositiveButton("확인", (dialog, which) -> dialog.dismiss())
-                    .show();
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    // 자동검색 팝업창을 띄우는 메서드
-    private void showAutoSearchDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("자동 검색")
-                .setMessage("자동 검색을 시작하시겠습니까?")
-                .setPositiveButton("시작", (dialog, which) -> startAutoSearch())
-                .setNegativeButton("취소", null)
-                .show();
-    }
-
-    // 자동검색 로직을 처리할 메서드
-    private void startAutoSearch() {
-        Toast.makeText(this, "자동 검색을 시작합니다...", Toast.LENGTH_SHORT).show();
     }
 
     protected void onResume() {

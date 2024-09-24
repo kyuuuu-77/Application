@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel;
 public class InfoViewModel extends ViewModel {
 
     private final MutableLiveData<String> batteryTextLiveData = new MutableLiveData<>();
+    private final MutableLiveData<String> batteryVoltLiveData = new MutableLiveData<>();
     private final MutableLiveData<String> deviceNameLiveData = new MutableLiveData<>();
     private final MutableLiveData<String> rssiLiveData = new MutableLiveData<>();
     private final MutableLiveData<String> autoSearchLiveData = new MutableLiveData<>();
@@ -20,6 +21,15 @@ public class InfoViewModel extends ViewModel {
     public void setBatteryText(String batt) {
         batteryTextLiveData.setValue(batt);
     }
+
+    // 배터리 전압 정보 텍스트
+    public LiveData<String> getbatteryVoltLiveData() {
+        return batteryVoltLiveData;
+    }
+    public void setBatteryVolt(String volt) {
+        batteryVoltLiveData.setValue(volt);
+    }
+
 
     // 디바이스 이름
     public LiveData<String> getdeviceNameLiveData() {

@@ -1,5 +1,6 @@
 package com.arduino.Application.ui.info;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -32,6 +33,7 @@ public class InfoFragment extends Fragment {
 
     TextView deviceName;
     TextView battText;
+    TextView battVolt;
     TextView rssiTextView;
     TextView auto_search_status;
     TextView security_status;
@@ -47,6 +49,7 @@ public class InfoFragment extends Fragment {
 
     private FragmentInfoBinding binding;
 
+    @SuppressLint("SetTextI18n")
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         infoViewModel = new ViewModelProvider(requireActivity()).get(InfoViewModel.class);
@@ -61,6 +64,7 @@ public class InfoFragment extends Fragment {
 
         deviceName = root.findViewById(R.id.ble_device);
         battText = root.findViewById(R.id.batteryText);
+        battVolt = root.findViewById(R.id.batteryVoltage);
         rssiTextView = root.findViewById(R.id.rssi_signal);
         auto_search_status = root.findViewById(R.id.auto_search);
         security_status = root.findViewById(R.id.security);
@@ -75,21 +79,34 @@ public class InfoFragment extends Fragment {
         // ViewModel 선언
         infoViewModel.getdeviceNameLiveData().observe(getViewLifecycleOwner(), name -> deviceName.setText(name));
         infoViewModel.getbatteryTextLiveData().observe(getViewLifecycleOwner(), batt -> {
-            switch (batt) {
-                case "정상":     // 방전중일 경우
-                    Bat_icon.setImageResource(R.drawable.info_bat_normal);
-                    break;
-                case "충전중":     // 충전중일 경우
+            if (Objects.equals(batt, "정보없음")) {
+                battText.setText(batt);
+                Bat_icon.setImageResource(R.drawable.info_bat_unknown);
+            } else {
+                if (Objects.equals(batt, "충전중")) {
+                    battText.setText(batt);
                     Bat_icon.setImageResource(R.drawable.info_bat_charging);
-                    break;
-                case "충전됨":     // 완충된 경우
-                    Bat_icon.setImageResource(R.drawable.info_bat_full);
-                    break;
-                case "정보없음":    // 정보 취득에 실패한 경우
-                    Bat_icon.setImageResource(R.drawable.info_bat_unknown);
-                    break;
+                } else {
+                    int battery = Integer.parseInt(batt);
+                    if (battery >= 80) {
+                        Bat_icon.setImageResource(R.drawable.info_bat_full);
+                    } else if (battery >= 60) {
+                        Bat_icon.setImageResource(R.drawable.info_bat_normal);
+                    } else if (battery >= 40) {
+                        Bat_icon.setImageResource(R.drawable.info_bat_low);
+                    } else {
+                        Bat_icon.setImageResource(R.drawable.info_bat_very_row);
+                    }
+                    battText.setText(batt + " %");
+                }
             }
-            battText.setText(batt);
+        });
+        infoViewModel.getbatteryVoltLiveData().observe(getViewLifecycleOwner(), volt -> {
+            if (Objects.equals(volt, "NULL")) {
+                battVolt.setText(volt);
+            } else {
+                battVolt.setText(volt+" V");
+            }
         });
         infoViewModel.getRssiLiveData().observe(getViewLifecycleOwner(), rssi -> {
             if (Objects.equals(rssi, "RSSI 측정 불가")) {       // rssi 값을 측정할 수 없는 경우
