@@ -109,7 +109,7 @@ public class InfoFragment extends Fragment {
             }
         });
         infoViewModel.getRssiLiveData().observe(getViewLifecycleOwner(), rssi -> {
-            if (Objects.equals(rssi, "RSSI 측정 불가")) {       // rssi 값을 측정할 수 없는 경우
+            if (Objects.equals(rssi, "측정 불가")) {       // rssi 값을 측정할 수 없는 경우
                 RSSI_icon.setImageResource(R.drawable.info_rssi_off);
             } else {    // rssi 값을 측정하고 있는 경우
                 RSSI_icon.setImageResource(R.drawable.info_rssi_on);
@@ -117,7 +117,7 @@ public class InfoFragment extends Fragment {
             rssiTextView.setText(rssi);
         });
         infoViewModel.getAutoSearchLiveData().observe(getViewLifecycleOwner(), search -> {
-            if (Objects.equals(search, "자동 검색 사용중")) {      // 자동 검색이 켜져 있으면
+            if (Objects.equals(search, "사용중")) {      // 자동 검색이 켜져 있으면
                 Search_icon.setImageResource(R.drawable.info_search_on);
             } else {        // 자동 검색이 꺼져 있으면
                 Search_icon.setImageResource(R.drawable.info_search_off);
@@ -125,7 +125,7 @@ public class InfoFragment extends Fragment {
             auto_search_status.setText(search);
         });
         infoViewModel.getSecurityLiveData().observe(getViewLifecycleOwner(), security -> {
-            if (Objects.equals(security, "도난방지 켜짐")) {      // 도난 방지가 켜져 있으면
+            if (Objects.equals(security, "사용중")) {      // 도난 방지가 켜져 있으면
                 Security_icon.setImageResource(R.drawable.info_security_on);
             } else {        // 도난 방지가 꺼져 있으면
                 Security_icon.setImageResource(R.drawable.info_security_off);
@@ -134,15 +134,15 @@ public class InfoFragment extends Fragment {
         });
         infoViewModel.getInfoTextLiveData().observe(getViewLifecycleOwner(), text -> {
             switch (text) {
-                case "블루투스를 지원 X":
-                case "블루투스가 꺼짐":
+                case "지원안함":
+                case "비활성화":
                     BT_icon.setImageResource(R.drawable.info_bt_off);
                     break;
-                case "연결되지 않음":
-                case "송수신 불가능":
+                case "활성화":
+                case "통신불가":
                     BT_icon.setImageResource(R.drawable.info_bt_on);
                     break;
-                case "정상적으로 연결됨":
+                case "연결됨":
                     BT_icon.setImageResource(R.drawable.info_bt_connect);
                     break;
             }
