@@ -745,7 +745,7 @@ public class MainActivity extends AppCompatActivity {
             viewModel_weight.setWeightBtn("무게 측정 불가");
             viewModel_bagDrop.setConnectText("연결되지 않음");
             viewModel_info.setdeviceName("X");
-            viewModel_info.setRssi("측정 불가");
+            viewModel_info.setRssi("측정불가");
             viewModel_info.setSecurity("사용안함");
             viewModel_info.setInfoText("활성화");
             Toast.makeText(getApplicationContext(), "디바이스와의 연결이 끊어졌습니다", Toast.LENGTH_SHORT).show();
@@ -1016,7 +1016,7 @@ public class MainActivity extends AppCompatActivity {
     public void checkRssi() {
         runOnUiThread(() -> {
             if (!rssiSignal) {
-                viewModel_info.setRssi("측정 불가");
+                viewModel_info.setRssi("측정불가");
             }
         });
     }

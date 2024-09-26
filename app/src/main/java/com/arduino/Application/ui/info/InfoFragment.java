@@ -35,8 +35,10 @@ public class InfoFragment extends Fragment {
     TextView battText;
     TextView battVolt;
     TextView rssiTextView;
+    TextView rssiSub;
     TextView auto_search_status;
     TextView security_status;
+    TextView securitySub;
     TextView infoText;
 
     ImageView Bat_icon;
@@ -66,8 +68,10 @@ public class InfoFragment extends Fragment {
         battText = root.findViewById(R.id.batteryText);
         battVolt = root.findViewById(R.id.batteryVoltage);
         rssiTextView = root.findViewById(R.id.rssi_signal);
+        rssiSub = root.findViewById(R.id.rssi_sub);
         auto_search_status = root.findViewById(R.id.auto_search);
         security_status = root.findViewById(R.id.security);
+        securitySub = root.findViewById(R.id.security_sub);
         infoText = root.findViewById(R.id.text_info);
 
         Bat_icon = root.findViewById(R.id.battery);
@@ -109,8 +113,9 @@ public class InfoFragment extends Fragment {
             }
         });
         infoViewModel.getRssiLiveData().observe(getViewLifecycleOwner(), rssi -> {
-            if (Objects.equals(rssi, "측정 불가")) {       // rssi 값을 측정할 수 없는 경우
+            if (Objects.equals(rssi, "측정불가")) {       // rssi 값을 측정할 수 없는 경우
                 RSSI_icon.setImageResource(R.drawable.info_rssi_off);
+                rssiSub.setText("신호 없음");
             } else {    // rssi 값을 측정하고 있는 경우
                 RSSI_icon.setImageResource(R.drawable.info_rssi_on);
             }
@@ -127,8 +132,10 @@ public class InfoFragment extends Fragment {
         infoViewModel.getSecurityLiveData().observe(getViewLifecycleOwner(), security -> {
             if (Objects.equals(security, "사용중")) {      // 도난 방지가 켜져 있으면
                 Security_icon.setImageResource(R.drawable.info_security_on);
+                securitySub.setText("도난방지 켜짐");
             } else {        // 도난 방지가 꺼져 있으면
                 Security_icon.setImageResource(R.drawable.info_security_off);
+                securitySub.setText("도난방지 꺼짐");
             }
             security_status.setText(security);
         });
@@ -137,10 +144,12 @@ public class InfoFragment extends Fragment {
                 case "지원안함":
                 case "비활성화":
                     BT_icon.setImageResource(R.drawable.info_bt_off);
+                    infoViewModel.setdeviceName("블루투스 꺼짐");
                     break;
                 case "활성화":
                 case "통신불가":
                     BT_icon.setImageResource(R.drawable.info_bt_on);
+                    infoViewModel.setdeviceName("블루투스 켜짐");
                     break;
                 case "연결됨":
                     BT_icon.setImageResource(R.drawable.info_bt_connect);

@@ -60,11 +60,11 @@
     <!-- 캐리어 정보 화면 -->
     <string name="text_autoSearch">자동검색 꺼짐</string>
     <string name="title_rssi">신호세기</string>
-    <string name="main_rssi">-60dBm</string>
+    <string name="main_rssi">측정불가</string>
     <string name="sub_rssi">신호 없음</string>
     <string name="title_battery">배터리</string>
     <string name="main_battery">정보없음</string>
-    <string name="sub_battery">Null Voltage</string>
+    <string name="sub_battery">Null</string>
     <string name="title_security">도난방지</string>
     <string name="main_security">사용안함</string>
     <string name="sub_security">도난방지 꺼짐</string>

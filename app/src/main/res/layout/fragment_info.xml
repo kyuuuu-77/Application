@@ -71,7 +71,7 @@
             app:layout_constraintVertical_bias="0">
 
             <LinearLayout
-                android:layout_width="140dp"
+                android:layout_width="150dp"
                 android:layout_height="120dp"
                 android:layout_margin="12dp"
                 android:background="@drawable/icon_rounded"
@@ -109,11 +109,12 @@
                         android:layout_marginStart="5dp"
                         android:text="@string/main_rssi"
                         android:textColor="@color/black"
-                        android:textSize="19sp"
+                        android:textSize="20sp"
                         android:textStyle="bold" />
                 </LinearLayout>
 
                 <TextView
+                    android:id="@+id/rssi_sub"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="5dp"
@@ -122,7 +123,7 @@
             </LinearLayout>
 
             <LinearLayout
-                android:layout_width="140dp"
+                android:layout_width="150dp"
                 android:layout_height="120dp"
                 android:layout_margin="12dp"
                 android:background="@drawable/icon_rounded"
@@ -160,7 +161,7 @@
                         android:layout_marginStart="5dp"
                         android:text="@string/main_battery"
                         android:textColor="@color/black"
-                        android:textSize="19sp"
+                        android:textSize="20sp"
                         android:textStyle="bold" />
                 </LinearLayout>
 
@@ -184,7 +185,7 @@
             app:layout_constraintVertical_bias="1">
 
             <LinearLayout
-                android:layout_width="140dp"
+                android:layout_width="150dp"
                 android:layout_height="120dp"
                 android:layout_margin="12dp"
                 android:background="@drawable/icon_rounded"
@@ -222,11 +223,12 @@
                         android:layout_marginStart="5dp"
                         android:text="@string/main_security"
                         android:textColor="@color/black"
-                        android:textSize="19sp"
+                        android:textSize="20sp"
                         android:textStyle="bold" />
                 </LinearLayout>
 
                 <TextView
+                    android:id="@+id/security_sub"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="5dp"
@@ -235,7 +237,7 @@
             </LinearLayout>
 
             <LinearLayout
-                android:layout_width="140dp"
+                android:layout_width="150dp"
                 android:layout_height="120dp"
                 android:layout_margin="12dp"
                 android:background="@drawable/icon_rounded"
@@ -273,7 +275,7 @@
                         android:layout_marginStart="5dp"
                         android:text="@string/main_bt"
                         android:textColor="@color/black"
-                        android:textSize="19sp"
+                        android:textSize="20sp"
                         android:textStyle="bold" />
                 </LinearLayout>
 
