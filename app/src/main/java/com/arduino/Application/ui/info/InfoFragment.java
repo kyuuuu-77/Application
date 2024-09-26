@@ -117,7 +117,7 @@ public class InfoFragment extends Fragment {
             rssiTextView.setText(rssi);
         });
         infoViewModel.getAutoSearchLiveData().observe(getViewLifecycleOwner(), search -> {
-            if (Objects.equals(search, "사용중")) {      // 자동 검색이 켜져 있으면
+            if (Objects.equals(search, "자동검색 켜짐")) {      // 자동 검색이 켜져 있으면
                 Search_icon.setImageResource(R.drawable.info_search_on);
             } else {        // 자동 검색이 꺼져 있으면
                 Search_icon.setImageResource(R.drawable.info_search_off);

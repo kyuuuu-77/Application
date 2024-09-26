@@ -58,13 +58,19 @@
     <string name="text_hourMin">hh시간 mm분</string>
 
     <!-- 캐리어 정보 화면 -->
-    <string name="deviceName">BLE :</string>
-    <string name="batteryText">배터리</string>
-    <string name="voltageText">배터리 전압</string>
-    <string name="rssi_value">RSSI 신호 상태</string>
-    <string name="auto_search_text">자동 검색 상태</string>
-    <string name="security_status">도난 방지 상태</string>
-    <string name="info_text">블루투스 상태</string>
+    <string name="text_autoSearch">자동검색 꺼짐</string>
+    <string name="title_rssi">신호세기</string>
+    <string name="main_rssi">-60dBm</string>
+    <string name="sub_rssi">신호 없음</string>
+    <string name="title_battery">배터리</string>
+    <string name="main_battery">정보없음</string>
+    <string name="sub_battery">Null Voltage</string>
+    <string name="title_security">도난방지</string>
+    <string name="main_security">사용안함</string>
+    <string name="sub_security">도난방지 꺼짐</string>
+    <string name="title_bluetooth">블루투스</string>
+    <string name="main_bt">비활성화</string>
+    <string name="sub_bt">블루투스 꺼짐</string>
     <string name="resetBtn">설정 초기화</string>
 
     <!-- 앱서랍 화면 -->

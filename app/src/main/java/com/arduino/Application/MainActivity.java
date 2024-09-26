@@ -274,13 +274,13 @@ public class MainActivity extends AppCompatActivity {
                 .setMessage("자동 검색을 사용할까요?")
                 .setPositiveButton("사용", (dialog, which) -> {
                     onAutoSearch = true;
-                    viewModel_info.setAutoSearch("사용중");
+                    viewModel_info.setAutoSearch("자동검색 켜짐");
                     Toast.makeText(this, "자동 검색이 켜졌습니다!", Toast.LENGTH_SHORT).show();
                     dialog.dismiss();
                 })
                 .setNegativeButton("사용안함", ((dialog, which) -> {
                     onAutoSearch = false;
-                    viewModel_info.setAutoSearch("사용안함");
+                    viewModel_info.setAutoSearch("자동검색 꺼짐");
                     Toast.makeText(this, "자동 검색이 꺼집니다.", Toast.LENGTH_SHORT).show();
                     dialog.dismiss();
                 }))
@@ -361,7 +361,7 @@ public class MainActivity extends AppCompatActivity {
             viewModel_home.setHomeText("캐리어에 연결되지 않음");
             viewModel_home.setBtBtn("블루투스 끄기");
             viewModel_home.setConnectBtn("연결");
-            viewModel_info.setAutoSearch("사용중");
+            viewModel_info.setAutoSearch("자동검색 켜짐");
             Toast.makeText(getApplicationContext(), "블루투스 활성화", Toast.LENGTH_SHORT).show();
         });
     }
@@ -378,7 +378,7 @@ public class MainActivity extends AppCompatActivity {
             viewModel_home.setBtBtn("블루투스 켜기");
             viewModel_home.setConnectBtn("연결 불가");
             viewModel_info.setdeviceName("X");
-            viewModel_info.setAutoSearch("사용안함");
+            viewModel_info.setAutoSearch("자동검색 켜짐");
             viewModel_info.setInfoText("비활성화");
             Toast.makeText(getApplicationContext(), "블루투스 비활성화", Toast.LENGTH_SHORT).show();
         });
@@ -618,7 +618,7 @@ public class MainActivity extends AppCompatActivity {
                 .setNegativeButton("취소", (dialog, which) -> {
                     isDialogShowing = false;
                     onAutoSearch = false;
-                    viewModel_info.setAutoSearch("사용안함");
+                    viewModel_info.setAutoSearch("자동검색 꺼짐");
                     dialog.dismiss();
                     stopLeScan();
                 })
@@ -1025,9 +1025,9 @@ public class MainActivity extends AppCompatActivity {
     public void checkAutoSearch() {
         runOnUiThread(() -> {
             if (onAutoSearch) {
-                viewModel_info.setAutoSearch("사용중");
+                viewModel_info.setAutoSearch("자동검색 켜짐");
             } else {
-                viewModel_info.setAutoSearch("사용안함");
+                viewModel_info.setAutoSearch("자동검색 꺼짐");
             }
         });
     }
@@ -1206,7 +1206,7 @@ public class MainActivity extends AppCompatActivity {
 
         viewModel_weight.setWeightNow("-- Kg");
         viewModel_weight.setWeightInfo("무게 초과 여부 표시");
-        viewModel_info.setAutoSearch("사용안함");
+        viewModel_info.setAutoSearch("자동검색 꺼짐");
     }
 
     // 시간 설정을 저장하는 메서드
