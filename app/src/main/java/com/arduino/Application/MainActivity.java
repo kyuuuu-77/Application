@@ -745,8 +745,8 @@ public class MainActivity extends AppCompatActivity {
             viewModel_weight.setWeightBtn("무게 측정 불가");
             viewModel_bagDrop.setConnectText("연결되지 않음");
             viewModel_info.setdeviceName("X");
-            viewModel_info.setRssi("측정불가");
-            viewModel_info.setSecurity("사용안함");
+            viewModel_info.setRssi(999);
+            viewModel_info.setSecurity(false);
             viewModel_info.setBleStatus(1);
             Toast.makeText(getApplicationContext(), "디바이스와의 연결이 끊어졌습니다", Toast.LENGTH_SHORT).show();
         });
@@ -907,7 +907,7 @@ public class MainActivity extends AppCompatActivity {
                     });
                 }
             }
-            handler_RSSI.post(() -> runOnUiThread(() -> viewModel_info.setRssi(rssi_global + " dBm")));
+            handler_RSSI.post(() -> viewModel_info.setRssi(rssi_global));
         }
     };
 
@@ -937,14 +937,14 @@ public class MainActivity extends AppCompatActivity {
             runOnUiThread(() -> {
                 // 배터리 정보를 받지 못했으면
                 if (data == null) {
-                    viewModel_info.setBatteryText("정보없음");
+                    viewModel_info.setBattery(-1);
                     Toast.makeText(getApplicationContext(), "배터리 정보 취득 실패", Toast.LENGTH_SHORT).show();
                 } else {    // 수신 데이터 -> "45" = 배터리 잔량이 45%, "45+" 배터리 잔량이 45%이고 충전중임. "100+" 완충됨
                     data = data.trim();
                     if (data.charAt(data.length() - 1) == '+') {      // 충전중이면
-                        viewModel_info.setBatteryText("충전중");
+                        viewModel_info.setBattery(999);
                     } else {        // 방전중이면
-                        viewModel_info.setBatteryText(data.substring(0, data.length() - 1));
+                        viewModel_info.setBattery(Integer.parseInt(data));
                     }
                 }
             });
@@ -955,15 +955,15 @@ public class MainActivity extends AppCompatActivity {
             checkData();
             runOnUiThread(() -> {
                 if (data == null) {
-                    viewModel_info.setBatteryVolt("NULL");
+                    viewModel_info.setBatteryVolt(-1);
                 } else {
-                    viewModel_info.setBatteryVolt(data);
+                    viewModel_info.setBatteryVolt(Double.parseDouble(data));
                 }
             });
         } else {
             runOnUiThread(() -> {
-                viewModel_info.setBatteryText("정보없음");
-                viewModel_info.setBatteryVolt("NULL");
+                viewModel_info.setBattery(-1);
+                viewModel_info.setBatteryVolt(-1);
                 Toast.makeText(getApplicationContext(), "배터리 정보 취득 실패", Toast.LENGTH_SHORT).show();
             });
         }
@@ -1016,7 +1016,7 @@ public class MainActivity extends AppCompatActivity {
     public void checkRssi() {
         runOnUiThread(() -> {
             if (!rssiSignal) {
-                viewModel_info.setRssi("측정불가");
+                viewModel_info.setRssi(999);
             }
         });
     }
@@ -1037,10 +1037,10 @@ public class MainActivity extends AppCompatActivity {
         runOnUiThread(() -> {
             if (security) {
                 viewModel_find.setAlertStatus("도난방지 켜짐");
-                viewModel_info.setSecurity("사용중");
+                viewModel_info.setSecurity(true);
             } else {
                 viewModel_find.setAlertStatus("도난방지 꺼짐");
-                viewModel_info.setSecurity("사용안함");
+                viewModel_info.setSecurity(false);
             }
         });
         return security;
@@ -1049,7 +1049,6 @@ public class MainActivity extends AppCompatActivity {
     // 도난방지 ON 메서드
     public boolean security_ON() {
         checkSecurity();
-
         security = true;
         createNotif("security", "도난방지 동작", "도난방지 모드가 동작합니다.\n캐리어와 멀어지는 경우 알림을 받을 수 있습니다.");
         Toast.makeText(getApplicationContext(), "도난방지가 켜졌습니다.", Toast.LENGTH_SHORT).show();

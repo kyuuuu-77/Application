@@ -7,15 +7,15 @@ import androidx.lifecycle.ViewModel;
 public class InfoViewModel extends ViewModel {
 
     private final MutableLiveData<Boolean> autoSearchLiveData = new MutableLiveData<>(true);     // 자동검색
-    private final MutableLiveData<String> rssiLiveData = new MutableLiveData<>();           // RSSI 세기
-    private final MutableLiveData<String> batteryTextLiveData = new MutableLiveData<>();    // 배터리 잔량
-    private final MutableLiveData<String> batteryVoltLiveData = new MutableLiveData<>();    // 배터리 전압
-    private final MutableLiveData<String> securityLiveData = new MutableLiveData<>();       // 도난방지
-    private final MutableLiveData<Integer> bleStatusLiveData = new MutableLiveData<>();       // 블루투스 상태
+    private final MutableLiveData<Integer> rssiLiveData = new MutableLiveData<>();          // RSSI 세기
+    private final MutableLiveData<Integer> batteryLiveData = new MutableLiveData<>();       // 배터리 잔량
+    private final MutableLiveData<Double> batteryVoltLiveData = new MutableLiveData<>();    // 배터리 전압
+    private final MutableLiveData<Boolean> securityLiveData = new MutableLiveData<>();      // 도난방지
+    private final MutableLiveData<Integer> bleStatusLiveData = new MutableLiveData<>();     // 블루투스 상태
     private final MutableLiveData<String> deviceNameLiveData = new MutableLiveData<>();     // 블루투스 디바이스 이름
 
     // 캐리어 자동 검색
-    // 동작중이면 1, 아니면 0
+    // 동작중이면 true, 아니면 false
     public LiveData<Boolean> getAutoSearchLiveData() {
         return autoSearchLiveData;
     }
@@ -24,34 +24,35 @@ public class InfoViewModel extends ViewModel {
     }
 
     // 신호 세기
-    public LiveData<String> getRssiLiveData() {
+    public LiveData<Integer> getRssiLiveData() {
         return rssiLiveData;
     }
-    public void setRssi(String rssi) {
+    public void setRssi(int rssi) {
         rssiLiveData.setValue(rssi);
     }
 
     // 배터리 정보
-    public LiveData<String> getbatteryTextLiveData() {
-        return batteryTextLiveData;
+    public LiveData<Integer> getBatteryLiveData() {
+        return batteryLiveData;
     }
-    public void setBatteryText(String batt) {
-        batteryTextLiveData.setValue(batt);
+    public void setBattery(int batt) {
+        batteryLiveData.setValue(batt);
     }
 
     // 배터리 전압 정보 텍스트
-    public LiveData<String> getbatteryVoltLiveData() {
+    public LiveData<Double> getbatteryVoltLiveData() {
         return batteryVoltLiveData;
     }
-    public void setBatteryVolt(String volt) {
-        batteryVoltLiveData.setValue(volt);
+    public void setBatteryVolt(double voltage) {
+        batteryVoltLiveData.setValue(voltage);
     }
 
     // 도난방지 상태
-    public LiveData<String> getSecurityLiveData() {
+    // 사용하면 true, 사용 안하면 false
+    public LiveData<Boolean> getSecurityLiveData() {
         return securityLiveData;
     }
-    public void setSecurity(String security) {
+    public void setSecurity(boolean security) {
         securityLiveData.setValue(security);
     }
 
