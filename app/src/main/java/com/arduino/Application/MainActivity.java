@@ -1024,11 +1024,7 @@ public class MainActivity extends AppCompatActivity {
     // 자동 검색 여부를 확인하는 메서드
     public void checkAutoSearch() {
         runOnUiThread(() -> {
-            if (onAutoSearch) {
-                viewModel_info.setAutoSearch(true);
-            } else {
-                viewModel_info.setAutoSearch(false);
-            }
+            viewModel_info.setAutoSearch(onAutoSearch);
         });
     }
 
