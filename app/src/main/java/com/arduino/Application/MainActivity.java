@@ -1202,6 +1202,7 @@ public class MainActivity extends AppCompatActivity {
         viewModel_weight.setWeightNow("-- Kg");
         viewModel_weight.setWeightInfo("무게 초과 여부 표시");
         viewModel_info.setAutoSearch(false);
+        viewModel_info.setSecurity(false);
     }
 
     // 시간 설정을 저장하는 메서드
