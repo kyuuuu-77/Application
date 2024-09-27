@@ -742,7 +742,7 @@ public class MainActivity extends AppCompatActivity {
             viewModel_find.setAlertStatus("도난방지 꺼짐");
             viewModel_find.setAlertBtnText("도난방지 사용불가");
             viewModel_find.setDistance("캐리어와의 거리");
-            viewModel_weight.setWeightBtn("무게 측정 불가");
+            viewModel_weight.setWeightBtn(0);
             viewModel_bagDrop.setConnectText("연결되지 않음");
             viewModel_info.setdeviceName("X");
             viewModel_info.setRssi(999);
@@ -989,24 +989,24 @@ public class MainActivity extends AppCompatActivity {
             double tmp_weight = Double.parseDouble(data);
             weight[0] = tmp_weight;
             weight[1] = maxSet;
-            runOnUiThread(() -> viewModel_weight.setWeightNow(String.format("%.1f", weight[0]) +" Kg"));
+            runOnUiThread(() -> viewModel_weight.setWeightNow(tmp_weight));
 
             runOnUiThread(() -> {
                 if (weight[0] > 32) {                    // 32kg 초과시
-                    viewModel_weight.setWeightInfo("32Kg을 초과했습니다.");
+                    viewModel_weight.setWeightInfo(999);
                 } else if (weight[0] > weight[1]) {      // 허용무게 초과시
-                    viewModel_weight.setWeightInfo(String.format("%.1f", weight[0] - weight[1]) + " Kg  초과했습니다.");
+                    viewModel_weight.setWeightInfo(weight[0] - weight[1]);
                 } else {                                // 무게 초과하지 않은 경우
-                    viewModel_weight.setWeightInfo("허용 무게를 초과하지 않았습니다.");
+                    viewModel_weight.setWeightInfo(0);
                 }
             });
 
-            runOnUiThread(() -> viewModel_weight.setWeightBtn("무게 다시 측정"));
+            runOnUiThread(() -> viewModel_weight.setWeightBtn(2));
             return weight[0];
         } else {
             runOnUiThread(() -> {
-                viewModel_weight.setWeightInfo("무게 측정에 실패하였습니다.");
-                viewModel_weight.setWeightBtn("무게 측정 실패");
+                viewModel_weight.setWeightInfo(-999);
+                viewModel_weight.setWeightBtn(-1);
             });
             return -1;
         }
@@ -1023,9 +1023,7 @@ public class MainActivity extends AppCompatActivity {
 
     // 자동 검색 여부를 확인하는 메서드
     public void checkAutoSearch() {
-        runOnUiThread(() -> {
-            viewModel_info.setAutoSearch(onAutoSearch);
-        });
+        runOnUiThread(() -> viewModel_info.setAutoSearch(onAutoSearch));
     }
 
     // 도난방지 여부를 확인하는 메서드
@@ -1199,8 +1197,8 @@ public class MainActivity extends AppCompatActivity {
         weight[0] = 0;
         weight[1] = 0;
 
-        viewModel_weight.setWeightNow("-- Kg");
-        viewModel_weight.setWeightInfo("무게 초과 여부 표시");
+        viewModel_weight.setWeightNow((double) -1);
+        viewModel_weight.setWeightInfo(-1);
         viewModel_info.setAutoSearch(false);
         viewModel_info.setSecurity(false);
     }
