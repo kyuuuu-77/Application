@@ -274,13 +274,13 @@ public class MainActivity extends AppCompatActivity {
                 .setMessage("자동 검색을 사용할까요?")
                 .setPositiveButton("사용", (dialog, which) -> {
                     onAutoSearch = true;
-                    viewModel_info.setAutoSearch("자동 검색 사용중");
+                    viewModel_info.setAutoSearch(true);
                     Toast.makeText(this, "자동 검색이 켜졌습니다!", Toast.LENGTH_SHORT).show();
                     dialog.dismiss();
                 })
                 .setNegativeButton("사용안함", ((dialog, which) -> {
                     onAutoSearch = false;
-                    viewModel_info.setAutoSearch("자동 검색 꺼짐");
+                    viewModel_info.setAutoSearch(false);
                     Toast.makeText(this, "자동 검색이 꺼집니다.", Toast.LENGTH_SHORT).show();
                     dialog.dismiss();
                 }))
@@ -361,7 +361,7 @@ public class MainActivity extends AppCompatActivity {
             viewModel_home.setHomeText("캐리어에 연결되지 않음");
             viewModel_home.setBtBtn("블루투스 끄기");
             viewModel_home.setConnectBtn("연결");
-            viewModel_info.setAutoSearch("자동 검색 사용중");
+            viewModel_info.setAutoSearch(true);
             Toast.makeText(getApplicationContext(), "블루투스 활성화", Toast.LENGTH_SHORT).show();
         });
     }
@@ -378,8 +378,8 @@ public class MainActivity extends AppCompatActivity {
             viewModel_home.setBtBtn("블루투스 켜기");
             viewModel_home.setConnectBtn("연결 불가");
             viewModel_info.setdeviceName("X");
-            viewModel_info.setAutoSearch("자동 검색 꺼짐");
-            viewModel_info.setInfoText("블루투스가 꺼짐");
+            viewModel_info.setAutoSearch(true);
+            viewModel_info.setBleStatus(0);
             Toast.makeText(getApplicationContext(), "블루투스 비활성화", Toast.LENGTH_SHORT).show();
         });
     }
@@ -618,7 +618,7 @@ public class MainActivity extends AppCompatActivity {
                 .setNegativeButton("취소", (dialog, which) -> {
                     isDialogShowing = false;
                     onAutoSearch = false;
-                    viewModel_info.setAutoSearch("자동 검색 꺼짐");
+                    viewModel_info.setAutoSearch(false);
                     dialog.dismiss();
                     stopLeScan();
                 })
@@ -718,7 +718,7 @@ public class MainActivity extends AppCompatActivity {
             viewModel_home.setHomeText("스마트 캐리어에 연결됨");
             viewModel_home.setConnectBtn("연결됨");
             viewModel_bagDrop.setConnectText("연결됨");
-            viewModel_info.setInfoText("정상적으로 연결됨");
+            viewModel_info.setBleStatus(9);
             Toast.makeText(getApplicationContext(), "스마트 캐리어에 연결됨", Toast.LENGTH_SHORT).show();
         });
     }
@@ -745,9 +745,9 @@ public class MainActivity extends AppCompatActivity {
             viewModel_weight.setWeightBtn("무게 측정 불가");
             viewModel_bagDrop.setConnectText("연결되지 않음");
             viewModel_info.setdeviceName("X");
-            viewModel_info.setRssi("RSSI 측정 불가");
-            viewModel_info.setSecurity("도난방지 꺼짐");
-            viewModel_info.setInfoText("연결되지 않음");
+            viewModel_info.setRssi(999);
+            viewModel_info.setSecurity(false);
+            viewModel_info.setBleStatus(1);
             Toast.makeText(getApplicationContext(), "디바이스와의 연결이 끊어졌습니다", Toast.LENGTH_SHORT).show();
         });
     }
@@ -907,7 +907,7 @@ public class MainActivity extends AppCompatActivity {
                     });
                 }
             }
-            handler_RSSI.post(() -> runOnUiThread(() -> viewModel_info.setRssi("RSSI: " + rssi_global + " dBm")));
+            handler_RSSI.post(() -> viewModel_info.setRssi(rssi_global));
         }
     };
 
@@ -937,14 +937,14 @@ public class MainActivity extends AppCompatActivity {
             runOnUiThread(() -> {
                 // 배터리 정보를 받지 못했으면
                 if (data == null) {
-                    viewModel_info.setBatteryText("정보없음");
+                    viewModel_info.setBattery(-1);
                     Toast.makeText(getApplicationContext(), "배터리 정보 취득 실패", Toast.LENGTH_SHORT).show();
                 } else {    // 수신 데이터 -> "45" = 배터리 잔량이 45%, "45+" 배터리 잔량이 45%이고 충전중임. "100+" 완충됨
                     data = data.trim();
                     if (data.charAt(data.length() - 1) == '+') {      // 충전중이면
-                        viewModel_info.setBatteryText("충전중");
+                        viewModel_info.setBattery(999);
                     } else {        // 방전중이면
-                        viewModel_info.setBatteryText(data.substring(0, data.length() - 1));
+                        viewModel_info.setBattery(Integer.parseInt(data));
                     }
                 }
             });
@@ -955,15 +955,15 @@ public class MainActivity extends AppCompatActivity {
             checkData();
             runOnUiThread(() -> {
                 if (data == null) {
-                    viewModel_info.setBatteryVolt("NULL");
+                    viewModel_info.setBatteryVolt(-1);
                 } else {
-                    viewModel_info.setBatteryVolt(data);
+                    viewModel_info.setBatteryVolt(Double.parseDouble(data));
                 }
             });
         } else {
             runOnUiThread(() -> {
-                viewModel_info.setBatteryText("정보없음");
-                viewModel_info.setBatteryVolt("NULL");
+                viewModel_info.setBattery(-1);
+                viewModel_info.setBatteryVolt(-1);
                 Toast.makeText(getApplicationContext(), "배터리 정보 취득 실패", Toast.LENGTH_SHORT).show();
             });
         }
@@ -1016,7 +1016,7 @@ public class MainActivity extends AppCompatActivity {
     public void checkRssi() {
         runOnUiThread(() -> {
             if (!rssiSignal) {
-                viewModel_info.setRssi("RSSI 측정 불가");
+                viewModel_info.setRssi(999);
             }
         });
     }
@@ -1024,11 +1024,7 @@ public class MainActivity extends AppCompatActivity {
     // 자동 검색 여부를 확인하는 메서드
     public void checkAutoSearch() {
         runOnUiThread(() -> {
-            if (onAutoSearch) {
-                viewModel_info.setAutoSearch("자동 검색 사용중");
-            } else {
-                viewModel_info.setAutoSearch("자동 검색 꺼짐");
-            }
+            viewModel_info.setAutoSearch(onAutoSearch);
         });
     }
 
@@ -1037,10 +1033,10 @@ public class MainActivity extends AppCompatActivity {
         runOnUiThread(() -> {
             if (security) {
                 viewModel_find.setAlertStatus("도난방지 켜짐");
-                viewModel_info.setSecurity("도난방지 켜짐");
+                viewModel_info.setSecurity(true);
             } else {
                 viewModel_find.setAlertStatus("도난방지 꺼짐");
-                viewModel_info.setSecurity("도난방지 꺼짐");
+                viewModel_info.setSecurity(false);
             }
         });
         return security;
@@ -1049,7 +1045,6 @@ public class MainActivity extends AppCompatActivity {
     // 도난방지 ON 메서드
     public boolean security_ON() {
         checkSecurity();
-
         security = true;
         createNotif("security", "도난방지 동작", "도난방지 모드가 동작합니다.\n캐리어와 멀어지는 경우 알림을 받을 수 있습니다.");
         Toast.makeText(getApplicationContext(), "도난방지가 켜졌습니다.", Toast.LENGTH_SHORT).show();
@@ -1145,19 +1140,19 @@ public class MainActivity extends AppCompatActivity {
     // 연결 상태를 전달하는 메서드
     public int checkConnection() {
         if (mBluetoothAdapter == null) {        // 블루투스를 지원하지 않는 디바이스
-            runOnUiThread(() -> viewModel_info.setInfoText("블루투스를 지원 X"));
+            runOnUiThread(() -> viewModel_info.setBleStatus(-1));
             return -2;
         } else if (!mBluetoothAdapter.isEnabled()) {     // 블루투스가 꺼져 있음
-            runOnUiThread(() -> viewModel_info.setInfoText("블루투스가 꺼짐"));
+            runOnUiThread(() -> viewModel_info.setBleStatus(0));
             return -1;
         } else if (bluetoothGatt == null) {     // 캐리어에 연결되어 있지 않음
-            runOnUiThread(() -> viewModel_info.setInfoText("연결되지 않음"));
+            runOnUiThread(() -> viewModel_info.setBleStatus(1));
             return 0;
         } else if (writeCharacteristic == null || readCharacteristic == null) {      // 연결이 되어 있으나 송수신 불가
-            runOnUiThread(() -> viewModel_info.setInfoText("송수신 불가능"));
+            runOnUiThread(() -> viewModel_info.setBleStatus(2));
             return 1;
         } else if (checkBLE() == BluetoothGatt.STATE_CONNECTED) {    // 캐리어에 제대로 연결되어 있음
-            runOnUiThread(() -> viewModel_info.setInfoText("정상적으로 연결됨"));
+            runOnUiThread(() -> viewModel_info.setBleStatus(9));
             return 9;
         } else {    // 그 외의 경우
             return 0;
@@ -1206,7 +1201,8 @@ public class MainActivity extends AppCompatActivity {
 
         viewModel_weight.setWeightNow("-- Kg");
         viewModel_weight.setWeightInfo("무게 초과 여부 표시");
-        viewModel_info.setAutoSearch("자동 검색 꺼짐");
+        viewModel_info.setAutoSearch(false);
+        viewModel_info.setSecurity(false);
     }
 
     // 시간 설정을 저장하는 메서드
