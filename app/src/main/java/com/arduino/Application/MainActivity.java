@@ -472,7 +472,7 @@ public class MainActivity extends AppCompatActivity {
                 if (Settings.canDrawOverlays(MainActivity.this)) {
                     ringBell(false);
                     ignoreSecurity = true;
-                    viewModel_find.setIgnoreText(true);
+                    viewModel_find.setIgnore(true);
                     Toast.makeText(this, "도난방지 경고를 무시합니다.", Toast.LENGTH_SHORT).show();
                     removeOverlay();
                 }
@@ -1061,11 +1061,7 @@ public class MainActivity extends AppCompatActivity {
 
     // 도난방지 무시 여부 체크 메서드
     public void checkIgnore() {
-        if (!ignoreSecurity) {     // 도난방지 무시가 꺼진 경우
-            viewModel_find.setIgnoreText(false);
-        } else {
-            viewModel_find.setIgnoreText(true);
-        }
+        viewModel_find.setIgnore(ignoreSecurity);
     }
 
     // 도난방지 무시 설정 메서드

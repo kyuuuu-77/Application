@@ -18,7 +18,7 @@ public class FindViewModel extends ViewModel {
         return ignoreLiveData;
     }
 
-    public void setIgnoreText(boolean ignore) {
+    public void setIgnore(boolean ignore) {
         ignoreLiveData.setValue(ignore);
     }
 
