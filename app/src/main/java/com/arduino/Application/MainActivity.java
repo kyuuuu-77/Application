@@ -472,7 +472,7 @@ public class MainActivity extends AppCompatActivity {
                 if (Settings.canDrawOverlays(MainActivity.this)) {
                     ringBell(false);
                     ignoreSecurity = true;
-                    viewModel_find.setIgnoreText("무시");
+                    viewModel_find.setIgnoreText(true);
                     Toast.makeText(this, "도난방지 경고를 무시합니다.", Toast.LENGTH_SHORT).show();
                     removeOverlay();
                 }
@@ -739,9 +739,9 @@ public class MainActivity extends AppCompatActivity {
             // 뷰모델 초기화
             viewModel_home.setHomeText("캐리어와 연결이 끊어졌습니다");
             viewModel_home.setConnectBtn("연결");
-            viewModel_find.setAlertStatus("도난방지 꺼짐");
-            viewModel_find.setAlertBtnText("도난방지 사용불가");
-            viewModel_find.setDistance("캐리어와의 거리");
+            viewModel_find.setAlertStatus(false);
+            viewModel_find.setAlertBtn(-1);
+            viewModel_find.setDistance(-1);
             viewModel_weight.setWeightBtn(0);
             viewModel_bagDrop.setConnectText("연결되지 않음");
             viewModel_info.setdeviceName("X");
@@ -871,18 +871,18 @@ public class MainActivity extends AppCompatActivity {
             }
 
             if (!security) {        // 도난 방지가 꺼져 있으면
-                runOnUiThread(() -> viewModel_find.setDistance("캐리어와의 거리"));
+                runOnUiThread(() -> viewModel_find.setDistance(-1));
             } else {                // 도난 방지가 켜져 있으면
                 if (firstRssi > -12) {
                     runOnUiThread(() -> {
                         if (rssi_global > -5) {
-                            viewModel_find.setDistance("캐리어와 매우 가까움");
+                            viewModel_find.setDistance(0);
                         } else if (rssi_global > -15) {
-                            viewModel_find.setDistance("캐리어와 가까움");
+                            viewModel_find.setDistance(1);
                         } else if (rssi_global > -25) {
-                            viewModel_find.setDistance("캐리어와 떨어져 있음");
+                            viewModel_find.setDistance(2);
                         } else {
-                            viewModel_find.setDistance("캐리어와 멂");
+                            viewModel_find.setDistance(3);
                             if (!ignoreSecurity) {
                                 ringBell(true);
                                 showOverlay();
@@ -892,13 +892,13 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     runOnUiThread(() -> {
                         if (rssi_global > -50) {
-                            viewModel_find.setDistance("캐리어와 매우 가까움");
+                            viewModel_find.setDistance(0);
                         } else if (rssi_global > -75) {
-                            viewModel_find.setDistance("캐리어와 가까움");
+                            viewModel_find.setDistance(1);
                         } else if (rssi_global > -95) {
-                            viewModel_find.setDistance("캐리어와 떨어져 있음");
+                            viewModel_find.setDistance(2);
                         } else {
-                            viewModel_find.setDistance("캐리어와 멂");
+                            viewModel_find.setDistance(3);
                             if (!ignoreSecurity) {
                                 ringBell(true);
                                 showOverlay();
@@ -1030,10 +1030,10 @@ public class MainActivity extends AppCompatActivity {
     public boolean checkSecurity() {
         runOnUiThread(() -> {
             if (security) {
-                viewModel_find.setAlertStatus("도난방지 켜짐");
+                viewModel_find.setAlertStatus(true);
                 viewModel_info.setSecurity(true);
             } else {
-                viewModel_find.setAlertStatus("도난방지 꺼짐");
+                viewModel_find.setAlertStatus(false);
                 viewModel_info.setSecurity(false);
             }
         });
@@ -1062,9 +1062,9 @@ public class MainActivity extends AppCompatActivity {
     // 도난방지 무시 여부 체크 메서드
     public void checkIgnore() {
         if (!ignoreSecurity) {     // 도난방지 무시가 꺼진 경우
-            viewModel_find.setIgnoreText("알림");
+            viewModel_find.setIgnoreText(false);
         } else {
-            viewModel_find.setIgnoreText("무시");
+            viewModel_find.setIgnoreText(true);
         }
     }
 
