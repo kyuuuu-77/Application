@@ -1139,16 +1139,16 @@ public class MainActivity extends AppCompatActivity {
     public int checkConnection() {
         if (mBluetoothAdapter == null) {        // 블루투스를 지원하지 않는 디바이스
             runOnUiThread(() -> viewModel_info.setBleStatus(-1));
-            return -2;
+            return -1;
         } else if (!mBluetoothAdapter.isEnabled()) {     // 블루투스가 꺼져 있음
             runOnUiThread(() -> viewModel_info.setBleStatus(0));
-            return -1;
+            return -0;
         } else if (bluetoothGatt == null) {     // 캐리어에 연결되어 있지 않음
             runOnUiThread(() -> viewModel_info.setBleStatus(1));
-            return 0;
+            return 1;
         } else if (writeCharacteristic == null || readCharacteristic == null) {      // 연결이 되어 있으나 송수신 불가
             runOnUiThread(() -> viewModel_info.setBleStatus(2));
-            return 1;
+            return 2;
         } else if (checkBLE() == BluetoothGatt.STATE_CONNECTED) {    // 캐리어에 제대로 연결되어 있음
             runOnUiThread(() -> viewModel_info.setBleStatus(9));
             return 9;
