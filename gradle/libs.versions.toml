@@ -1,22 +1,20 @@
 [versions]
-agp = "8.5.0"
-coreSplashscreen = "1.0.1"
+agp = "8.5.2"
 junit = "4.13.2"
-junitVersion = "1.1.5"
-espressoCore = "3.5.1"
-appcompat = "1.6.1"
+junitVersion = "1.2.1"
+espressoCore = "3.6.1"
+appcompat = "1.7.0"
 lottie = "5.0.3"
-material = "1.10.0"
+material = "1.12.0"
 constraintlayout = "2.1.4"
-lifecycleLivedataKtx = "2.6.1"
-lifecycleViewmodelKtx = "2.6.1"
+lifecycleLivedataKtx = "2.8.6"
+lifecycleViewmodelKtx = "2.8.6"
 mpandroidchart = "v3.1.0"
-navigationFragment = "2.6.0"
-navigationUi = "2.6.0"
-activity = "1.8.0"
+navigationFragment = "2.8.1"
+navigationUi = "2.8.1"
+activity = "1.9.2"
 
 [libraries]
-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "coreSplashscreen" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
