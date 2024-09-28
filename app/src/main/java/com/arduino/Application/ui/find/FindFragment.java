@@ -25,7 +25,18 @@ import com.airbnb.lottie.LottieAnimationView;
 import com.arduino.Application.MainActivity;
 import com.arduino.Application.R;
 import com.arduino.Application.databinding.FragmentFindBinding;
+import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.AxisBase;
+import com.github.mikephil.charting.components.Description;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.formatter.ValueFormatter;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -33,7 +44,6 @@ public class FindFragment extends Fragment {
 
     // 버튼 및 텍스트 뷰 초기화
     TextView textIgnore;
-    TextView textAlert;
     TextView alertStatus;
     TextView distance;
 
@@ -48,13 +58,14 @@ public class FindFragment extends Fragment {
     Drawable ignore_blue;
     Drawable ignore_red;
 
-    FindViewModel findViewModel;
+    private LineChart lineChart;
 
     private boolean security = false;       // security
 
     private BluetoothAdapter mBluetoothAdapter;
 
     private FragmentFindBinding binding;
+    FindViewModel findViewModel;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -67,7 +78,6 @@ public class FindFragment extends Fragment {
 
         // 버튼 및 텍스트 뷰 선언
         textIgnore = root.findViewById(R.id.text_ignore);
-        textAlert = root.findViewById(R.id.text_alert);
         alertStatus = root.findViewById(R.id.alert_status);
         distance = root.findViewById(R.id.find_distance);
 
@@ -83,6 +93,79 @@ public class FindFragment extends Fragment {
         ignore_blue = ContextCompat.getDrawable(requireContext(), R.drawable.find_ignore_off);
         ignore_red = ContextCompat.getDrawable(requireContext(), R.drawable.find_ignore_on);
 
+        /////
+        lineChart = root.findViewById(R.id.lineChart);
+
+        List<Entry> entries = new ArrayList<>();
+
+        int[] values = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+        for (int i = 0; i < values.length; i++) {
+            entries.add(new Entry(i, values[i])); // Entry 객체를 통해 x, y 값을 추가
+        }
+
+        LineDataSet dataSet = new LineDataSet(entries, "캐리어 신호세기");
+        LineData lineData = new LineData(dataSet);
+
+        Description description = new Description();
+        description.setEnabled(false);      // 설명 라벨 제거
+        lineChart.setDescription(description);
+
+        dataSet.setLineWidth(2f);
+        dataSet.setColor(ContextCompat.getColor(requireActivity(), R.color.indigo_500));
+        dataSet.setCircleColor(ContextCompat.getColor(requireActivity(), R.color.indigo_500));
+        dataSet.setDrawValues(false);
+        dataSet.setDrawFilled(true); // 그래프 아래 영역을 채우기
+        dataSet.setFillColor(ContextCompat.getColor(requireActivity(), R.color.indigo_100)); // 채우기 색상 설정
+
+        // X축
+        XAxis xAxis = lineChart.getXAxis();
+        xAxis.setValueFormatter(new CustomXAxisValueFormatter());
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setGranularity(1f);
+        xAxis.setAxisMinimum(0f);
+        xAxis.setAxisMaximum(10f);
+        xAxis.setTextSize(12f);
+
+        YAxis yAxis = lineChart.getAxisLeft();
+        yAxis.setValueFormatter(new CustomYAxisValueFormatter());
+        yAxis.setAxisMinimum(0f);
+        yAxis.setAxisMaximum(6f);
+        yAxis.setGranularity(1f);
+        yAxis.setLabelCount(7, true);
+        yAxis.setTextSize(12f);
+        yAxis.setDrawGridLines(true);
+
+        YAxis rightAxis = lineChart.getAxisRight();
+        rightAxis.setEnabled(false);
+
+        lineChart.setData(lineData);
+        lineChart.invalidate();
+
+        Handler signalGraph_handler = new Handler();
+        Runnable signalGraph_handler_runnable = new Runnable() {
+            @Override
+            public void run() {
+                entries.clear();
+
+                for (int i = 0; i < values.length-1; i++) {
+                    values[i] = values[i + 1];
+                }
+                values[values.length - 1] = (int) (Math.random() * 5 + 1);
+
+                for (int i = 0; i < values.length; i++) {
+                    entries.add(new Entry(i, values[i])); // Entry 객체를 통해 x, y 값을 추가
+                }
+
+                dataSet.notifyDataSetChanged(); // 데이터셋 변경 알림
+                lineChart.notifyDataSetChanged(); // 차트 데이터 변경 알림
+                lineChart.invalidate(); // 차트 다시 그리기
+
+                signalGraph_handler.postDelayed(this, 1000);
+            }
+        };
+
+        signalGraph_handler.postDelayed(signalGraph_handler_runnable, 1000);
+
         // ViewModel 선언
         // 알림 버튼 상태
         findViewModel.getIgnoreLiveData().observe(getViewLifecycleOwner(), ignore -> {
@@ -94,9 +177,6 @@ public class FindFragment extends Fragment {
                 Btn_ignore.setBackground(ignore_blue);
             }
         });
-
-        // 도난방지 메인
-        findViewModel.getAlertTextLiveData().observe(getViewLifecycleOwner(), text -> textAlert.setText(text));
 
         // 도난방지 상태
         findViewModel.getAlertStatusLiveData().observe(getViewLifecycleOwner(), status -> {
@@ -127,7 +207,11 @@ public class FindFragment extends Fragment {
                     distance.setTextColor(ContextCompat.getColor(requireActivity(), R.color.orange_500));
                     break;
                 case 3:
-                    distance.setText("캐리어와 멂");
+                    distance.setText("캐리어와 매우 멂");
+                    distance.setTextColor(ContextCompat.getColor(requireActivity(), R.color.orange_500));
+                    break;
+                case 4:
+                    distance.setText("캐리어와 매우 멂");
                     distance.setTextColor(ContextCompat.getColor(requireActivity(), R.color.red_500));
                     break;
             }
@@ -179,6 +263,38 @@ public class FindFragment extends Fragment {
         });
 
         return root;
+    }
+
+    // 그래프 Y축 글자 설정
+    public static class CustomYAxisValueFormatter extends ValueFormatter {
+        @Override
+        public String getAxisLabel(float value, AxisBase axis) {
+            switch ((int) value) {
+                case 1:
+                    return "매우 낮음";
+                case 2:
+                    return "낮음";
+                case 3:
+                    return "중간";
+                case 4:
+                    return "높음";
+                case 5:
+                    return "매우 높음";
+                default:
+                    return "";
+            }
+        }
+    }
+
+    // 그래프 X축 글자 설정
+    public static class CustomXAxisValueFormatter extends ValueFormatter {
+        @Override
+        public String getAxisLabel(float value, AxisBase axis) {
+            if ((int) value == 0) {
+                return "현재";
+            }
+            return (int) value + "초전";
+        }
     }
 
     // 벨을 울리는 메서드

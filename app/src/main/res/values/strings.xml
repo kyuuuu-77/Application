@@ -32,8 +32,10 @@
     <string name="findBtn_text">찾기</string>
     <string name="alert_text">도난방지 기능으로\n캐리어를 안전하게 보관하세요!</string>
     <string name="alertStatus">도난방지 꺼짐</string>
-    <string name="bag_distance">캐리어와의 거리</string>
     <string name="alert_Btn">도난방지 켜기</string>
+    <string name="title_distance">캐리어와 거리</string>
+    <string name="main_distance">정보없음</string>
+    <string name="sub_distance">연결되지 않음</string>
 
     <!-- 캐리어 무게측정 화면 -->
     <string name="text_reset">설정 리셋</string>

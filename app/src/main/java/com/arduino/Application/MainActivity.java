@@ -875,14 +875,16 @@ public class MainActivity extends AppCompatActivity {
             } else {                // 도난 방지가 켜져 있으면
                 if (firstRssi > -12) {
                     runOnUiThread(() -> {
-                        if (rssi_global > -5) {
+                        if (rssi_global > -6) {
                             viewModel_find.setDistance(0);
-                        } else if (rssi_global > -15) {
+                        } else if (rssi_global > -12) {
                             viewModel_find.setDistance(1);
-                        } else if (rssi_global > -25) {
+                        } else if (rssi_global > -18) {
                             viewModel_find.setDistance(2);
-                        } else {
+                        } else if (rssi_global > -25) {
                             viewModel_find.setDistance(3);
+                        } else {
+                            viewModel_find.setDistance(4);
                             if (!ignoreSecurity) {
                                 ringBell(true);
                                 showOverlay();
@@ -893,12 +895,14 @@ public class MainActivity extends AppCompatActivity {
                     runOnUiThread(() -> {
                         if (rssi_global > -50) {
                             viewModel_find.setDistance(0);
-                        } else if (rssi_global > -75) {
+                        } else if (rssi_global > -65) {
                             viewModel_find.setDistance(1);
-                        } else if (rssi_global > -95) {
+                        } else if (rssi_global > -77) {
+                            viewModel_find.setDistance(2);
+                        }  else if (rssi_global > -90) {
                             viewModel_find.setDistance(2);
                         } else {
-                            viewModel_find.setDistance(3);
+                            viewModel_find.setDistance(4);
                             if (!ignoreSecurity) {
                                 ringBell(true);
                                 showOverlay();
