@@ -44,8 +44,10 @@ public class FindFragment extends Fragment {
 
     // 버튼 및 텍스트 뷰 초기화
     TextView textIgnore;
-    TextView alertStatus;
-    TextView distance;
+    TextView securityMain;
+    TextView securitySub;
+    TextView distanceMain;
+    TextView distanceSub;
 
     Button Btn_ignore;
     Button Btn_bell;
@@ -78,8 +80,10 @@ public class FindFragment extends Fragment {
 
         // 버튼 및 텍스트 뷰 선언
         textIgnore = root.findViewById(R.id.text_ignore);
-        alertStatus = root.findViewById(R.id.alert_status);
-        distance = root.findViewById(R.id.find_distance);
+        securityMain = root.findViewById(R.id.alert_status);
+        securitySub = root.findViewById(R.id.security_sub);
+        distanceMain = root.findViewById(R.id.find_distance);
+        distanceSub = root.findViewById(R.id.distance_sub);
 
         Btn_ignore = root.findViewById(R.id.ignore);
         Btn_bell = root.findViewById(R.id.bell);
@@ -93,14 +97,15 @@ public class FindFragment extends Fragment {
         ignore_blue = ContextCompat.getDrawable(requireContext(), R.drawable.find_ignore_off);
         ignore_red = ContextCompat.getDrawable(requireContext(), R.drawable.find_ignore_on);
 
-        /////
+        // 그래프 선언
         lineChart = root.findViewById(R.id.lineChart);
 
+        // 그래프 정의
         List<Entry> entries = new ArrayList<>();
 
-        int[] values = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+        int[] values = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};       // 신호세기 값을 저장할 배열 (나중에 전역변수로 변환 필요)
         for (int i = 0; i < values.length; i++) {
-            entries.add(new Entry(i, values[i])); // Entry 객체를 통해 x, y 값을 추가
+            entries.add(new Entry(i, values[i]));       // Entry 객체를 통해 x, y 값을 추가
         }
 
         LineDataSet dataSet = new LineDataSet(entries, "캐리어 신호세기");
@@ -117,7 +122,7 @@ public class FindFragment extends Fragment {
         dataSet.setDrawFilled(true); // 그래프 아래 영역을 채우기
         dataSet.setFillColor(ContextCompat.getColor(requireActivity(), R.color.indigo_100)); // 채우기 색상 설정
 
-        // X축
+        // 그래프 X축
         XAxis xAxis = lineChart.getXAxis();
         xAxis.setValueFormatter(new CustomXAxisValueFormatter());
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
@@ -126,6 +131,7 @@ public class FindFragment extends Fragment {
         xAxis.setAxisMaximum(10f);
         xAxis.setTextSize(12f);
 
+        // 그래프 Y축
         YAxis yAxis = lineChart.getAxisLeft();
         yAxis.setValueFormatter(new CustomYAxisValueFormatter());
         yAxis.setAxisMinimum(0f);
@@ -134,23 +140,24 @@ public class FindFragment extends Fragment {
         yAxis.setLabelCount(7, true);
         yAxis.setTextSize(12f);
         yAxis.setDrawGridLines(true);
-
         YAxis rightAxis = lineChart.getAxisRight();
         rightAxis.setEnabled(false);
 
         lineChart.setData(lineData);
         lineChart.invalidate();
 
+        // 그래프를 1초마다 갱신하기 위한 Handler와 Runnable
         Handler signalGraph_handler = new Handler();
         Runnable signalGraph_handler_runnable = new Runnable() {
             @Override
             public void run() {
                 entries.clear();
 
-                for (int i = 0; i < values.length-1; i++) {
-                    values[i] = values[i + 1];
+                // 0 ~ 10 까지, length = 11
+                for (int i = values.length - 1; i > 0 ; i--) {
+                    values[i] = values[i - 1];
                 }
-                values[values.length - 1] = (int) (Math.random() * 5 + 1);
+                values[0] = (int) (Math.random() * 5 + 1);      // 현재의 신호세기 값을 입력
 
                 for (int i = 0; i < values.length; i++) {
                     entries.add(new Entry(i, values[i])); // Entry 객체를 통해 x, y 값을 추가
@@ -163,7 +170,6 @@ public class FindFragment extends Fragment {
                 signalGraph_handler.postDelayed(this, 1000);
             }
         };
-
         signalGraph_handler.postDelayed(signalGraph_handler_runnable, 1000);
 
         // ViewModel 선언
@@ -181,9 +187,11 @@ public class FindFragment extends Fragment {
         // 도난방지 상태
         findViewModel.getAlertStatusLiveData().observe(getViewLifecycleOwner(), status -> {
             if (status) {       // 도난방지가 켜져 있으면
-                alertStatus.setText("도난방지 켜짐");
+                securityMain.setText("동작중");
+                securitySub.setText("도난방지 켜짐");
             } else {        // 도난방지가 꺼져 있으면
-                alertStatus.setText("도난방지 꺼짐");
+                securityMain.setText("사용안함");
+                securitySub.setText("도난방지 꺼짐");
             }
         });
 
@@ -191,28 +199,35 @@ public class FindFragment extends Fragment {
         findViewModel.getDistanceLiveData().observe(getViewLifecycleOwner(), bag_distance -> {
             switch (bag_distance) {
                 case -1:
-                    distance.setText("캐리어와의 거리");
-                    distance.setTextColor(ContextCompat.getColor(requireActivity(), R.color.black));
+                    distanceMain.setText("정보없음");
+                    distanceSub.setText("연결되지 않음");
+                    distanceMain.setTextColor(ContextCompat.getColor(requireActivity(), R.color.black));
                     break;
                 case 0:
-                    distance.setText("캐리어와 매우 가까움");
-                    distance.setTextColor(ContextCompat.getColor(requireActivity(), R.color.blue_500));
+                    distanceMain.setText("바로 앞");
+                    distanceSub.setText("캐리어와 매우 가까움");
+                    distanceMain.setTextColor(ContextCompat.getColor(requireActivity(), R.color.blue_500));
                     break;
                 case 1:
-                    distance.setText("캐리어와 가까움");
-                    distance.setTextColor(ContextCompat.getColor(requireActivity(), R.color.green_500));
+                    distanceMain.setText("근처");
+                    distanceSub.setText("캐리어와 가까움");
+                    distanceMain.setTextColor(ContextCompat.getColor(requireActivity(), R.color.green_500));
                     break;
                 case 2:
-                    distance.setText("캐리어와 떨어져 있음");
-                    distance.setTextColor(ContextCompat.getColor(requireActivity(), R.color.orange_500));
+                    distanceMain.setText("거리있음");
+                    distanceSub.setText("캐리어와 거리가 있음");
+                    distanceMain.setTextColor(ContextCompat.getColor(requireActivity(), R.color.orange_500));
                     break;
                 case 3:
-                    distance.setText("캐리어와 매우 멂");
-                    distance.setTextColor(ContextCompat.getColor(requireActivity(), R.color.orange_500));
+                    distanceMain.setText("떨어짐");
+                    distanceSub.setText("캐리어와 약간 멂");
+                    distanceMain.setTextColor(ContextCompat.getColor(requireActivity(), R.color.orange_500));
                     break;
                 case 4:
-                    distance.setText("캐리어와 매우 멂");
-                    distance.setTextColor(ContextCompat.getColor(requireActivity(), R.color.red_500));
+                    distanceMain.setText("매우 멂");
+                    distanceSub.setText("도난 위험 있음");
+                    distanceMain.setTextColor(ContextCompat.getColor(requireActivity(), R.color.red_500));
+                    distanceSub.setTextColor(ContextCompat.getColor(requireActivity(), R.color.red_500));
                     break;
             }
         });
