@@ -953,17 +953,17 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
 
-            data = null;
-            sendData("menu 5");
-
-            checkData();
-            runOnUiThread(() -> {
-                if (data == null) {
-                    viewModel_info.setBatteryVolt(-1);
-                } else {
-                    viewModel_info.setBatteryVolt(Double.parseDouble(data));
-                }
-            });
+//            data = null;
+//            sendData("menu 5");
+//
+//            checkData();
+//            runOnUiThread(() -> {
+//                if (data == null) {
+//                    viewModel_info.setBatteryVolt(-1);
+//                } else {
+//                    viewModel_info.setBatteryVolt(Double.parseDouble(data));
+//                }
+//            });
         } else {
             runOnUiThread(() -> {
                 viewModel_info.setBattery(-1);
