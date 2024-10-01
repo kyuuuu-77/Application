@@ -25,8 +25,18 @@ import com.airbnb.lottie.LottieAnimationView;
 import com.arduino.Application.MainActivity;
 import com.arduino.Application.R;
 import com.arduino.Application.databinding.FragmentFindBinding;
+import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.AxisBase;
+import com.github.mikephil.charting.components.Description;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.formatter.ValueFormatter;
 
-import java.util.Objects;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -34,13 +44,14 @@ public class FindFragment extends Fragment {
 
     // 버튼 및 텍스트 뷰 초기화
     TextView textIgnore;
-    TextView textAlert;
-    TextView alertStatus;
-    TextView distance;
+    TextView securityMain;
+    TextView securitySub;
+    TextView distanceMain;
+    TextView distanceSub;
 
-    Button ignoreBtn;
-    Button bellBtn;
-    Button securityBtn;
+    Button Btn_ignore;
+    Button Btn_bell;
+    Button Btn_security;
 
     Drawable Btn_blue;
     Drawable Btn_red;
@@ -49,13 +60,14 @@ public class FindFragment extends Fragment {
     Drawable ignore_blue;
     Drawable ignore_red;
 
-    FindViewModel findViewModel;
+    private LineChart lineChart;
 
     private boolean security = false;       // security
 
     private BluetoothAdapter mBluetoothAdapter;
 
     private FragmentFindBinding binding;
+    FindViewModel findViewModel;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -68,13 +80,14 @@ public class FindFragment extends Fragment {
 
         // 버튼 및 텍스트 뷰 선언
         textIgnore = root.findViewById(R.id.text_ignore);
-        textAlert = root.findViewById(R.id.text_alert);
-        alertStatus = root.findViewById(R.id.alert_status);
-        distance = root.findViewById(R.id.find_distance);
+        securityMain = root.findViewById(R.id.alert_status);
+        securitySub = root.findViewById(R.id.security_sub);
+        distanceMain = root.findViewById(R.id.find_distance);
+        distanceSub = root.findViewById(R.id.distance_sub);
 
-        ignoreBtn = root.findViewById(R.id.ignore);
-        bellBtn = root.findViewById(R.id.bell);
-        securityBtn = root.findViewById(R.id.alertBtn);
+        Btn_ignore = root.findViewById(R.id.ignore);
+        Btn_bell = root.findViewById(R.id.bell);
+        Btn_security = root.findViewById(R.id.alertBtn);
 
         // Drawable 선언
         Btn_blue = ContextCompat.getDrawable(requireContext(), R.drawable.button_round);
@@ -84,41 +97,154 @@ public class FindFragment extends Fragment {
         ignore_blue = ContextCompat.getDrawable(requireContext(), R.drawable.find_ignore_off);
         ignore_red = ContextCompat.getDrawable(requireContext(), R.drawable.find_ignore_on);
 
+        // 그래프 선언
+        lineChart = root.findViewById(R.id.lineChart);
+
+        // 그래프 정의
+        List<Entry> entries = new ArrayList<>();
+
+        int[] values = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};       // 신호세기 값을 저장할 배열 (나중에 전역변수로 변환 필요)
+        for (int i = 0; i < values.length; i++) {
+            entries.add(new Entry(i, values[i]));       // Entry 객체를 통해 x, y 값을 추가
+        }
+
+        LineDataSet dataSet = new LineDataSet(entries, "캐리어 신호세기");
+        LineData lineData = new LineData(dataSet);
+
+        Description description = new Description();
+        description.setEnabled(false);      // 설명 라벨 제거
+        lineChart.setDescription(description);
+
+        dataSet.setLineWidth(2f);
+        dataSet.setColor(ContextCompat.getColor(requireActivity(), R.color.indigo_500));
+        dataSet.setCircleColor(ContextCompat.getColor(requireActivity(), R.color.indigo_500));
+        dataSet.setDrawValues(false);
+        dataSet.setDrawFilled(true); // 그래프 아래 영역을 채우기
+        dataSet.setFillColor(ContextCompat.getColor(requireActivity(), R.color.indigo_100)); // 채우기 색상 설정
+
+        // 그래프 X축
+        XAxis xAxis = lineChart.getXAxis();
+        xAxis.setValueFormatter(new CustomXAxisValueFormatter());
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setGranularity(1f);
+        xAxis.setAxisMinimum(0f);
+        xAxis.setAxisMaximum(10f);
+        xAxis.setTextSize(12f);
+
+        // 그래프 Y축
+        YAxis yAxis = lineChart.getAxisLeft();
+        yAxis.setValueFormatter(new CustomYAxisValueFormatter());
+        yAxis.setAxisMinimum(0f);
+        yAxis.setAxisMaximum(6f);
+        yAxis.setGranularity(1f);
+        yAxis.setLabelCount(7, true);
+        yAxis.setTextSize(12f);
+        yAxis.setDrawGridLines(true);
+        YAxis rightAxis = lineChart.getAxisRight();
+        rightAxis.setEnabled(false);
+
+        lineChart.setData(lineData);
+        lineChart.invalidate();
+
+        // 그래프를 1초마다 갱신하기 위한 Handler와 Runnable
+        Handler signalGraph_handler = new Handler();
+        Runnable signalGraph_handler_runnable = new Runnable() {
+            @Override
+            public void run() {
+                entries.clear();
+
+                // 0 ~ 10 까지, length = 11
+                for (int i = values.length - 1; i > 0 ; i--) {
+                    values[i] = values[i - 1];
+                }
+                values[0] = (int) (Math.random() * 5 + 1);      // 현재의 신호세기 값을 입력
+
+                for (int i = 0; i < values.length; i++) {
+                    entries.add(new Entry(i, values[i])); // Entry 객체를 통해 x, y 값을 추가
+                }
+
+                dataSet.notifyDataSetChanged(); // 데이터셋 변경 알림
+                lineChart.notifyDataSetChanged(); // 차트 데이터 변경 알림
+                lineChart.invalidate(); // 차트 다시 그리기
+
+                signalGraph_handler.postDelayed(this, 1000);
+            }
+        };
+        signalGraph_handler.postDelayed(signalGraph_handler_runnable, 1000);
+
         // ViewModel 선언
-        findViewModel.getAlertTextLiveData().observe(getViewLifecycleOwner(), text -> textAlert.setText(text));
-        findViewModel.getAlertStatusLiveData().observe(getViewLifecycleOwner(), status -> alertStatus.setText(status));
-        findViewModel.getDistanceLiveData().observe(getViewLifecycleOwner(), bag_distance -> {
-            if (Objects.equals(bag_distance, "캐리어와 떨어져 있음")) {
-                distance.setTextColor(ContextCompat.getColor(requireActivity(), R.color.orange_500));
-            } else if (Objects.equals(bag_distance, "캐리어와 멂")) {
-                distance.setTextColor(ContextCompat.getColor(requireActivity(), R.color.red_500));
-            } else if (Objects.equals(bag_distance, "캐리어와 매우 가까움")) {
-                distance.setTextColor(ContextCompat.getColor(requireActivity(), R.color.blue_500));
-            } else if (Objects.equals(bag_distance, "캐리어와 가까움")) {
-                distance.setTextColor(ContextCompat.getColor(requireActivity(), R.color.green_500));
+        // 알림 버튼 상태
+        findViewModel.getIgnoreLiveData().observe(getViewLifecycleOwner(), ignore -> {
+            if (ignore) {     // 무시 상태이면
+                textIgnore.setText("무시");
+                Btn_ignore.setBackground(ignore_red);
             } else {
-                distance.setTextColor(ContextCompat.getColor(requireActivity(), R.color.black));
+                textIgnore.setText("알림");
+                Btn_ignore.setBackground(ignore_blue);
             }
-            distance.setText(bag_distance);
         });
-        findViewModel.getIgnoreTextLiveData().observe(getViewLifecycleOwner(), ignore -> {
-            if (Objects.equals(ignore, "알림")) {
-                ignoreBtn.setBackground(ignore_blue);
-            } else if(Objects.equals(ignore, "무시")) {
-                ignoreBtn.setBackground(ignore_red);
+
+        // 도난방지 상태
+        findViewModel.getAlertStatusLiveData().observe(getViewLifecycleOwner(), status -> {
+            if (status) {       // 도난방지가 켜져 있으면
+                securityMain.setText("동작중");
+                securitySub.setText("도난방지 켜짐");
+            } else {        // 도난방지가 꺼져 있으면
+                securityMain.setText("사용안함");
+                securitySub.setText("도난방지 꺼짐");
             }
-            textIgnore.setText(ignore);
         });
-        findViewModel.getAlertBtntextLiveData().observe(getViewLifecycleOwner(), btnText -> {
-            if (Objects.equals(btnText, "도난방지 사용불가")) {
-                securityBtn.setBackground(Btn_red);
-                securityBtn.setEnabled(false);
-            } else if (Objects.equals(btnText, "도난방지 켜기")) {       // 도난방지 켜기
-                securityBtn.setBackground(Btn_blue);
+
+        // 캐리어 거리
+        findViewModel.getDistanceLiveData().observe(getViewLifecycleOwner(), bag_distance -> {
+            switch (bag_distance) {
+                case -1:
+                    distanceMain.setText("정보없음");
+                    distanceSub.setText("연결되지 않음");
+                    distanceMain.setTextColor(ContextCompat.getColor(requireActivity(), R.color.black));
+                    break;
+                case 0:
+                    distanceMain.setText("바로 앞");
+                    distanceSub.setText("캐리어와 매우 가까움");
+                    distanceMain.setTextColor(ContextCompat.getColor(requireActivity(), R.color.blue_500));
+                    break;
+                case 1:
+                    distanceMain.setText("근처");
+                    distanceSub.setText("캐리어와 가까움");
+                    distanceMain.setTextColor(ContextCompat.getColor(requireActivity(), R.color.green_500));
+                    break;
+                case 2:
+                    distanceMain.setText("거리있음");
+                    distanceSub.setText("캐리어와 거리가 있음");
+                    distanceMain.setTextColor(ContextCompat.getColor(requireActivity(), R.color.orange_500));
+                    break;
+                case 3:
+                    distanceMain.setText("떨어짐");
+                    distanceSub.setText("캐리어와 약간 멂");
+                    distanceMain.setTextColor(ContextCompat.getColor(requireActivity(), R.color.orange_500));
+                    break;
+                case 4:
+                    distanceMain.setText("매우 멂");
+                    distanceSub.setText("도난 위험 있음");
+                    distanceMain.setTextColor(ContextCompat.getColor(requireActivity(), R.color.red_500));
+                    distanceSub.setTextColor(ContextCompat.getColor(requireActivity(), R.color.red_500));
+                    break;
+            }
+        });
+
+        // 도난방지 버튼 상태
+        findViewModel.getAlertBtnLiveData().observe(getViewLifecycleOwner(), status -> {
+            if (status == -1) {     // 도난방지 사용불가
+                Btn_security.setText("도난방지 사용불가");      
+                Btn_security.setBackground(Btn_red);
+                Btn_security.setEnabled(false);
+            } else if (status == 0) {       // 도난방지 켜기
+                Btn_security.setText("도난방지 켜기");
+                Btn_security.setBackground(Btn_blue);
             } else {        // 도난방지 끄기
-                securityBtn.setBackground(Btn_red);
+                Btn_security.setText("도난방지 끄기");
+                Btn_security.setBackground(Btn_red);
             }
-            securityBtn.setText(btnText);
         });
 
         // 블루투스 어뎁터 초기화
@@ -126,32 +252,64 @@ public class FindFragment extends Fragment {
 
         // 버튼 이벤트 리스너
         // 도난방지 무시 버튼
-        ignoreBtn.setOnClickListener(view -> {
+        Btn_ignore.setOnClickListener(view -> {
             ignoreAlert();
             checkIgnore();
         });
 
         // 벨 울리는 버튼
-        bellBtn.setOnClickListener(view -> {
+        Btn_bell.setOnClickListener(view -> {
             findViewModel.setAlertText("벨 울리기 시도중...");
             Toast.makeText(getActivity(), "벨 울리기 시도중...", Toast.LENGTH_SHORT).show();
             ringBell(true);
         });
 
         // 도난방지 버튼
-        securityBtn.setOnClickListener(view -> {
+        Btn_security.setOnClickListener(view -> {
             if (security) {     // 도난방지가 켜져있는 경우 -> 끄기
                 security_OFF();
-                findViewModel.setAlertBtnText("도난방지 켜기");
+                findViewModel.setAlertBtn(0);
                 Toast.makeText(getActivity(), "도난방지를 사용하지 않습니다.", Toast.LENGTH_SHORT).show();
             } else {            // 도난방지가 꺼져있는 경우 -> 켜기
                 security_ON();
-                findViewModel.setAlertBtnText("도난방지 끄기");
+                findViewModel.setAlertBtn(1);
                 Toast.makeText(getActivity(), "도난방지를 사용합니다.", Toast.LENGTH_SHORT).show();
             }
         });
 
         return root;
+    }
+
+    // 그래프 Y축 글자 설정
+    public static class CustomYAxisValueFormatter extends ValueFormatter {
+        @Override
+        public String getAxisLabel(float value, AxisBase axis) {
+            switch ((int) value) {
+                case 1:
+                    return "매우 낮음";
+                case 2:
+                    return "낮음";
+                case 3:
+                    return "중간";
+                case 4:
+                    return "높음";
+                case 5:
+                    return "매우 높음";
+                default:
+                    return "";
+            }
+        }
+    }
+
+    // 그래프 X축 글자 설정
+    public static class CustomXAxisValueFormatter extends ValueFormatter {
+        @Override
+        public String getAxisLabel(float value, AxisBase axis) {
+            if ((int) value == 0) {
+                return "현재";
+            }
+            return (int) value + "초전";
+        }
     }
 
     // 벨을 울리는 메서드
@@ -170,7 +328,7 @@ public class FindFragment extends Fragment {
                 loadingOverlay.setVisibility(View.VISIBLE);
                 lottieView.setVisibility(View.VISIBLE);
                 lottieView.playAnimation();
-                securityBtn.setEnabled(false);
+                Btn_security.setEnabled(false);
             });
             executorService.execute(() -> {
                 // 백그라운드 작업 처리
@@ -186,7 +344,7 @@ public class FindFragment extends Fragment {
                         int status = mainActivity.ringBell(false);
                         if (status != 2) {
                             SystemClock.sleep(5000);
-                            Toast.makeText(getActivity(), "벨 중지에 실패했습니다. 5초후에 다시 시도합니다.", Toast.LENGTH_SHORT).show();
+//                            Toast.makeText(getActivity(), "벨 중지에 실패했습니다. 5초후에 다시 시도합니다.", Toast.LENGTH_SHORT).show();
                         } else {
                             break;
                         }
@@ -202,7 +360,7 @@ public class FindFragment extends Fragment {
                     loadingOverlay.setVisibility(View.GONE);
                     lottieView.cancelAnimation();
                     lottieView.setVisibility(View.GONE);
-                    securityBtn.setEnabled(true);
+                    Btn_security.setEnabled(true);
                 });
             });
         }
@@ -353,23 +511,23 @@ public class FindFragment extends Fragment {
 
         if (!mBluetoothAdapter.isEnabled()) {
             showCustomDialog(1);
-            bellBtn.setEnabled(false);
-            bellBtn.setBackground(find_red);
-            findViewModel.setAlertBtnText("도난방지 사용불가");
+            Btn_bell.setEnabled(false);
+            Btn_bell.setBackground(find_red);
+            findViewModel.setAlertBtn(-1);
         } else if (checkBLE() == 2) {
-            bellBtn.setEnabled(true);
-            bellBtn.setBackground(find_blue);
-            securityBtn.setEnabled(true);
+            Btn_bell.setEnabled(true);
+            Btn_bell.setBackground(find_blue);
+            Btn_security.setEnabled(true);
             if (security) {     // 도난방지가 켜져있는 경우
-                findViewModel.setAlertBtnText("도난방지 끄기");
+                findViewModel.setAlertBtn(1);
             } else {            // 도난방지가 꺼져있는 경우
-                findViewModel.setAlertBtnText("도난방지 켜기");
+                findViewModel.setAlertBtn(0);
             }
         } else {
             showCustomDialog(0);
-            bellBtn.setEnabled(false);
-            bellBtn.setBackground(find_red);
-            findViewModel.setAlertBtnText("도난방지 사용불가");
+            Btn_bell.setEnabled(false);
+            Btn_bell.setBackground(find_red);
+            findViewModel.setAlertBtn(-1);
         }
     }
 
