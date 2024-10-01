@@ -50,6 +50,7 @@
             android:textColor="@android:color/background_light"
             android:textSize="28sp"
             android:textStyle="bold"
+            android:layout_marginStart="10dp"
             tools:ignore="TextSizeCheck,TextContrastCheck" />
     </LinearLayout>
 

@@ -931,7 +931,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    // 배터리 정보(잔량 및 전압)를 확인하는 메서드
+    // 배터리 정보(잔량)를 확인하는 메서드
     public void checkBattery() {
         if (writeCharacteristic != null && checkBLE() == BluetoothGatt.STATE_CONNECTED) {
             // 데이터 초기화
@@ -939,7 +939,6 @@ public class MainActivity extends AppCompatActivity {
             sendData("menu 4");
 
             checkData();
-
             runOnUiThread(() -> {
                 // 배터리 정보를 받지 못했으면
                 if (data == null) {
@@ -947,25 +946,19 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(), "배터리 정보 취득 실패", Toast.LENGTH_SHORT).show();
                 } else {    // 수신 데이터 -> "45" = 배터리 잔량이 45%, "45+" 배터리 잔량이 45%이고 충전중임. "100+" 완충됨
                     data = data.trim();
-                    if (data.charAt(data.length() - 1) == '+') {      // 충전중이면
+                    String[] parts = data.split("/");
+
+                    String percentage = parts[0];
+                    double voltage = Double.parseDouble(parts[1]);
+
+                    viewModel_info.setBatteryVolt(voltage);
+                    if (percentage.contains("+")) {      // 충전중이면
                         viewModel_info.setBattery(999);
                     } else {        // 방전중이면
-                        viewModel_info.setBattery(Integer.parseInt(data));
+                        viewModel_info.setBattery(Integer.parseInt(percentage));
                     }
                 }
             });
-
-//            data = null;
-//            sendData("menu 5");
-//
-//            checkData();
-//            runOnUiThread(() -> {
-//                if (data == null) {
-//                    viewModel_info.setBatteryVolt(-1);
-//                } else {
-//                    viewModel_info.setBatteryVolt(Double.parseDouble(data));
-//                }
-//            });
         } else {
             runOnUiThread(() -> {
                 viewModel_info.setBattery(-1);
@@ -1003,7 +996,7 @@ public class MainActivity extends AppCompatActivity {
 
             runOnUiThread(() -> {
                 if (weight[0] > 32) {                    // 32kg 초과시
-                    viewModel_weight.setWeightInfo(999);
+                    viewModel_weight.setWeightInfo(-999);
                 } else if (weight[0] > weight[1]) {      // 허용무게 초과시
                     viewModel_weight.setWeightInfo(weight[0] - weight[1]);
                 } else {                                // 무게 초과하지 않은 경우

@@ -48,7 +48,7 @@ public class InfoFragment extends Fragment {
     InfoViewModel infoViewModel;
     private FragmentInfoBinding binding;
 
-    @SuppressLint("SetTextI18n")
+    @SuppressLint({"SetTextI18n", "DefaultLocale"})
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         infoViewModel = new ViewModelProvider(requireActivity()).get(InfoViewModel.class);
@@ -126,7 +126,7 @@ public class InfoFragment extends Fragment {
             if (voltage == -1) {
                 battSub.setText("NULL V");
             } else {
-                battSub.setText(voltage + " V");
+                battSub.setText("전압 : " + String.format("%.2f", voltage) + " V");
             }
         });
 
@@ -181,7 +181,6 @@ public class InfoFragment extends Fragment {
             checkAll();
             Toast.makeText(getActivity(), "설정 초기화 완료!", Toast.LENGTH_SHORT).show();
         });
-
         return root;
     }
 

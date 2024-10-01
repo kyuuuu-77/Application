@@ -319,6 +319,10 @@ public class BagDropFragment extends Fragment {
 
     // 백드랍 모드 설정 가능여부 체크
     private void checkCanUseBagDrop() {
+        if (bagDropMode) {
+            Toast.makeText(getActivity(), "백드랍 모드 동작중!", Toast.LENGTH_SHORT).show();
+            bagDropBtn.setEnabled(true);
+        }
         if (checkConnection() == 9 && checkWeight() != 0 && arriveTime != -1) {
             Toast.makeText(getActivity(), "백드랍 모드를 사용할 수 있습니다!", Toast.LENGTH_SHORT).show();
             bagDropBtn.setEnabled(true);
