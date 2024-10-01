@@ -275,7 +275,6 @@ public class FindFragment extends Fragment {
 
         // 벨 울리는 버튼
         Btn_bell.setOnClickListener(view -> {
-            findViewModel.setAlertText("벨 울리기 시도중...");
             Toast.makeText(getActivity(), "벨 울리기 시도중...", Toast.LENGTH_SHORT).show();
             ringBell(true);
         });

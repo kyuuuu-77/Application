@@ -112,6 +112,8 @@ public class WeightFragment extends Fragment {
                 weightInfo.setText("무게를 측정하지 않았습니다");
             } else if (over == 0) {
                 weightInfo.setText("무게를 초과하지 않았습니다!");
+            } else  if (over == -2) {
+                weightInfo.setText("무게 측정에 실패하였습니다");
             } else {
                 weightInfo.setText(over + " Kg 초과하였습니다.");
                 weightInfo.setTextColor(ContextCompat.getColor(requireActivity(), R.color.red_500));

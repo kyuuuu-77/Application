@@ -22,15 +22,6 @@ public class FindViewModel extends ViewModel {
         ignoreLiveData.setValue(ignore);
     }
 
-    // 도난방지 메인
-    public LiveData<String> getAlertTextLiveData() {
-        return alertTextLiveData;
-    }
-
-    public void setAlertText(String text) {
-        alertTextLiveData.setValue(text);
-    }
-
     // 도난방지 상태
     // 도난방지가 켜져 있으면 true, 아니면 false
     public LiveData<Boolean> getAlertStatusLiveData() {

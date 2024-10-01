@@ -978,7 +978,7 @@ public class MainActivity extends AppCompatActivity {
     // 무게를 측정하는 메서드
     @SuppressLint({"DefaultLocale", "HandlerLeak"})
     public double measureWeight(double maxSet) {
-        if (writeCharacteristic != null) {
+        if (writeCharacteristic != null) {      // 무게를 측정할 수 있으면
             // 무게값 초기화
             data = null;
 
@@ -989,6 +989,10 @@ public class MainActivity extends AppCompatActivity {
 
             // 무게값을 받지 못했으면
             if (data == null) {
+                runOnUiThread(() -> {
+                    viewModel_weight.setWeightInfo(-2);
+                    viewModel_weight.setWeightBtn(-1);
+                });
                 return -1;
             }
 
@@ -1011,7 +1015,7 @@ public class MainActivity extends AppCompatActivity {
             return weight[0];
         } else {
             runOnUiThread(() -> {
-                viewModel_weight.setWeightInfo(-999);
+                viewModel_weight.setWeightInfo(-2);
                 viewModel_weight.setWeightBtn(-1);
             });
             return -1;
@@ -1104,14 +1108,14 @@ public class MainActivity extends AppCompatActivity {
 
                 // 벨 울리기 실패
                 if (data == null) {
-                    runOnUiThread(() -> viewModel_find.setAlertText("벨 울리기 실패\n통신 상태를 확인하세요."));
+                    runOnUiThread(() -> Toast.makeText(this, "벨을 울릴 수 없습니다.", Toast.LENGTH_SHORT).show());
                     return -1;
                 } else if (data.trim().equals("ring_suc")) {   // 벨 울리기 성공
                     data = "ring_suc";
-                    runOnUiThread(() -> viewModel_find.setAlertText("벨 울리기 성공!"));
+                    runOnUiThread(() -> Toast.makeText(this, "벨 울리기 성공!", Toast.LENGTH_SHORT).show());
                     return 1;
                 } else {    // 잘못된 값을 받은 경우
-                    runOnUiThread(() -> viewModel_find.setAlertText("벨 울리기 실패\n잘못된 인자값이 전달되었습니다."));
+                    runOnUiThread(() -> Toast.makeText(this, "벨을 울릴 수 없습니다.\n잘못된 인자값이 전달되었습니다.", Toast.LENGTH_SHORT).show());
                     return -1;
                 }
             } else {   // 벨 울리기 중지 동작
@@ -1123,17 +1127,15 @@ public class MainActivity extends AppCompatActivity {
                 if (data == null) {
                     return -1;
                 }
-                else if (data.trim().equals("ring_stop")) {   // 벨 울리기 성공
+                else if (data.trim().equals("ring_stop")) {   // 벨 울리기 중지 성공
                     data = null;
-
-                    runOnUiThread(() -> viewModel_find.setAlertText("도난방지 기능으로\n캐리어를 안전하게 보관하세요!"));
                     return 2;
                 } else {
                     return -1;
                 }
             }
         } else {        // 통신이 불가능할 때
-            runOnUiThread(() -> viewModel_find.setAlertText("벨 울리기 실패\n통신 상태를 확인하세요."));
+            runOnUiThread(() -> Toast.makeText(this, "벨을 울릴 수 없습니다.\n통신 상태를 확인하세요!", Toast.LENGTH_SHORT).show());
             return -1;
         }
     }
