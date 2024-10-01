@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.SystemClock;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,7 +41,10 @@ import java.util.concurrent.Executors;
 
 public class FindFragment extends Fragment {
 
-    // 버튼 및 텍스트 뷰 초기화
+    // 이미지 뷰, 버튼, 텍스트 뷰 및 Drawable 초기화
+    ImageView security_icon;
+    ImageView distance_icon;
+
     TextView textIgnore;
     TextView securityMain;
     TextView securitySub;
@@ -76,9 +78,10 @@ public class FindFragment extends Fragment {
         binding = FragmentFindBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        Log.d("Find Fragment", "Find Fragment-onCreatedView()");
+        // 이미지 뷰, 텍스트 뷰, 버튼 및 Drawable 선언
+        security_icon = root.findViewById(R.id.security_icon);
+        distance_icon = root.findViewById(R.id.distance_icon);
 
-        // 버튼 및 텍스트 뷰 선언
         textIgnore = root.findViewById(R.id.text_ignore);
         securityMain = root.findViewById(R.id.alert_status);
         securitySub = root.findViewById(R.id.security_sub);
@@ -157,7 +160,7 @@ public class FindFragment extends Fragment {
                 for (int i = values.length - 1; i > 0 ; i--) {
                     values[i] = values[i - 1];
                 }
-                values[0] = (int) (Math.random() * 5 + 1);      // 현재의 신호세기 값을 입력
+                values[0] = getRSSIStrength();      // 현재의 신호세기 값을 입력
 
                 for (int i = 0; i < values.length; i++) {
                     entries.add(new Entry(i, values[i])); // Entry 객체를 통해 x, y 값을 추가
@@ -189,9 +192,11 @@ public class FindFragment extends Fragment {
             if (status) {       // 도난방지가 켜져 있으면
                 securityMain.setText("동작중");
                 securitySub.setText("도난방지 켜짐");
+                security_icon.setImageResource(R.drawable.info_security_on);
             } else {        // 도난방지가 꺼져 있으면
                 securityMain.setText("사용안함");
                 securitySub.setText("도난방지 꺼짐");
+                security_icon.setImageResource(R.drawable.info_security_off);
             }
         });
 
@@ -200,34 +205,45 @@ public class FindFragment extends Fragment {
             switch (bag_distance) {
                 case -1:
                     distanceMain.setText("정보없음");
-                    distanceSub.setText("연결되지 않음");
+                    distanceSub.setText("거리 측정 불가");
                     distanceMain.setTextColor(ContextCompat.getColor(requireActivity(), R.color.black));
+                    distanceSub.setTextColor(ContextCompat.getColor(requireActivity(), R.color.black));
+                    distance_icon.setImageResource(R.drawable.find_distance_off);
                     break;
                 case 0:
                     distanceMain.setText("바로 앞");
-                    distanceSub.setText("캐리어와 매우 가까움");
-                    distanceMain.setTextColor(ContextCompat.getColor(requireActivity(), R.color.blue_500));
+                    distanceSub.setText("매우 가까움");
+                    distanceMain.setTextColor(ContextCompat.getColor(requireActivity(), R.color.indigo_500));
+                    distanceSub.setTextColor(ContextCompat.getColor(requireActivity(), R.color.indigo_500));
+                    distance_icon.setImageResource(R.drawable.find_distance_on);
                     break;
                 case 1:
                     distanceMain.setText("근처");
-                    distanceSub.setText("캐리어와 가까움");
-                    distanceMain.setTextColor(ContextCompat.getColor(requireActivity(), R.color.green_500));
+                    distanceSub.setText("가까움");
+                    distanceMain.setTextColor(ContextCompat.getColor(requireActivity(), R.color.blue_500));
+                    distanceSub.setTextColor(ContextCompat.getColor(requireActivity(), R.color.blue_500));
+                    distance_icon.setImageResource(R.drawable.find_distance_on);
                     break;
                 case 2:
                     distanceMain.setText("거리있음");
-                    distanceSub.setText("캐리어와 거리가 있음");
-                    distanceMain.setTextColor(ContextCompat.getColor(requireActivity(), R.color.orange_500));
+                    distanceSub.setText("거리가 있음");
+                    distanceMain.setTextColor(ContextCompat.getColor(requireActivity(), R.color.green_500));
+                    distanceSub.setTextColor(ContextCompat.getColor(requireActivity(), R.color.green_500));
+                    distance_icon.setImageResource(R.drawable.find_distance_on);
                     break;
                 case 3:
                     distanceMain.setText("떨어짐");
-                    distanceSub.setText("캐리어와 약간 멂");
+                    distanceSub.setText("약간 멂");
                     distanceMain.setTextColor(ContextCompat.getColor(requireActivity(), R.color.orange_500));
+                    distanceSub.setTextColor(ContextCompat.getColor(requireActivity(), R.color.orange_500));
+                    distance_icon.setImageResource(R.drawable.find_distance_on);
                     break;
                 case 4:
                     distanceMain.setText("매우 멂");
                     distanceSub.setText("도난 위험 있음");
                     distanceMain.setTextColor(ContextCompat.getColor(requireActivity(), R.color.red_500));
                     distanceSub.setTextColor(ContextCompat.getColor(requireActivity(), R.color.red_500));
+                    distance_icon.setImageResource(R.drawable.find_distance_on);
                     break;
             }
         });
@@ -259,7 +275,6 @@ public class FindFragment extends Fragment {
 
         // 벨 울리는 버튼
         Btn_bell.setOnClickListener(view -> {
-            findViewModel.setAlertText("벨 울리기 시도중...");
             Toast.makeText(getActivity(), "벨 울리기 시도중...", Toast.LENGTH_SHORT).show();
             ringBell(true);
         });
@@ -269,11 +284,9 @@ public class FindFragment extends Fragment {
             if (security) {     // 도난방지가 켜져있는 경우 -> 끄기
                 security_OFF();
                 findViewModel.setAlertBtn(0);
-                Toast.makeText(getActivity(), "도난방지를 사용하지 않습니다.", Toast.LENGTH_SHORT).show();
             } else {            // 도난방지가 꺼져있는 경우 -> 켜기
                 security_ON();
                 findViewModel.setAlertBtn(1);
-                Toast.makeText(getActivity(), "도난방지를 사용합니다.", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -416,6 +429,16 @@ public class FindFragment extends Fragment {
         }
     }
 
+    // rssi 신호값을 매인 액티비티에서 불러오는 메서드
+    private int getRSSIStrength() {
+        MainActivity mainActivity = (MainActivity) getActivity();
+        if (mainActivity != null) {
+            return mainActivity.getRSSIStrength();
+        } else {
+            return 0;
+        }
+    }
+
     // 커스텀 다이얼로그를 표시하는 메서드
     private void showCustomDialog(int status) {
         LayoutInflater inflater = LayoutInflater.from(getContext());
@@ -504,7 +527,6 @@ public class FindFragment extends Fragment {
 
     public void onResume() {
         super.onResume();
-        Log.d("Find Fragment", "Find Fragment-onResume()");
 
         checkSecurity();
         checkIgnore();
@@ -535,7 +557,5 @@ public class FindFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
-
-        Log.d("Find Fragment", "Find Fragment-onDestroyView()");
     }
 }

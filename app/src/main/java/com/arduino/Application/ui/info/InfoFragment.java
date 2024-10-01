@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -49,7 +48,7 @@ public class InfoFragment extends Fragment {
     InfoViewModel infoViewModel;
     private FragmentInfoBinding binding;
 
-    @SuppressLint("SetTextI18n")
+    @SuppressLint({"SetTextI18n", "DefaultLocale"})
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         infoViewModel = new ViewModelProvider(requireActivity()).get(InfoViewModel.class);
@@ -127,7 +126,7 @@ public class InfoFragment extends Fragment {
             if (voltage == -1) {
                 battSub.setText("NULL V");
             } else {
-                battSub.setText(voltage + " V");
+                battSub.setText("전압 : " + String.format("%.2f", voltage) + " V");
             }
         });
 
@@ -182,7 +181,6 @@ public class InfoFragment extends Fragment {
             checkAll();
             Toast.makeText(getActivity(), "설정 초기화 완료!", Toast.LENGTH_SHORT).show();
         });
-
         return root;
     }
 
@@ -245,8 +243,6 @@ public class InfoFragment extends Fragment {
 
     public void onResume(){
         super.onResume();
-        Log.d("Info Fragment", "Info Fragment-onResume()");
-
         View root = binding.getRoot();
 
         // 로딩 애니메이션 (로티 애니메이션) 및 비동기 처리 구문
@@ -283,7 +279,5 @@ public class InfoFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
-
-        Log.d("Info Fragment", "Info Fragment-onDestroyView()");
     }
 }

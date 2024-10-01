@@ -7,7 +7,6 @@ import androidx.lifecycle.ViewModel;
 public class FindViewModel extends ViewModel {
 
     private final MutableLiveData<Boolean> ignoreLiveData = new MutableLiveData<>();
-    private final MutableLiveData<String> alertTextLiveData = new MutableLiveData<>();
     private final MutableLiveData<Boolean> alertStatusLiveData = new MutableLiveData<>();
     private final MutableLiveData<Integer> distanceLiveData = new MutableLiveData<>();
     private final MutableLiveData<Integer> alertBtnLiveData = new MutableLiveData<>();
@@ -20,15 +19,6 @@ public class FindViewModel extends ViewModel {
 
     public void setIgnore(boolean ignore) {
         ignoreLiveData.setValue(ignore);
-    }
-
-    // 도난방지 메인
-    public LiveData<String> getAlertTextLiveData() {
-        return alertTextLiveData;
-    }
-
-    public void setAlertText(String text) {
-        alertTextLiveData.setValue(text);
     }
 
     // 도난방지 상태

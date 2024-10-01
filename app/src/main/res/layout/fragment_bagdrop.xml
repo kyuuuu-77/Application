@@ -25,6 +25,7 @@
         android:backgroundTint="#78000000"
         android:gravity="center"
         android:layout_margin="20dp"
+        android:elevation="5dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
@@ -49,6 +50,7 @@
             android:textColor="@android:color/background_light"
             android:textSize="28sp"
             android:textStyle="bold"
+            android:layout_marginStart="10dp"
             tools:ignore="TextSizeCheck,TextContrastCheck" />
     </LinearLayout>
 
@@ -104,6 +106,7 @@
         android:background="@drawable/background_orange"
         android:gravity="center_vertical"
         android:padding="7dp"
+        android:elevation="5dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
@@ -156,6 +159,7 @@
         android:background="@drawable/background_orange"
         android:gravity="center_vertical"
         android:padding="7dp"
+        android:elevation="5dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
@@ -208,6 +212,7 @@
         android:background="@drawable/background_orange"
         android:gravity="center_vertical"
         android:padding="7dp"
+        android:elevation="5dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"

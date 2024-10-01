@@ -63,7 +63,7 @@ public class WeightFragment extends Fragment {
     private FragmentWeightBinding binding;
     WeightViewModel weightViewModel;
 
-    @SuppressLint("SetTextI18n")
+    @SuppressLint({"SetTextI18n", "DefaultLocale"})
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -108,13 +108,19 @@ public class WeightFragment extends Fragment {
         weightViewModel.getWeightInfoLiveData().observe(getViewLifecycleOwner(), over -> {
             if (over == -999) {
                 weightInfo.setText("32 Kg을 초과하였습니다");
+                weightInfo.setTextColor(ContextCompat.getColor(requireActivity(), R.color.red_500));
             } else if (over == -1) {
                 weightInfo.setText("무게를 측정하지 않았습니다");
+                weightInfo.setTextColor(ContextCompat.getColor(requireActivity(), R.color.black));
             } else if (over == 0) {
                 weightInfo.setText("무게를 초과하지 않았습니다!");
-            } else {
-                weightInfo.setText(over + " Kg 초과하였습니다.");
+                weightInfo.setTextColor(ContextCompat.getColor(requireActivity(), R.color.indigo_500));
+            } else  if (over == -2) {
+                weightInfo.setText("무게 측정에 실패하였습니다");
                 weightInfo.setTextColor(ContextCompat.getColor(requireActivity(), R.color.red_500));
+            } else {
+                weightInfo.setText(String.format("%.1f", over)+ " Kg 초과하였습니다.");
+                weightInfo.setTextColor(ContextCompat.getColor(requireActivity(), R.color.orange_500));
             }
         });
 
