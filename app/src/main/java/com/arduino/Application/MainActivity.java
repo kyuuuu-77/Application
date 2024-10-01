@@ -123,6 +123,7 @@ public class MainActivity extends AppCompatActivity {
     private String deviceName = null;
     private int BLE_status = 0;
     private int rssi_global = 99;
+    private int rssi_strength = -1;
     private int firstRssi = 99;
     private int setHourMin = -1;
 
@@ -862,19 +863,25 @@ public class MainActivity extends AppCompatActivity {
 
             if (!security) {        // 도난 방지가 꺼져 있으면
                 runOnUiThread(() -> viewModel_find.setDistance(-1));
+                rssi_strength = 0;
             } else {                // 도난 방지가 켜져 있으면
                 if (firstRssi > -12) {
                     runOnUiThread(() -> {
                         if (rssi_global > -6) {
                             viewModel_find.setDistance(0);
+                            rssi_strength = 5;
                         } else if (rssi_global > -12) {
                             viewModel_find.setDistance(1);
+                            rssi_strength = 4;
                         } else if (rssi_global > -18) {
                             viewModel_find.setDistance(2);
+                            rssi_strength = 3;
                         } else if (rssi_global > -25) {
                             viewModel_find.setDistance(3);
+                            rssi_strength = 2;
                         } else {
                             viewModel_find.setDistance(4);
+                            rssi_strength = 1;
                             if (!ignoreSecurity) {
                                 ringBell(true);
                                 showOverlay();
@@ -885,14 +892,19 @@ public class MainActivity extends AppCompatActivity {
                     runOnUiThread(() -> {
                         if (rssi_global > -50) {
                             viewModel_find.setDistance(0);
+                            rssi_strength = 5;
                         } else if (rssi_global > -65) {
                             viewModel_find.setDistance(1);
+                            rssi_strength = 4;
                         } else if (rssi_global > -77) {
                             viewModel_find.setDistance(2);
+                            rssi_strength = 3;
                         }  else if (rssi_global > -90) {
                             viewModel_find.setDistance(2);
+                            rssi_strength = 2;
                         } else {
                             viewModel_find.setDistance(4);
+                            rssi_strength = 1;
                             if (!ignoreSecurity) {
                                 ringBell(true);
                                 showOverlay();
@@ -1036,20 +1048,21 @@ public class MainActivity extends AppCompatActivity {
 
     // 도난방지 ON 메서드
     public boolean security_ON() {
-        checkSecurity();
         security = true;
         createNotif("security", "도난방지 동작", "도난방지 모드가 동작합니다.\n캐리어와 멀어지는 경우 알림을 받을 수 있습니다.");
-        Toast.makeText(getApplicationContext(), "도난방지가 켜졌습니다.", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "도난방지를 사용합니다.", Toast.LENGTH_SHORT).show();
+        checkSecurity();
+
         return security;
     }
 
     // 도난방지 OFF 메서드
     public boolean security_OFF() {
-        checkSecurity();
-
         security = false;
         createNotif("security", "도난방지 동작 안함", "도난방지 모드가 동작하지 않습니다.\n캐리어와 멀어지는 경우 알림을 받을 수 없습니다.");
-        Toast.makeText(getApplicationContext(), "도난방지가 꺼졌습니다.", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "도난방지를 사용하지 않습니다.", Toast.LENGTH_SHORT).show();
+        checkSecurity();
+
         return security;
     }
 
@@ -1154,6 +1167,11 @@ public class MainActivity extends AppCompatActivity {
         } else {
             return 0;
         }
+    }
+    
+    // RSSI 신호 세기 정도를 전달하는 메서드
+    public int getRSSIStrength() {
+        return rssi_strength;
     }
 
     // 무게 설정을 전달하는 메서드

@@ -9,9 +9,9 @@
     <string name="action_appInfo">앱 정보</string>
     <string name="splash_name">Suitcase Genie</string>
     <string name="weight_popup">Notification</string>
-    <string name="app_version">0.21 Beta</string>
-    <string name="app_date">2024.09.24/19</string>
-    <string name="app_update_log">백드랍 모드 추가, 마이너 버그 수정, 앱 최적화 진행</string>
+    <string name="app_version">1.01</string>
+    <string name="app_date">2024.10.01/15</string>
+    <string name="app_update_log">찾기 기능 수정, 앱 최적화 및 버그 수정, 배터리 정보 표시 개선</string>
     <string name="loading" tools:ignore="TypographyEllipsis">로드중...</string>
 
     <!-- 네비게이션 바 -->
