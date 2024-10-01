@@ -7,7 +7,6 @@ import androidx.lifecycle.ViewModel;
 public class FindViewModel extends ViewModel {
 
     private final MutableLiveData<Boolean> ignoreLiveData = new MutableLiveData<>();
-    private final MutableLiveData<String> alertTextLiveData = new MutableLiveData<>();
     private final MutableLiveData<Boolean> alertStatusLiveData = new MutableLiveData<>();
     private final MutableLiveData<Integer> distanceLiveData = new MutableLiveData<>();
     private final MutableLiveData<Integer> alertBtnLiveData = new MutableLiveData<>();
