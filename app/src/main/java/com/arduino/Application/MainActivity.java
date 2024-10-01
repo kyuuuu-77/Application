@@ -73,14 +73,8 @@ import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCallback;
 
 public class MainActivity extends AppCompatActivity {
-    /* Activty 생명주기 참고할 것 !!!
-     * onCreate()->onStart()->onResume()
-     *                                  <->[onPause()->onStop()->onRestart()]
-     *                                                              ->onDestroy()
-     * */
 
     private AppBarConfiguration mAppBarConfiguration;
-    private ActivityMainBinding binding;
 
     // 블루투스 관련 변수
     BluetoothAdapter mBluetoothAdapter;
@@ -137,23 +131,20 @@ public class MainActivity extends AppCompatActivity {
     Toolbar toolbar;
     Menu appMenu;
 
-    // 오버레이
+    // 권한 요구 코드
     private static final int REQUEST_OVERLAY_PERMISSION = 1;
+
     private WindowManager windowManager;
     private View overlayView;
     private Boolean isOverlayShowing = false;
-
-    // 기능 메서드중에 usages가 1인 메서드 (즉 하나의 프레그먼트에서만 사용되는 메서드)인 경우에는
-    // Fragment에 기능을 구현할 수 있도록 노력
 
     @RequiresApi(api = Build.VERSION_CODES.S)
     @SuppressLint({"HandlerLeak", "ResourceAsColor"})
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d("MainActivity", "MainActivity-onCreate()");
 
-        binding = ActivityMainBinding.inflate(getLayoutInflater());
+        ActivityMainBinding binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
         // 툴바 및 윈도우 설정
@@ -199,7 +190,6 @@ public class MainActivity extends AppCompatActivity {
         viewModel_info = new ViewModelProvider(this).get(InfoViewModel.class);
 
         checkOverlayPermission();
-        checkAlertPermission();
     }
 
     @Override
@@ -226,7 +216,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    // 오버레이 퍼미션을 체크하는 메서드
+    // 오버레이 권한을 체크하는 메서드
     private void checkOverlayPermission() {
         if (!Settings.canDrawOverlays(this)) {
             Toast.makeText(this, "오버레이 권한이 없음", Toast.LENGTH_SHORT).show();
@@ -236,9 +226,9 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    // 알림 퍼미션을 체크하는 메서드
+    // 알림 권한을 체크하는 메서드
     private void checkAlertPermission() {
-        if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.POST_NOTIFICATIONS}, 1);
             }
@@ -1080,10 +1070,10 @@ public class MainActivity extends AppCompatActivity {
             cnt ++;
             SystemClock.sleep(10);
             if (data != null) {
-                Log.d("받은 데이터", data);
+                Log.d("데이터 송수신", data + "가 수신됨");
                 break;
             } else if (cnt >= 500){
-                Log.d("받은 데이터", "수신 실패");
+                Log.d("데이터 송수신", "수신 실패");
                 break;
             }
         }
@@ -1283,6 +1273,8 @@ public class MainActivity extends AppCompatActivity {
 
     // 알람을 띄우는 메서드
     private void createNotif(String channel_id, String big, String summary) {
+        checkAlertPermission();
+
         NotificationManager manager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
         NotificationChannel channel = manager.getNotificationChannel(channel_id);
         if (channel == null) {
@@ -1306,8 +1298,6 @@ public class MainActivity extends AppCompatActivity {
         builder.setContentIntent(contentIntent);
         NotificationManagerCompat m = NotificationManagerCompat.from(getApplicationContext());
 
-        checkAlertPermission();
-
         m.notify(1, builder.build());
     }
 
@@ -1315,15 +1305,12 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
         setSupportActionBar(toolbar);
 
-        Log.d("MainActivity", "MainActivity-onResume()");
-
         setUIColor();
         startLeScan();
     }
 
     protected void onDestroy() {
         super.onDestroy();
-        Log.d("MainActivity", "MainActivity-onDestroy()");
 
         stopRSSIMeasurement();          // RSSI 측정 중지
         stopLeScan();       // 리스캔 중지

@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -68,8 +67,6 @@ public class BagDropFragment extends Fragment {
 
         binding = FragmentBagdropBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
-
-        Log.d("BagDrop Fragment", "BagDrop Fragment-onCreatedView()");
 
         // 리니어 레이아웃, 텍스트 뷰, 이미지 뷰, 아이콘, 버튼, Drawable 선언
         linearRemain = root.findViewById(R.id.remain_time);
@@ -333,7 +330,6 @@ public class BagDropFragment extends Fragment {
     @SuppressLint("ResourceAsColor")
     public void onResume() {
         super.onResume();
-        Log.d("BagDrop Fragment", "BagDrop Fragment-onResume()");
 
         // 캐리어 연결 여부 확인
         if (checkConnection() == 9) {
@@ -384,7 +380,5 @@ public class BagDropFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
-
-        Log.d("BagDrop Fragment", "BagDrop Fragment-onDestroyView()");
     }
 }

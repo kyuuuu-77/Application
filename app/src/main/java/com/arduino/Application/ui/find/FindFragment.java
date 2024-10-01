@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.SystemClock;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -75,8 +74,6 @@ public class FindFragment extends Fragment {
 
         binding = FragmentFindBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
-
-        Log.d("Find Fragment", "Find Fragment-onCreatedView()");
 
         // 버튼 및 텍스트 뷰 선언
         textIgnore = root.findViewById(R.id.text_ignore);
@@ -504,7 +501,6 @@ public class FindFragment extends Fragment {
 
     public void onResume() {
         super.onResume();
-        Log.d("Find Fragment", "Find Fragment-onResume()");
 
         checkSecurity();
         checkIgnore();
@@ -535,7 +531,5 @@ public class FindFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
-
-        Log.d("Find Fragment", "Find Fragment-onDestroyView()");
     }
 }

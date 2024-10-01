@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -245,8 +244,6 @@ public class InfoFragment extends Fragment {
 
     public void onResume(){
         super.onResume();
-        Log.d("Info Fragment", "Info Fragment-onResume()");
-
         View root = binding.getRoot();
 
         // 로딩 애니메이션 (로티 애니메이션) 및 비동기 처리 구문
@@ -283,7 +280,5 @@ public class InfoFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
-
-        Log.d("Info Fragment", "Info Fragment-onDestroyView()");
     }
 }
