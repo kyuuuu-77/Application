@@ -5,7 +5,6 @@ import android.bluetooth.BluetoothAdapter;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -55,8 +54,6 @@ public class HomeFragment extends Fragment {
 
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
-
-        Log.d("Home Fragment", "Home Fragment-onCreatedView()");
 
         // 버튼 및 텍스트뷰 선언
         mBtnBT = root.findViewById(R.id.btnBT);                     // 블루투스를 켜는 버튼 ID
@@ -186,7 +183,6 @@ public class HomeFragment extends Fragment {
 
     public void onResume(){
         super.onResume();
-        Log.d("Home Fragment", "Home Fragment-onResume()");
 
         if (mBluetoothAdapter == null) {        // 블루투스를 지원하지 않는 경우
             homeViewModel.setBluetoothStatus("블루투스 사용 불가능");
@@ -212,8 +208,6 @@ public class HomeFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        Log.d("Home Fragment", "Home Fragment-onDestroyView()");
-
         binding = null;
     }
 }

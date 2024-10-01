@@ -4,12 +4,9 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.provider.Settings;
-import android.util.Log;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
@@ -28,7 +25,6 @@ import androidx.core.view.WindowInsetsCompat;
 public class SplashActivity extends AppCompatActivity {
 
     private static final int PERMISSION_REQUEST_CODE = 1;
-    private static final int OVERLAY_PERMISSION_REQUEST_CODE = 2;
 
     ImageView imageView;
     TextView textView;
@@ -39,8 +35,6 @@ public class SplashActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_splash);
-
-        Log.d("SplashActivity", "SplashActivity-onCreate()");
 
         imageView = findViewById(R.id.imageView3);
         textView = findViewById(R.id.textView4);
@@ -63,8 +57,19 @@ public class SplashActivity extends AppCompatActivity {
 
     // 권한 확인 및 요청 메서드
     private void checkPermissions() {
+        // 필요한 권한 리스트를 만들고 확인
         String[] permissionList;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            permissionList = new String[]{     // 권한 리스트 (메인 액티비티에도 동일)
+                    Manifest.permission.POST_NOTIFICATIONS,
+                    Manifest.permission.BLUETOOTH_CONNECT,
+                    Manifest.permission.BLUETOOTH_SCAN,
+                    Manifest.permission.BLUETOOTH_ADMIN,
+                    Manifest.permission.ACCESS_COARSE_LOCATION,
+                    Manifest.permission.ACCESS_FINE_LOCATION
+            };
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             permissionList = new String[]{     // 권한 리스트 (메인 액티비티에도 동일)
                     Manifest.permission.BLUETOOTH_CONNECT,
                     Manifest.permission.BLUETOOTH_SCAN,
@@ -72,7 +77,6 @@ public class SplashActivity extends AppCompatActivity {
                     Manifest.permission.ACCESS_COARSE_LOCATION,
                     Manifest.permission.ACCESS_FINE_LOCATION
             };
-            // 필요한 권한이 부여여부 확인
         } else {
             permissionList = new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION};
         }
@@ -82,11 +86,6 @@ public class SplashActivity extends AppCompatActivity {
         } else {
             proceedWithSplash();
         }
-    }
-
-    private void overlayPermission() {
-        Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + getPackageName()));
-        startActivityForResult(intent, OVERLAY_PERMISSION_REQUEST_CODE);
     }
 
     // 권한 확인 메서드
@@ -113,19 +112,19 @@ public class SplashActivity extends AppCompatActivity {
                 }
             }
 
-            // 모든 권한이 허가 되었으면 진행, 아니면 종료
+            // 모든 권한이 허가 되었으면 진행, 아니면 강제 종료
             if (allPermissionsGranted) {
                 proceedWithSplash();
             } else {
-                Toast.makeText(this, "필수 권한이 필요합니다. 앱을 종료합니다.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "필수 권한이 허가되지 않았으므로 앱을 강제 종료합니다.", Toast.LENGTH_SHORT).show();
                 finish();
             }
         }
     }
 
     // 스플래시 화면 -> 메인 액티비티
+    // 스플래시 2초 동안 뜨게 함
     private void proceedWithSplash() {
-        // splash 2초 동안 뜨게 함.
         final Handler hd = new Handler();
         hd.postDelayed(new splashHandler(), 2000); // 2초 후에 splashHandler 작동
     }

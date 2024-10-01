@@ -6,50 +6,49 @@ import androidx.lifecycle.ViewModel;
 
 public class FindViewModel extends ViewModel {
 
-    private final MutableLiveData<String> ignoreTextLiveData = new MutableLiveData<>();
-    private final MutableLiveData<String> alertTextLiveData = new MutableLiveData<>();
-    private final MutableLiveData<String> alertStatusLiveData = new MutableLiveData<>();
-    private final MutableLiveData<String> distanceLiveData = new MutableLiveData<>();
-    private final MutableLiveData<String> alertBtnTextLiveData = new MutableLiveData<>();
+    private final MutableLiveData<Boolean> ignoreLiveData = new MutableLiveData<>();
+    private final MutableLiveData<Boolean> alertStatusLiveData = new MutableLiveData<>();
+    private final MutableLiveData<Integer> distanceLiveData = new MutableLiveData<>();
+    private final MutableLiveData<Integer> alertBtnLiveData = new MutableLiveData<>();
 
-    // 알림 버튼 텍스트
-    public LiveData<String> getIgnoreTextLiveData() {
-        return ignoreTextLiveData;
-    }
-    public void setIgnoreText(String text) {
-        ignoreTextLiveData.setValue(text);
+    // 알림 버튼 상태
+    // 무시 상태이면 true, 알림이 켜져 있으면 false
+    public LiveData<Boolean> getIgnoreLiveData() {
+        return ignoreLiveData;
     }
 
-    // 도난방지 텍스트
-    public LiveData<String> getAlertTextLiveData() {
-        return alertTextLiveData;
-    }
-    public void setAlertText(String text) {
-        alertTextLiveData.setValue(text);
+    public void setIgnore(boolean ignore) {
+        ignoreLiveData.setValue(ignore);
     }
 
-    // 도난방지 상태 텍스트
-    public LiveData<String> getAlertStatusLiveData() {
+    // 도난방지 상태
+    // 도난방지가 켜져 있으면 true, 아니면 false
+    public LiveData<Boolean> getAlertStatusLiveData() {
         return alertStatusLiveData;
     }
-    public void setAlertStatus(String status) {
+
+    public void setAlertStatus(boolean status) {
         alertStatusLiveData.setValue(status);
     }
 
-    // 캐리어 거리 텍스트
-    public LiveData<String> getDistanceLiveData() {
+    // 캐리어 거리
+    // 기본으로 -1, 매우 가까우면 0, 가까우면 1, 떨어져 있으면 2, 멀면 3
+    public LiveData<Integer> getDistanceLiveData() {
         return distanceLiveData;
     }
-    public void setDistance(String bag_distance) {
-        distanceLiveData.setValue(bag_distance);
+
+    public void setDistance(int distance) {
+        distanceLiveData.setValue(distance);
     }
 
-    // 도난방지 버튼 텍스트
-    public LiveData<String> getAlertBtntextLiveData() {
-        return alertBtnTextLiveData;
+    // 도난방지 버튼 상태
+    // 사용불가 -1, 켜기 상태이면 0, 끄기 상태이면 1
+    public LiveData<Integer> getAlertBtnLiveData() {
+        return alertBtnLiveData;
     }
-    public void setAlertBtnText(String btnText) {
-        alertBtnTextLiveData.setValue(btnText);
+
+    public void setAlertBtn(int status) {
+        alertBtnLiveData.setValue(status);
     }
 
 }
