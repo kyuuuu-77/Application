@@ -282,11 +282,11 @@ public class MainActivity extends AppCompatActivity {
     @RequiresApi(api = Build.VERSION_CODES.S)
     public void BT_on() {
         if (mBluetoothAdapter == null) {
-            viewModel_home.setBluetoothStatus("블루투스 사용 불가능");
+            viewModel_home.setBluetoothStatus(-1);
             Toast.makeText(getApplicationContext(), "블루투스를 지원하지 않는 기종입니다.", Toast.LENGTH_SHORT).show();
         } else {
             if (mBluetoothAdapter.isEnabled()) {
-                viewModel_home.setBluetoothStatus("블루투스 활성화");
+                viewModel_home.setBluetoothStatus(0);
                 Toast.makeText(getApplicationContext(), "블루투스가 이미 활성화되어 있습니다", Toast.LENGTH_SHORT).show();
             } else {
                 checkPermission();
@@ -300,11 +300,11 @@ public class MainActivity extends AppCompatActivity {
     @SuppressLint("MissingPermission")
     public void BT_on_Legacy() {
         if (mBluetoothAdapter == null) {
-            viewModel_home.setBluetoothStatus("블루투스 사용 불가능");
+            viewModel_home.setBluetoothStatus(-1);
             Toast.makeText(getApplicationContext(), "블루투스를 지원하지 않는 기종입니다", Toast.LENGTH_SHORT).show();
         } else {
             if (mBluetoothAdapter.isEnabled()) {
-                viewModel_home.setBluetoothStatus("블루투스 활성화");
+                viewModel_home.setBluetoothStatus(1);
                 Toast.makeText(getApplicationContext(), "블루투스가 이미 활성화되어 있습니다", Toast.LENGTH_SHORT).show();
             } else {
                 mBluetoothAdapter.enable();
@@ -348,10 +348,10 @@ public class MainActivity extends AppCompatActivity {
         onAutoSearch = true;
 
         runOnUiThread(() -> {
-            viewModel_home.setBluetoothStatus("블루투스 활성화");
+            viewModel_home.setBluetoothStatus(1);
             viewModel_home.setHomeText("캐리어에 연결되지 않음");
-            viewModel_home.setBtBtn("블루투스 끄기");
-            viewModel_home.setConnectBtn("연결");
+            viewModel_home.setBtBtn(1);
+            viewModel_home.setConnectBtn(0);
             viewModel_info.setAutoSearch(true);
             Toast.makeText(getApplicationContext(), "블루투스 활성화", Toast.LENGTH_SHORT).show();
         });
@@ -364,10 +364,10 @@ public class MainActivity extends AppCompatActivity {
         deviceName = null;
 
         runOnUiThread(() -> {
-            viewModel_home.setBluetoothStatus("블루투스 비활성화");
+            viewModel_home.setBluetoothStatus(0);
             viewModel_home.setHomeText("캐리어에 연결되지 않음");
-            viewModel_home.setBtBtn("블루투스 켜기");
-            viewModel_home.setConnectBtn("연결 불가");
+            viewModel_home.setBtBtn(0);
+            viewModel_home.setConnectBtn(-1);
             viewModel_info.setdeviceName("X");
             viewModel_info.setAutoSearch(true);
             viewModel_info.setBleStatus(0);
@@ -385,9 +385,9 @@ public class MainActivity extends AppCompatActivity {
                 setUIColor();
             } else if (resultCode == RESULT_CANCELED) {
                 runOnUiThread(() -> {
-                    viewModel_home.setBluetoothStatus("블루투스 비활성화");
-                    viewModel_home.setBtBtn("블루투스 켜기");
-                    viewModel_home.setConnectBtn("연결 불가");
+                    viewModel_home.setBluetoothStatus(0);
+                    viewModel_home.setBtBtn(0);
+                    viewModel_home.setConnectBtn(-1);
                     Toast.makeText(getApplicationContext(), "취소됨", Toast.LENGTH_SHORT).show();
                 });
             }
@@ -399,9 +399,9 @@ public class MainActivity extends AppCompatActivity {
                 setUIColor();
             } else if (resultCode == RESULT_CANCELED) {
                 runOnUiThread(() -> {
-                    viewModel_home.setBluetoothStatus("블루투스 활성화");
-                    viewModel_home.setBtBtn("블루투스 끄기");
-                    viewModel_home.setConnectBtn("연결");
+                    viewModel_home.setBluetoothStatus(1);
+                    viewModel_home.setBtBtn(1);
+                    viewModel_home.setConnectBtn(0);
                     Toast.makeText(getApplicationContext(), "취소됨", Toast.LENGTH_SHORT).show();
                 });
             }
@@ -707,7 +707,7 @@ public class MainActivity extends AppCompatActivity {
             toolbar.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.indigo_500));
 
             viewModel_home.setHomeText("스마트 캐리어에 연결됨");
-            viewModel_home.setConnectBtn("연결됨");
+            viewModel_home.setConnectBtn(1);
             viewModel_bagDrop.setConnectText("연결됨");
             viewModel_info.setBleStatus(9);
             Toast.makeText(getApplicationContext(), "스마트 캐리어에 연결됨", Toast.LENGTH_SHORT).show();
@@ -729,7 +729,7 @@ public class MainActivity extends AppCompatActivity {
 
             // 뷰모델 초기화
             viewModel_home.setHomeText("캐리어와 연결이 끊어졌습니다");
-            viewModel_home.setConnectBtn("연결");
+            viewModel_home.setConnectBtn(0);
             viewModel_find.setAlertStatus(false);
             viewModel_find.setAlertBtn(-1);
             viewModel_find.setDistance(-1);
@@ -773,7 +773,7 @@ public class MainActivity extends AppCompatActivity {
                         toolbar.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.green_500));
 
                         viewModel_home.setHomeText("잘못된 디바이스에 연결됨");
-                        viewModel_home.setConnectBtn("연결");
+                        viewModel_home.setConnectBtn(0);
                         Toast.makeText(getApplicationContext(), "연결된 디바이스는 스마트 캐리어가 아닙니다.", Toast.LENGTH_SHORT).show();
                     });
                 }
