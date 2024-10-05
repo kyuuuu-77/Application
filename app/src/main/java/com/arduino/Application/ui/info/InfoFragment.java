@@ -45,8 +45,9 @@ public class InfoFragment extends Fragment {
     ImageView Icon_security;
     ImageView Icon_BT;
 
-    InfoViewModel infoViewModel;
     private FragmentInfoBinding binding;
+    private InfoViewModel infoViewModel;
+    MainActivity mainActivity;
 
     @SuppressLint({"SetTextI18n", "DefaultLocale"})
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -186,7 +187,6 @@ public class InfoFragment extends Fragment {
 
     // 배터리 상태를 확인하는 메서드
     private void checkBattery() {
-        MainActivity mainActivity = (MainActivity) getActivity();
         if (mainActivity != null) {
             mainActivity.checkBattery();
         }
@@ -194,7 +194,6 @@ public class InfoFragment extends Fragment {
 
     // RSSI 측정여부를 표시하는 메서드
     private void checkRssi() {
-        MainActivity mainActivity = (MainActivity) getActivity();
         if (mainActivity != null) {
             mainActivity.checkRssi();
         }
@@ -202,7 +201,6 @@ public class InfoFragment extends Fragment {
 
     // 자동 검색 사용여부 표시하는 메서드
     private void checkAutoSearch() {
-        MainActivity mainActivity = (MainActivity) getActivity();
         if (mainActivity != null) {
             mainActivity.checkAutoSearch();
         }
@@ -210,7 +208,6 @@ public class InfoFragment extends Fragment {
 
     // 도난방지 여부를 표시하는 메서드
     private void checkSecurity() {
-        MainActivity mainActivity = (MainActivity) getActivity();
         if (mainActivity != null) {
             mainActivity.checkSecurity();
         }
@@ -218,7 +215,6 @@ public class InfoFragment extends Fragment {
 
     // 연결 상태를 확인하는 메서드
     private void checkConnection() {
-        MainActivity mainActivity = (MainActivity) getActivity();
         if (mainActivity != null) {
             mainActivity.checkConnection();
         }
@@ -226,7 +222,6 @@ public class InfoFragment extends Fragment {
 
     // 설정을 초기화하는 메서드
     private void resetSettings() {
-        MainActivity mainActivity = (MainActivity) getActivity();
         if (mainActivity != null) {
             mainActivity.resetSettings();
         }

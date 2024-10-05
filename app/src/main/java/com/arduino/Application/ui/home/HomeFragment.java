@@ -22,8 +22,6 @@ import com.arduino.Application.MainActivity;
 import com.arduino.Application.R;
 import com.arduino.Application.databinding.FragmentHomeBinding;
 
-import java.util.Objects;
-
 public class HomeFragment extends Fragment {
 
     // 버튼 및 텍스트 뷰 변수 초기화
@@ -47,7 +45,8 @@ public class HomeFragment extends Fragment {
     private BluetoothAdapter mBluetoothAdapter;
 
     private FragmentHomeBinding binding;
-    HomeViewModel homeViewModel;
+    private HomeViewModel homeViewModel;
+    MainActivity mainActivity;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -55,6 +54,8 @@ public class HomeFragment extends Fragment {
 
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
+
+        mainActivity = (MainActivity) getActivity();
 
         // 버튼 및 텍스트뷰 선언
         BtnBT = root.findViewById(R.id.btnBT);                     // 블루투스를 켜는 버튼 ID
@@ -149,7 +150,6 @@ public class HomeFragment extends Fragment {
     // 블루투스를 켜는 메서드
     @SuppressLint("NewApi")
     private void BT_on() {
-        MainActivity mainActivity = (MainActivity) getActivity();
         if (mainActivity != null) {
             mainActivity.BT_on();
         }
@@ -157,7 +157,6 @@ public class HomeFragment extends Fragment {
 
     // 블루투스를 켜는 메서드 (레거시)
     private void BT_on_Legacy() {
-        MainActivity mainActivity = (MainActivity) getActivity();
         if (mainActivity != null) {
             mainActivity.BT_on_Legacy();
         }
@@ -166,7 +165,6 @@ public class HomeFragment extends Fragment {
     // 블루투스를 끄는 메서드
     @SuppressLint("NewApi")
     private void BT_off() {
-        MainActivity mainActivity = (MainActivity) getActivity();
         if (mainActivity != null) {
             mainActivity.BT_off();
         }
@@ -174,7 +172,6 @@ public class HomeFragment extends Fragment {
 
     // 블루투스를 끄는 메서드 (레거시)
     private void BT_off_Legacy() {
-        MainActivity mainActivity = (MainActivity) getActivity();
         if (mainActivity != null) {
             mainActivity.BT_off_Legacy();
         }
@@ -183,7 +180,6 @@ public class HomeFragment extends Fragment {
     // 페어링 가능한 디바이스 리스트를 보여주는 메서드 -> 연결 수행
     @SuppressLint("NewApi")
     private void listPairedDevices() {
-        MainActivity mainActivity = (MainActivity) getActivity();
         if (mainActivity != null) {
             mainActivity.listPairedDevices();
         }
@@ -191,7 +187,6 @@ public class HomeFragment extends Fragment {
 
     // BLE 연결 상태를 확인하는 메서드
     private int checkBLE() {
-        MainActivity mainActivity = (MainActivity) getActivity();
         if (mainActivity != null) {
             return mainActivity.checkBLE();
         } else {

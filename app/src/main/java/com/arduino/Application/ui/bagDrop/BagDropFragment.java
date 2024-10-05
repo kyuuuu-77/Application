@@ -57,6 +57,7 @@ public class BagDropFragment extends Fragment {
 
     private FragmentBagdropBinding binding;
     private BagDropViewModel bagDropViewModel;
+    MainActivity mainActivity;
 
     private int arriveTime = -1;
     private boolean bagDropMode = false;
@@ -67,6 +68,8 @@ public class BagDropFragment extends Fragment {
 
         binding = FragmentBagdropBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
+
+        mainActivity = (MainActivity) getActivity();
 
         // 리니어 레이아웃, 텍스트 뷰, 이미지 뷰, 아이콘, 버튼, Drawable 선언
         Linear_remain = root.findViewById(R.id.remain_time);
@@ -271,7 +274,6 @@ public class BagDropFragment extends Fragment {
 
     // 캐리어와 연결을 확인하는 메서드
     private int checkConnection() {
-        MainActivity mainActivity = (MainActivity) getActivity();
         if (mainActivity != null) {
             return mainActivity.checkConnection();
         }
@@ -280,7 +282,6 @@ public class BagDropFragment extends Fragment {
 
     // 무게 측정 여부를 확인하는 메서드
     private double checkWeight() {
-        MainActivity mainActivity = (MainActivity) getActivity();
         if (mainActivity != null) {
             return mainActivity.checkWeightSetting()[0];
         }
@@ -289,7 +290,6 @@ public class BagDropFragment extends Fragment {
 
     // 시간 설정 여부를 불러오는 메서드
     private int checkTime() {
-        MainActivity mainActivity = (MainActivity) getActivity();
         if (mainActivity != null) {
             arriveTime = mainActivity.checkTime();
             return arriveTime;
@@ -299,7 +299,6 @@ public class BagDropFragment extends Fragment {
 
     // 시간 설정을 하는 메서드
     private void setTime(int hour, int min) {
-        MainActivity mainActivity = (MainActivity) getActivity();
         if (mainActivity != null) {
             mainActivity.setTime(hour, min);
         }
@@ -307,7 +306,6 @@ public class BagDropFragment extends Fragment {
 
     // 백드랍 모드를 체크하는 메서드
     private void checkBagDrop() {
-        MainActivity mainActivity = (MainActivity) getActivity();
         if (mainActivity != null) {
             bagDropMode = mainActivity.checkBagDrop();
         }
@@ -315,7 +313,6 @@ public class BagDropFragment extends Fragment {
 
     // 백드랍 모드를 설정하는 메서드
     private void setBagDrop(boolean onOff) {
-        MainActivity mainActivity = (MainActivity) getActivity();
         if (mainActivity != null) {
             mainActivity.setBagDrop(onOff);
         }

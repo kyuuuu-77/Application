@@ -69,7 +69,8 @@ public class FindFragment extends Fragment {
     private BluetoothAdapter mBluetoothAdapter;
 
     private FragmentFindBinding binding;
-    FindViewModel findViewModel;
+    private FindViewModel findViewModel;
+    MainActivity mainActivity;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -77,6 +78,8 @@ public class FindFragment extends Fragment {
 
         binding = FragmentFindBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
+
+        mainActivity = (MainActivity) getActivity();
 
         // 이미지 뷰, 텍스트 뷰, 버튼 및 Drawable 선언
         Icon_security = root.findViewById(R.id.security_icon);
@@ -328,7 +331,6 @@ public class FindFragment extends Fragment {
     // 벨을 울리는 메서드
     private void ringBell(boolean onOff) {
         // 로딩 애니메이션 (로티 애니메이션) 및 비동기 처리 구문
-        MainActivity mainActivity = (MainActivity) getActivity();
         View root = binding.getRoot();
 
         LottieAnimationView lottieView = root.findViewById(R.id.lottieView);
@@ -381,7 +383,6 @@ public class FindFragment extends Fragment {
 
     // BLE 연결 여부를 체크하는 메서드
     private int checkBLE() {
-        MainActivity mainActivity = (MainActivity) getActivity();
         if (mainActivity != null) {
             return mainActivity.checkBLE();
         } else {
@@ -391,7 +392,6 @@ public class FindFragment extends Fragment {
 
     // 도난방지 여부를 체크하는 메서드
     private void checkSecurity() {
-        MainActivity mainActivity = (MainActivity) getActivity();
         if (mainActivity != null) {
             security = mainActivity.checkSecurity();
         }
@@ -399,7 +399,6 @@ public class FindFragment extends Fragment {
 
     // 도난방지를 켜는 메서드
     private void security_ON() {
-        MainActivity mainActivity = (MainActivity) getActivity();
         if (mainActivity != null) {
             security = mainActivity.security_ON();
         }
@@ -407,7 +406,6 @@ public class FindFragment extends Fragment {
 
     // 도난방지를 끄는 메서드
     private void security_OFF() {
-        MainActivity mainActivity = (MainActivity) getActivity();
         if (mainActivity != null) {
             security = mainActivity.security_OFF();
         }
@@ -415,7 +413,6 @@ public class FindFragment extends Fragment {
 
     // 도난방지 경고 무시 설정 메서드
     private void ignoreAlert() {
-        MainActivity mainActivity = (MainActivity) getActivity();
         if (mainActivity != null) {
             mainActivity.ignoreAlert();
         }
@@ -423,7 +420,6 @@ public class FindFragment extends Fragment {
 
     // 도난방지 무시 여부 체크 메서드
     private void checkIgnore() {
-        MainActivity mainActivity = (MainActivity) getActivity();
         if (mainActivity != null) {
             mainActivity.checkIgnore();
         }
@@ -431,7 +427,6 @@ public class FindFragment extends Fragment {
 
     // rssi 신호값을 매인 액티비티에서 불러오는 메서드
     private int getRSSIStrength() {
-        MainActivity mainActivity = (MainActivity) getActivity();
         if (mainActivity != null) {
             return mainActivity.getRSSIStrength();
         } else {

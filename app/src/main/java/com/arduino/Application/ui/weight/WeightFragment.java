@@ -60,7 +60,8 @@ public class WeightFragment extends Fragment {
 
     View root;
     private FragmentWeightBinding binding;
-    WeightViewModel weightViewModel;
+    private WeightViewModel weightViewModel;
+    MainActivity mainActivity;
 
     @SuppressLint({"SetTextI18n", "DefaultLocale"})
     @Override
@@ -69,6 +70,8 @@ public class WeightFragment extends Fragment {
         weightViewModel = new ViewModelProvider(requireActivity()).get(WeightViewModel.class);
         binding = FragmentWeightBinding.inflate(inflater, container, false);
         root = binding.getRoot();
+
+        mainActivity = (MainActivity) getActivity();
 
         // 텍스트 뷰, 버튼 및 Drawable 초기화
         Text_weightNow = root.findViewById(R.id.weightNow);         // 현재 무게정보 텍스트뷰
@@ -192,8 +195,6 @@ public class WeightFragment extends Fragment {
 
     private void measureWeight() {
         // 로딩 애니메이션 (로티 애니메이션) 및 비동기 처리 구문
-        MainActivity mainActivity = (MainActivity) getActivity();
-
         LottieAnimationView lottieView = root.findViewById(R.id.lottieView);
         View loadingOverlay = root.findViewById(R.id.loading_overlay);
         ExecutorService executorService = Executors.newSingleThreadExecutor();
@@ -243,7 +244,6 @@ public class WeightFragment extends Fragment {
 
     // 무게 설정을 확인하는 메서드
     private double[] checkWeightSetting() {
-        MainActivity mainActivity = (MainActivity) getActivity();
         if (mainActivity != null) {
             return mainActivity.checkWeightSetting();
         }
@@ -290,7 +290,6 @@ public class WeightFragment extends Fragment {
 
     // BLE 연결 여부를 체크하는 메서드
     private int checkBLE() {
-        MainActivity mainActivity = (MainActivity) getActivity();
         if (mainActivity != null) {
             return mainActivity.checkBLE();
         } else {
