@@ -60,7 +60,7 @@
             android:id="@+id/text_auth"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="인증 필요"
+            android:text="@string/authBtn_text"
             android:textSize="18sp"
             android:textStyle="bold"
             android:layout_gravity="center"

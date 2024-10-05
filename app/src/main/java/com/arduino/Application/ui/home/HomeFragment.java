@@ -81,6 +81,15 @@ public class HomeFragment extends Fragment {
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
         // ViewModel 선언
+        homeViewModel.getAuthenticateLiveData().observe(getViewLifecycleOwner(), auth -> {
+            if (auth) {         // 인증을 했으면
+                Text_auth.setText("인증됨");
+                Btn_auth.setEnabled(false);
+            } else {        // 인증을 안 했으면
+                Text_auth.setText("인증 필요");
+                Btn_auth.setEnabled(true);
+            }
+        });
         homeViewModel.getconnectBtnLiveData().observe(getViewLifecycleOwner(), status -> {
             if (status == -1) {        // 연결 불가능한 경우(연결 불가)
                 Text_connect.setText("연결 불가");
@@ -144,6 +153,11 @@ public class HomeFragment extends Fragment {
         // 연결(페어링) 버튼
         BtnBT_connect.setOnClickListener(view -> listPairedDevices());
 
+        // 인증(패스워드) 버튼
+        Btn_auth.setOnClickListener(view -> {
+            // 인증과 관련된 동작 작성할 예정
+        });
+
         return root;
     }
 
@@ -194,8 +208,17 @@ public class HomeFragment extends Fragment {
         }
     }
 
+    // 인증 상태를 확인하는 메서드
+    private void checkAuth() {
+        if (mainActivity != null) {
+            mainActivity.checkAuth();
+        }
+    }
+
     public void onResume() {
         super.onResume();
+
+        checkAuth();
 
         if (mBluetoothAdapter == null) {        // 블루투스를 지원하지 않는 경우
             homeViewModel.setBluetoothStatus(-1);

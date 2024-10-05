@@ -118,6 +118,7 @@ public class MainActivity extends AppCompatActivity {
     private boolean ignoreSecurity = false;
     private boolean backDropMode = false;
     private boolean bleAlreadyChecked = false;
+    private boolean isAuthEnable = false;
     private final double[] weight = {0.0, 0.0};   // weight, set
     private String data;
     private String deviceName = null;
@@ -1161,6 +1162,11 @@ public class MainActivity extends AppCompatActivity {
         } else {
             return 0;
         }
+    }
+
+    // 인증 상태를 확인하는 메서드
+    public void checkAuth() {
+        viewModel_home.setAuthenticate(isAuthEnable);
     }
 
     // RSSI 신호 세기 정도를 전달하는 메서드
