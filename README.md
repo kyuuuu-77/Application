@@ -2,17 +2,15 @@
 스마트 캐리어
 
 ## 💻 프로젝트 소개 (Introduction)
-esp32와 안드로이드 앱을 연동하여 다양한 기능이 사용 가능한 스마트 캐리어 애플리케이션 입니다.
+esp32와 안드로이드 앱을 연동 및 다양한 기능이 사용 가능한 스마트 캐리어 애플리케이션
 
-사용된 모듈 및 센서 (esp32)
-무게 센서, TP4056 (충전 모듈), 0.91 inch 128 X 32 LCD, 1KΩ 저항, 3.7V 리튬폴리머 충전지, HX711, 등등...
+#### 🧷 사용된 모듈 및 센서
+esp32기반
 
-제작 기간
+무게 센서, TP4056 (충전 모듈), 0.91 inch 128 X 32 LCD, 1KΩ 저항, 3.7V 리튬폴리머 충전지, HX711, etc....
+
+#### ⏰ 개발 기간
 2024.04.02 ~ 2024.10.31 (예정)
-
-애플리케이션 개발 버전
-2024.10.01 15:00 (KST)
-1.01 (Master branch 기준)
 
 ## 💡 주요 기능
 #### 메인화면 
@@ -42,22 +40,15 @@ esp32와 안드로이드 앱을 연동하여 다양한 기능이 사용 가능�
 ## 📲 애플리케이션 SDK 버전 (Application Verison)
 - `minSdkVersion` : 28
 - `targetSdkVersion` : 34
-Android 9.0 Pie (API 28) ~ Android 14 (API 34) 지원하여 대부분 기기와 호환
 
-애플리케이션 요구 권한
-알림 권한
-POST_NOTIFICATIONS,
-SYSTEM_ALERT_WINDOW
-블루투스 권한
-BLUETOOTH_CONNECT,
-BLUETOOTH_SCAN,
-BLUETOOTH_ADMIN,
-위치 권한
-ACCESS_COARSE_LOCATION,
-ACCESS_FINE_LOCATION
-오버레이 권한
+###### *Android 9.0 Pie (API 28) ~ Android 14 (API 34)* 
+
+- `Development version`
+2024.10.01 15:00 (KST) 1.01 (Master branch 기준)
 
 
 
-📌 updated 2024.10.01 
+
+
+📌 *updated 2024.10.05*
 
