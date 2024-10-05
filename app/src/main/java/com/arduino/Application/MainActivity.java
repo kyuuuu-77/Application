@@ -241,7 +241,7 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if (id==R.id.action_settings) {
+        if (id == R.id.action_settings) {
             showAutoSearchDialog();
         } else if (id == R.id.app_info) {
             String version = getString(R.string.app_version);
@@ -494,7 +494,7 @@ public class MainActivity extends AppCompatActivity {
                 mListPairedDevices = new ArrayList<>();
 
                 for (BluetoothDevice device : mPairedDevices) {
-                    if (device.getName()==null)
+                    if (device.getName() == null)
                         continue;
                     mListPairedDevices.add(device.getName());
                 }
@@ -508,10 +508,10 @@ public class MainActivity extends AppCompatActivity {
                 AlertDialog alert = builder.create();
                 alert.show();
             } else {        // 페어링 가능한 장치가 없을때
-                Toast.makeText(getApplicationContext(),"페어링 된 디바이스가 없습니다.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "페어링 된 디바이스가 없습니다.", Toast.LENGTH_SHORT).show();
             }
         } else {            // 블루투스가 꺼져 있을때
-            Toast.makeText(getApplicationContext(),"블루투스가 비활성화되어 있습니다.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "블루투스가 비활성화되어 있습니다.", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -543,7 +543,7 @@ public class MainActivity extends AppCompatActivity {
 
     // 주변의 BLE 디바이스를 스캔
     public void startLeScan() {
-        if (mBluetoothAdapter == null || !mBluetoothAdapter.isEnabled()){
+        if (mBluetoothAdapter == null || !mBluetoothAdapter.isEnabled()) {
             Toast.makeText(this, "블루투스가 꺼져있어 자동 검색을 수행할 수 없습니다.", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -565,7 +565,7 @@ public class MainActivity extends AppCompatActivity {
                     checkPermission();
                 }
 
-                if (!isDialogShowing && !checkDialog){
+                if (!isDialogShowing && !checkDialog) {
                     if (onAutoSearch && mBluetoothDevice.getName() != null && mBluetoothDevice.getName().equals("FB301(73F06C)")) {     // 스마트 캐리어를 발견 했으면
                         bluetoothLeScanner.stopScan(scanCallback);
                         showConnectionDialog(mBluetoothDevice);
@@ -618,7 +618,7 @@ public class MainActivity extends AppCompatActivity {
 
     // 백드랍 모드의 다이얼로그 메서드
     private void showBagDropDialog() {
-        while(true) {
+        while (true) {
             int tmpBell = ringBell(true);
             if (tmpBell == 1) break;
             SystemClock.sleep(500);
@@ -655,7 +655,7 @@ public class MainActivity extends AppCompatActivity {
     };
 
     // RSSI 측정 시작 메서드
-    public void startRSSIMeasurement(){
+    public void startRSSIMeasurement() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             checkPermission();
         }
@@ -667,8 +667,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // RSSI 측정 중지 메서드
-    public void stopRSSIMeasurement(){
-        if(bluetoothGatt != null){
+    public void stopRSSIMeasurement() {
+        if (bluetoothGatt != null) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 checkPermission();
             }
@@ -838,7 +838,7 @@ public class MainActivity extends AppCompatActivity {
                 byte[] value = characteristic.getValue();
                 String receivedData = new String(value);
                 data = receivedData;
-                Log.d("Received data", "받은 데이터 : "+ receivedData);
+                Log.d("Received data", "받은 데이터 : " + receivedData);
             }
         }
 
@@ -899,7 +899,7 @@ public class MainActivity extends AppCompatActivity {
                         } else if (rssi_global > -77) {
                             viewModel_find.setDistance(2);
                             rssi_strength = 3;
-                        }  else if (rssi_global > -90) {
+                        } else if (rssi_global > -90) {
                             viewModel_find.setDistance(2);
                             rssi_strength = 2;
                         } else {
@@ -1077,12 +1077,12 @@ public class MainActivity extends AppCompatActivity {
     private void checkData() {
         int cnt = 0;
         while (true) {
-            cnt ++;
+            cnt++;
             SystemClock.sleep(10);
             if (data != null) {
                 Log.d("데이터 송수신", data + "가 수신됨");
                 break;
-            } else if (cnt >= 500){
+            } else if (cnt >= 500) {
                 Log.d("데이터 송수신", "수신 실패");
                 break;
             }
@@ -1119,8 +1119,7 @@ public class MainActivity extends AppCompatActivity {
 
                 if (data == null) {
                     return -1;
-                }
-                else if (data.trim().equals("ring_stop")) {   // 벨 울리기 중지 성공
+                } else if (data.trim().equals("ring_stop")) {   // 벨 울리기 중지 성공
                     data = null;
                     return 2;
                 } else {
@@ -1163,7 +1162,7 @@ public class MainActivity extends AppCompatActivity {
             return 0;
         }
     }
-    
+
     // RSSI 신호 세기 정도를 전달하는 메서드
     public int getRSSIStrength() {
         return rssi_strength;
@@ -1266,10 +1265,10 @@ public class MainActivity extends AppCompatActivity {
             }
 
             if (remain / 60 > 0) {      // 1시간 이상 남으면
-                viewModel_bagDrop.setRemainTimeText(remain/60 + "시간 " + remain%60 + "분");
+                viewModel_bagDrop.setRemainTimeText(remain / 60 + "시간 " + remain % 60 + "분");
 
             } else {        // 1시간 이하인 경우
-                viewModel_bagDrop.setRemainTimeText(remain%60 + "분");
+                viewModel_bagDrop.setRemainTimeText(remain % 60 + "분");
             }
 
             if (remain <= 10) {     // 10분 전 부터 캐리어 찾기를 시도

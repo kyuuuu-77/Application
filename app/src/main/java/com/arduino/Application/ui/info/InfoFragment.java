@@ -29,21 +29,21 @@ public class InfoFragment extends Fragment {
     // 버튼, 텍스트뷰 및 아이콘 초기화
     Button Btn_reset;
 
-    TextView autoSearch;
-    TextView battMain;
-    TextView battSub;
-    TextView rssiMain;
-    TextView rssiSub;
-    TextView securityMain;
-    TextView securitySub;
-    TextView bleMain;
-    TextView bleSub;
+    TextView Text_autoSearch;
+    TextView Text_battMain;
+    TextView Text_battSub;
+    TextView Text_rssiMain;
+    TextView Text_rssiSub;
+    TextView Text_securityMain;
+    TextView Text_securitySub;
+    TextView Text_bleMain;
+    TextView Text_bleSub;
 
-    ImageView Search_icon;
-    ImageView RSSI_icon;
-    ImageView Bat_icon;
-    ImageView Security_icon;
-    ImageView BT_icon;
+    ImageView Icon_search;
+    ImageView Icon_RSSI;
+    ImageView Icon_battery;
+    ImageView Icon_security;
+    ImageView Icon_BT;
 
     InfoViewModel infoViewModel;
     private FragmentInfoBinding binding;
@@ -58,88 +58,88 @@ public class InfoFragment extends Fragment {
         // 버튼, 텍스트뷰 및 아이콘 선언
         Btn_reset = root.findViewById(R.id.reset);
 
-        autoSearch = root.findViewById(R.id.auto_search);
-        battMain = root.findViewById(R.id.batteryText);
-        battSub = root.findViewById(R.id.batteryVoltage);
-        rssiMain = root.findViewById(R.id.rssi_signal);
-        rssiSub = root.findViewById(R.id.rssi_sub);
-        securityMain = root.findViewById(R.id.security);
-        securitySub = root.findViewById(R.id.security_sub);
-        bleMain = root.findViewById(R.id.text_info);
-        bleSub = root.findViewById(R.id.ble_device);
+        Text_autoSearch = root.findViewById(R.id.auto_search);
+        Text_battMain = root.findViewById(R.id.batteryText);
+        Text_battSub = root.findViewById(R.id.batteryVoltage);
+        Text_rssiMain = root.findViewById(R.id.rssi_signal);
+        Text_rssiSub = root.findViewById(R.id.rssi_sub);
+        Text_securityMain = root.findViewById(R.id.security);
+        Text_securitySub = root.findViewById(R.id.security_sub);
+        Text_bleMain = root.findViewById(R.id.text_info);
+        Text_bleSub = root.findViewById(R.id.ble_device);
 
-        Bat_icon = root.findViewById(R.id.battery);
-        RSSI_icon = root.findViewById(R.id.rssi_icon);
-        Search_icon = root.findViewById(R.id.search_icon);
-        Security_icon = root.findViewById(R.id.security_icon);
-        BT_icon = root.findViewById(R.id.bt_icon);
+        Icon_battery = root.findViewById(R.id.battery);
+        Icon_RSSI = root.findViewById(R.id.rssi_icon);
+        Icon_search = root.findViewById(R.id.search_icon);
+        Icon_security = root.findViewById(R.id.security_icon);
+        Icon_BT = root.findViewById(R.id.bt_icon);
 
         // ViewModel 선언
         // 자동검색 상태
         infoViewModel.getAutoSearchLiveData().observe(getViewLifecycleOwner(), search -> {
             if (search) {      // 자동 검색이 켜져 있으면
-                Search_icon.setImageResource(R.drawable.info_search_on);
-                autoSearch.setText("자동검색 켜짐");
+                Icon_search.setImageResource(R.drawable.info_search_on);
+                Text_autoSearch.setText("자동검색 켜짐");
             } else {        // 자동 검색이 꺼져 있으면
-                Search_icon.setImageResource(R.drawable.info_search_off);
-                autoSearch.setText("자동검색 꺼짐");
+                Icon_search.setImageResource(R.drawable.info_search_off);
+                Text_autoSearch.setText("자동검색 꺼짐");
             }
         });
 
         // 신호세기
         infoViewModel.getRssiLiveData().observe(getViewLifecycleOwner(), rssi -> {
             if (rssi == 999) {       // rssi 값을 측정할 수 없는 경우
-                rssiMain.setText("측정불가");
-                rssiSub.setText("신호 없음");
-                RSSI_icon.setImageResource(R.drawable.info_rssi_off);
+                Text_rssiMain.setText("측정불가");
+                Text_rssiSub.setText("신호 없음");
+                Icon_RSSI.setImageResource(R.drawable.info_rssi_off);
             } else {    // rssi 값을 측정하고 있는 경우
-                rssiMain.setText(rssi + " dBm");
-                rssiSub.setText("신호 측정중");
-                RSSI_icon.setImageResource(R.drawable.info_rssi_on);
+                Text_rssiMain.setText(rssi + " dBm");
+                Text_rssiSub.setText("신호 측정중");
+                Icon_RSSI.setImageResource(R.drawable.info_rssi_on);
             }
         });
 
         // 배터리 상태
         infoViewModel.getBatteryLiveData().observe(getViewLifecycleOwner(), batt -> {
             if (batt == -1) {
-                battMain.setText("정보없음");
-                Bat_icon.setImageResource(R.drawable.info_bat_unknown);
+                Text_battMain.setText("정보없음");
+                Icon_battery.setImageResource(R.drawable.info_bat_unknown);
             } else {
                 if (batt == 999) {
-                    battMain.setText("충전중");
-                    Bat_icon.setImageResource(R.drawable.info_bat_charging);
+                    Text_battMain.setText("충전중");
+                    Icon_battery.setImageResource(R.drawable.info_bat_charging);
                 } else {
-                    battMain.setText(batt + " %");
+                    Text_battMain.setText(batt + " %");
                     if (batt >= 80) {
-                        Bat_icon.setImageResource(R.drawable.info_bat_full);
+                        Icon_battery.setImageResource(R.drawable.info_bat_full);
                     } else if (batt >= 60) {
-                        Bat_icon.setImageResource(R.drawable.info_bat_normal);
+                        Icon_battery.setImageResource(R.drawable.info_bat_normal);
                     } else if (batt >= 40) {
-                        Bat_icon.setImageResource(R.drawable.info_bat_low);
+                        Icon_battery.setImageResource(R.drawable.info_bat_low);
                     } else {
-                        Bat_icon.setImageResource(R.drawable.info_bat_very_row);
+                        Icon_battery.setImageResource(R.drawable.info_bat_very_row);
                     }
                 }
             }
         });
         infoViewModel.getbatteryVoltLiveData().observe(getViewLifecycleOwner(), voltage -> {
             if (voltage == -1) {
-                battSub.setText("NULL V");
+                Text_battSub.setText("NULL V");
             } else {
-                battSub.setText("전압 : " + String.format("%.2f", voltage) + " V");
+                Text_battSub.setText("전압 : " + String.format("%.2f", voltage) + " V");
             }
         });
 
         // 도난방지 상태
         infoViewModel.getSecurityLiveData().observe(getViewLifecycleOwner(), security -> {
             if (security) {      // 도난 방지가 켜져 있으면
-                securityMain.setText("사용중");
-                securitySub.setText("도난방지 켜짐");
-                Security_icon.setImageResource(R.drawable.info_security_on);
+                Text_securityMain.setText("사용중");
+                Text_securitySub.setText("도난방지 켜짐");
+                Icon_security.setImageResource(R.drawable.info_security_on);
             } else {        // 도난 방지가 꺼져 있으면
-                securityMain.setText("사용안함");
-                securitySub.setText("도난방지 꺼짐");
-                Security_icon.setImageResource(R.drawable.info_security_off);
+                Text_securityMain.setText("사용안함");
+                Text_securitySub.setText("도난방지 꺼짐");
+                Icon_security.setImageResource(R.drawable.info_security_off);
             }
         });
 
@@ -147,31 +147,31 @@ public class InfoFragment extends Fragment {
         infoViewModel.getbleStatusLiveData().observe(getViewLifecycleOwner(), status -> {
             switch (status) {
                 case -1:
-                    bleMain.setText("사용불가");
-                    BT_icon.setImageResource(R.drawable.info_bt_off);
+                    Text_bleMain.setText("사용불가");
+                    Icon_BT.setImageResource(R.drawable.info_bt_off);
                     break;
                 case 0:
-                    bleMain.setText("비활성화");
-                    BT_icon.setImageResource(R.drawable.info_bt_off);
+                    Text_bleMain.setText("비활성화");
+                    Icon_BT.setImageResource(R.drawable.info_bt_off);
                     infoViewModel.setdeviceName("블루투스 꺼짐");
                     break;
                 case 1:
-                    bleMain.setText("활성화");
-                    BT_icon.setImageResource(R.drawable.info_bt_on);
+                    Text_bleMain.setText("활성화");
+                    Icon_BT.setImageResource(R.drawable.info_bt_on);
                     infoViewModel.setdeviceName("블루투스 켜짐");
                     break;
                 case 2:
-                    bleMain.setText("통신오류");
-                    BT_icon.setImageResource(R.drawable.info_bt_on);
+                    Text_bleMain.setText("통신오류");
+                    Icon_BT.setImageResource(R.drawable.info_bt_on);
                     infoViewModel.setdeviceName("블루투스 켜짐");
                     break;
                 case 9:
-                    bleMain.setText("연결됨");
-                    BT_icon.setImageResource(R.drawable.info_bt_connect);
+                    Text_bleMain.setText("연결됨");
+                    Icon_BT.setImageResource(R.drawable.info_bt_connect);
                     break;
             }
         });
-        infoViewModel.getdeviceNameLiveData().observe(getViewLifecycleOwner(), name -> bleSub.setText(name));
+        infoViewModel.getdeviceNameLiveData().observe(getViewLifecycleOwner(), name -> Text_bleSub.setText(name));
 
         // 버튼 이벤트 리스너
         // 설정 초기화 버튼
@@ -241,7 +241,7 @@ public class InfoFragment extends Fragment {
         checkConnection();
     }
 
-    public void onResume(){
+    public void onResume() {
         super.onResume();
         View root = binding.getRoot();
 

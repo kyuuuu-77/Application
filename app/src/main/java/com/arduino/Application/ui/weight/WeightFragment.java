@@ -36,12 +36,12 @@ import java.util.concurrent.Executors;
 public class WeightFragment extends Fragment {
 
     // 버튼 요소 및 텍스트 뷰 초기화
-    private TextView weightNow;
-    private TextView weightSet;
-    private TextView weightInfo;
+    TextView Text_weightNow;
+    TextView Text_weightSet;
+    TextView Text_weightInfo;
 
-    private Button Btn_weight;
-    private Button Btn_menu;
+    Button Btn_weight;
+    Button Btn_menu;
 
     Drawable Btn_blue;
     Drawable Btn_red;
@@ -49,14 +49,13 @@ public class WeightFragment extends Fragment {
     Drawable menu_red;
 
     // 앱서랍 선언
-    private DrawerLayout drawerLayout;
-    private NavigationView navigationView;
+    DrawerLayout drawerLayout;
+    NavigationView navigationView;
 
     // Weight Fragment의 전역 변수
     private double[] weight = {0, 0};   // weight, set
     private MenuItem lastCheckedBaggage;
     private MenuItem lastCheckedWeight;
-
     private BluetoothAdapter mBluetoothAdapter;
 
     View root;
@@ -72,9 +71,9 @@ public class WeightFragment extends Fragment {
         root = binding.getRoot();
 
         // 텍스트 뷰, 버튼 및 Drawable 초기화
-        weightNow = root.findViewById(R.id.weightNow);         // 현재 무게정보 텍스트뷰
-        weightSet = root.findViewById(R.id.weightSet);          // 허용 무게 텍스트 뷰
-        weightInfo = root.findViewById(R.id.weightInfo);     // 초과 무게 텍스트 뷰
+        Text_weightNow = root.findViewById(R.id.weightNow);         // 현재 무게정보 텍스트뷰
+        Text_weightSet = root.findViewById(R.id.weightSet);          // 허용 무게 텍스트 뷰
+        Text_weightInfo = root.findViewById(R.id.weightInfo);     // 초과 무게 텍스트 뷰
 
         Btn_weight = root.findViewById(R.id.weight_btn);            // 무게 측정 시작 버튼
         Btn_menu = root.findViewById(R.id.menu);             // 무게 설정 메뉴 버튼
@@ -92,35 +91,35 @@ public class WeightFragment extends Fragment {
         // 측정된 무게 값
         weightViewModel.getWeightNowLiveData().observe(getViewLifecycleOwner(), weight -> {
             if (weight == -1) {
-                weightNow.setText("-- Kg");
+                Text_weightNow.setText("-- Kg");
             } else {
-                weightNow.setText(weight + " Kg");
+                Text_weightNow.setText(weight + " Kg");
             }
         });
 
         // 무게 설정 상태
         weightViewModel.getWeightSetLiveData().observe(getViewLifecycleOwner(), target -> {
             weight[1] = target;
-            weightSet.setText("허용 무게 : " + target + " Kg");
+            Text_weightSet.setText("허용 무게 : " + target + " Kg");
         });
 
         // 무게 초과 여부
         weightViewModel.getWeightInfoLiveData().observe(getViewLifecycleOwner(), over -> {
             if (over == -999) {
-                weightInfo.setText("32 Kg을 초과하였습니다");
-                weightInfo.setTextColor(ContextCompat.getColor(requireActivity(), R.color.red_500));
+                Text_weightInfo.setText("32 Kg을 초과하였습니다");
+                Text_weightInfo.setTextColor(ContextCompat.getColor(requireActivity(), R.color.red_500));
             } else if (over == -1) {
-                weightInfo.setText("무게를 측정하지 않았습니다");
-                weightInfo.setTextColor(ContextCompat.getColor(requireActivity(), R.color.black));
+                Text_weightInfo.setText("무게를 측정하지 않았습니다");
+                Text_weightInfo.setTextColor(ContextCompat.getColor(requireActivity(), R.color.black));
             } else if (over == 0) {
-                weightInfo.setText("무게를 초과하지 않았습니다!");
-                weightInfo.setTextColor(ContextCompat.getColor(requireActivity(), R.color.indigo_500));
-            } else  if (over == -2) {
-                weightInfo.setText("무게 측정에 실패하였습니다");
-                weightInfo.setTextColor(ContextCompat.getColor(requireActivity(), R.color.red_500));
+                Text_weightInfo.setText("무게를 초과하지 않았습니다!");
+                Text_weightInfo.setTextColor(ContextCompat.getColor(requireActivity(), R.color.indigo_500));
+            } else if (over == -2) {
+                Text_weightInfo.setText("무게 측정에 실패하였습니다");
+                Text_weightInfo.setTextColor(ContextCompat.getColor(requireActivity(), R.color.red_500));
             } else {
-                weightInfo.setText(String.format("%.1f", over)+ " Kg 초과하였습니다.");
-                weightInfo.setTextColor(ContextCompat.getColor(requireActivity(), R.color.orange_500));
+                Text_weightInfo.setText(String.format("%.1f", over) + " Kg 초과하였습니다.");
+                Text_weightInfo.setTextColor(ContextCompat.getColor(requireActivity(), R.color.orange_500));
             }
         });
 
@@ -218,11 +217,11 @@ public class WeightFragment extends Fragment {
                     } else {
                         if (weight[0] > 32.0) {
                             showCustomDialog(3);
-                            weightNow.setTextColor(ContextCompat.getColor(requireActivity(), R.color.red_500));
+                            Text_weightNow.setTextColor(ContextCompat.getColor(requireActivity(), R.color.red_500));
                         } else if (weight[0] > maxSet) {
-                            weightNow.setTextColor(ContextCompat.getColor(requireActivity(), R.color.orange_500));
+                            Text_weightNow.setTextColor(ContextCompat.getColor(requireActivity(), R.color.orange_500));
                         } else {
-                            weightNow.setTextColor(ContextCompat.getColor(requireActivity(), R.color.indigo_500));
+                            Text_weightNow.setTextColor(ContextCompat.getColor(requireActivity(), R.color.indigo_500));
                         }
                     }
                 });
@@ -259,7 +258,7 @@ public class WeightFragment extends Fragment {
         lastCheckedBaggage = null;
 
         weightViewModel.setWeightNow((double) -1);
-        weightNow.setTextColor(ContextCompat.getColor(requireActivity(), R.color.indigo_500));
+        Text_weightNow.setTextColor(ContextCompat.getColor(requireActivity(), R.color.indigo_500));
         weightViewModel.setWeightSet(15);
         weightViewModel.setWeightInfo(-1);
     }
@@ -278,11 +277,11 @@ public class WeightFragment extends Fragment {
 
             if (weight[0] > 32.0) {             // 32kg을 초과한 경우
                 showCustomDialog(3);
-                weightNow.setTextColor(ContextCompat.getColor(requireActivity(), R.color.red_500));
+                Text_weightNow.setTextColor(ContextCompat.getColor(requireActivity(), R.color.red_500));
             } else if (weight[0] > maxSet) {    // 허용 무게를 초과한 경우
-                weightNow.setTextColor(ContextCompat.getColor(requireActivity(), R.color.orange_500));
+                Text_weightNow.setTextColor(ContextCompat.getColor(requireActivity(), R.color.orange_500));
             } else {                            // 무게를 초과하지 않은 경우
-                weightNow.setTextColor(ContextCompat.getColor(requireActivity(), R.color.indigo_500));
+                Text_weightNow.setTextColor(ContextCompat.getColor(requireActivity(), R.color.indigo_500));
             }
         } else if (weight != null && weight[0] == -1) {  // 무게 측정 실패한 경우
             weightViewModel.setWeightBtn(-1);

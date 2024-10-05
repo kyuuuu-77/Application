@@ -42,14 +42,14 @@ import java.util.concurrent.Executors;
 public class FindFragment extends Fragment {
 
     // 이미지 뷰, 버튼, 텍스트 뷰 및 Drawable 초기화
-    ImageView security_icon;
-    ImageView distance_icon;
+    ImageView Icon_security;
+    ImageView Icon_distance;
 
-    TextView textIgnore;
-    TextView securityMain;
-    TextView securitySub;
-    TextView distanceMain;
-    TextView distanceSub;
+    TextView Text_ignore;
+    TextView Text_securityMain;
+    TextView Text_securitySub;
+    TextView Text_distanceMain;
+    TextView Text_distanceSub;
 
     Button Btn_ignore;
     Button Btn_bell;
@@ -62,10 +62,10 @@ public class FindFragment extends Fragment {
     Drawable ignore_blue;
     Drawable ignore_red;
 
-    private LineChart lineChart;
+    LineChart lineChart;
 
+    // Find Fragment의 전역 변수
     private boolean security = false;       // security
-
     private BluetoothAdapter mBluetoothAdapter;
 
     private FragmentFindBinding binding;
@@ -79,14 +79,14 @@ public class FindFragment extends Fragment {
         View root = binding.getRoot();
 
         // 이미지 뷰, 텍스트 뷰, 버튼 및 Drawable 선언
-        security_icon = root.findViewById(R.id.security_icon);
-        distance_icon = root.findViewById(R.id.distance_icon);
+        Icon_security = root.findViewById(R.id.security_icon);
+        Icon_distance = root.findViewById(R.id.distance_icon);
 
-        textIgnore = root.findViewById(R.id.text_ignore);
-        securityMain = root.findViewById(R.id.alert_status);
-        securitySub = root.findViewById(R.id.security_sub);
-        distanceMain = root.findViewById(R.id.find_distance);
-        distanceSub = root.findViewById(R.id.distance_sub);
+        Text_ignore = root.findViewById(R.id.text_ignore);
+        Text_securityMain = root.findViewById(R.id.alert_status);
+        Text_securitySub = root.findViewById(R.id.security_sub);
+        Text_distanceMain = root.findViewById(R.id.find_distance);
+        Text_distanceSub = root.findViewById(R.id.distance_sub);
 
         Btn_ignore = root.findViewById(R.id.ignore);
         Btn_bell = root.findViewById(R.id.bell);
@@ -179,10 +179,10 @@ public class FindFragment extends Fragment {
         // 알림 버튼 상태
         findViewModel.getIgnoreLiveData().observe(getViewLifecycleOwner(), ignore -> {
             if (ignore) {     // 무시 상태이면
-                textIgnore.setText("무시");
+                Text_ignore.setText("무시");
                 Btn_ignore.setBackground(ignore_red);
             } else {
-                textIgnore.setText("알림");
+                Text_ignore.setText("알림");
                 Btn_ignore.setBackground(ignore_blue);
             }
         });
@@ -190,13 +190,13 @@ public class FindFragment extends Fragment {
         // 도난방지 상태
         findViewModel.getAlertStatusLiveData().observe(getViewLifecycleOwner(), status -> {
             if (status) {       // 도난방지가 켜져 있으면
-                securityMain.setText("동작중");
-                securitySub.setText("도난방지 켜짐");
-                security_icon.setImageResource(R.drawable.info_security_on);
+                Text_securityMain.setText("동작중");
+                Text_securitySub.setText("도난방지 켜짐");
+                Icon_security.setImageResource(R.drawable.info_security_on);
             } else {        // 도난방지가 꺼져 있으면
-                securityMain.setText("사용안함");
-                securitySub.setText("도난방지 꺼짐");
-                security_icon.setImageResource(R.drawable.info_security_off);
+                Text_securityMain.setText("사용안함");
+                Text_securitySub.setText("도난방지 꺼짐");
+                Icon_security.setImageResource(R.drawable.info_security_off);
             }
         });
 
@@ -204,46 +204,46 @@ public class FindFragment extends Fragment {
         findViewModel.getDistanceLiveData().observe(getViewLifecycleOwner(), bag_distance -> {
             switch (bag_distance) {
                 case -1:
-                    distanceMain.setText("정보없음");
-                    distanceSub.setText("거리 측정 불가");
-                    distanceMain.setTextColor(ContextCompat.getColor(requireActivity(), R.color.black));
-                    distanceSub.setTextColor(ContextCompat.getColor(requireActivity(), R.color.black));
-                    distance_icon.setImageResource(R.drawable.find_distance_off);
+                    Text_distanceMain.setText("정보없음");
+                    Text_distanceSub.setText("거리 측정 불가");
+                    Text_distanceMain.setTextColor(ContextCompat.getColor(requireActivity(), R.color.black));
+                    Text_distanceSub.setTextColor(ContextCompat.getColor(requireActivity(), R.color.black));
+                    Icon_distance.setImageResource(R.drawable.find_distance_off);
                     break;
                 case 0:
-                    distanceMain.setText("바로 앞");
-                    distanceSub.setText("매우 가까움");
-                    distanceMain.setTextColor(ContextCompat.getColor(requireActivity(), R.color.indigo_500));
-                    distanceSub.setTextColor(ContextCompat.getColor(requireActivity(), R.color.indigo_500));
-                    distance_icon.setImageResource(R.drawable.find_distance_on);
+                    Text_distanceMain.setText("바로 앞");
+                    Text_distanceSub.setText("매우 가까움");
+                    Text_distanceMain.setTextColor(ContextCompat.getColor(requireActivity(), R.color.indigo_500));
+                    Text_distanceSub.setTextColor(ContextCompat.getColor(requireActivity(), R.color.indigo_500));
+                    Icon_distance.setImageResource(R.drawable.find_distance_on);
                     break;
                 case 1:
-                    distanceMain.setText("근처");
-                    distanceSub.setText("가까움");
-                    distanceMain.setTextColor(ContextCompat.getColor(requireActivity(), R.color.blue_500));
-                    distanceSub.setTextColor(ContextCompat.getColor(requireActivity(), R.color.blue_500));
-                    distance_icon.setImageResource(R.drawable.find_distance_on);
+                    Text_distanceMain.setText("근처");
+                    Text_distanceSub.setText("가까움");
+                    Text_distanceMain.setTextColor(ContextCompat.getColor(requireActivity(), R.color.blue_500));
+                    Text_distanceSub.setTextColor(ContextCompat.getColor(requireActivity(), R.color.blue_500));
+                    Icon_distance.setImageResource(R.drawable.find_distance_on);
                     break;
                 case 2:
-                    distanceMain.setText("거리있음");
-                    distanceSub.setText("거리가 있음");
-                    distanceMain.setTextColor(ContextCompat.getColor(requireActivity(), R.color.green_500));
-                    distanceSub.setTextColor(ContextCompat.getColor(requireActivity(), R.color.green_500));
-                    distance_icon.setImageResource(R.drawable.find_distance_on);
+                    Text_distanceMain.setText("거리있음");
+                    Text_distanceSub.setText("거리가 있음");
+                    Text_distanceMain.setTextColor(ContextCompat.getColor(requireActivity(), R.color.green_500));
+                    Text_distanceSub.setTextColor(ContextCompat.getColor(requireActivity(), R.color.green_500));
+                    Icon_distance.setImageResource(R.drawable.find_distance_on);
                     break;
                 case 3:
-                    distanceMain.setText("떨어짐");
-                    distanceSub.setText("약간 멂");
-                    distanceMain.setTextColor(ContextCompat.getColor(requireActivity(), R.color.orange_500));
-                    distanceSub.setTextColor(ContextCompat.getColor(requireActivity(), R.color.orange_500));
-                    distance_icon.setImageResource(R.drawable.find_distance_on);
+                    Text_distanceMain.setText("떨어짐");
+                    Text_distanceSub.setText("약간 멂");
+                    Text_distanceMain.setTextColor(ContextCompat.getColor(requireActivity(), R.color.orange_500));
+                    Text_distanceSub.setTextColor(ContextCompat.getColor(requireActivity(), R.color.orange_500));
+                    Icon_distance.setImageResource(R.drawable.find_distance_on);
                     break;
                 case 4:
-                    distanceMain.setText("매우 멂");
-                    distanceSub.setText("도난 위험 있음");
-                    distanceMain.setTextColor(ContextCompat.getColor(requireActivity(), R.color.red_500));
-                    distanceSub.setTextColor(ContextCompat.getColor(requireActivity(), R.color.red_500));
-                    distance_icon.setImageResource(R.drawable.find_distance_on);
+                    Text_distanceMain.setText("매우 멂");
+                    Text_distanceSub.setText("도난 위험 있음");
+                    Text_distanceMain.setTextColor(ContextCompat.getColor(requireActivity(), R.color.red_500));
+                    Text_distanceSub.setTextColor(ContextCompat.getColor(requireActivity(), R.color.red_500));
+                    Icon_distance.setImageResource(R.drawable.find_distance_on);
                     break;
             }
         });
