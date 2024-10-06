@@ -88,13 +88,15 @@
         <TextView
             android:id="@+id/dialog_title2"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="127dp"
             android:layout_marginStart="8dp"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/background_orange"
             android:gravity="center_horizontal"
             android:text="베터리 전압이 매우낮습니다\n기기를 충전해주세요"
             android:textColor="@android:color/black"
             android:textSize="27sp"
-            android:layout_marginTop="20dp"/>
+            />
 
     </LinearLayout>
 

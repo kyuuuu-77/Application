@@ -107,4 +107,8 @@
     <string name="dialogTime_setHour">hh시</string>
     <string name="dialogTime_setMin">mm분</string>
 
+    <!-- 다이얼로그 패스워드 화면 -->
+    <string name="text_password">Password</string>
+    <string name="pwd">비밀번호를 입력하세요</string>
+
 </resources>
