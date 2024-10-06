@@ -118,10 +118,11 @@ public class MainActivity extends AppCompatActivity {
     private boolean ignoreSecurity = false;
     private boolean backDropMode = false;
     private boolean bleAlreadyChecked = false;
-    private boolean isAuthEnable = false;
+    private boolean isAuth = false;
     private final double[] weight = {0.0, 0.0};   // weight, set
     private String data;
     private String deviceName = null;
+    private String getPassword;
     private int BLE_status = 0;
     private int rssi_global = 99;
     private int rssi_strength = -1;
@@ -1166,7 +1167,12 @@ public class MainActivity extends AppCompatActivity {
 
     // 인증 상태를 확인하는 메서드
     public void checkAuth() {
-        viewModel_home.setAuthenticate(isAuthEnable);
+        viewModel_home.setAuthenticate(isAuth);
+    }
+
+    // 인증 동작을 수행하는 메서드
+    public void getAuth(String password) {
+        getPassword = password;
     }
 
     // RSSI 신호 세기 정도를 전달하는 메서드

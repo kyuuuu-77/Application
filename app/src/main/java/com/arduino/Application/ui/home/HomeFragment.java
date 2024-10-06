@@ -156,9 +156,18 @@ public class HomeFragment extends Fragment {
         // 인증(패스워드) 버튼
         Btn_auth.setOnClickListener(view -> {
             // 인증과 관련된 동작 작성할 예정
+            getAuth();
         });
 
         return root;
+    }
+
+    private void getAuth() {
+        String password = null;
+        // 다이얼로그로 값을 입력 전달 받음
+        if (mainActivity != null) {
+            mainActivity.getAuth(password);
+        }
     }
 
     // 블루투스를 켜는 메서드
