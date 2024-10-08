@@ -107,8 +107,13 @@
     <string name="dialogTime_setHour">hh시</string>
     <string name="dialogTime_setMin">mm분</string>
 
+    <!-- 다이얼로그 배터리 부족 화면 -->
+    <string name="battery_main">배터리 경고!</string>
+    <string name="battery_sub">캐리어의 배터리가 부족합니다.\n배터리가 부족하면 캐리어가 오동작 할 수 있습니다.</string>
+    <string name="battery_rect">캐리어를 충전해주세요!</string>
+
     <!-- 다이얼로그 패스워드 화면 -->
     <string name="text_password">Password</string>
-    <string name="pwd">비밀번호를 입력하세요</string>
+    <string name="pwd">캐리어의 비밀번호를 입력하세요</string>
 
 </resources>

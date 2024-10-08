@@ -12,7 +12,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="587dp"
+        android:layout_height="wrap_content"
         android:orientation="vertical"
         android:padding="20dp">
 
@@ -25,79 +25,61 @@
 
             <ImageView
                 android:id="@+id/dialog_icon"
-                android:layout_width="32sp"
-                android:layout_height="32sp"
+                android:layout_width="40sp"
+                android:layout_height="40sp"
                 android:importantForAccessibility="no"
-                android:src="@drawable/dialog_warning" />
+                android:src="@drawable/info_bat_very_row" />
 
             <TextView
                 android:id="@+id/dialog_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
-                android:text="@string/dialog_main"
+                android:text="@string/battery_main"
                 android:textColor="@android:color/black"
-                android:textSize="23sp" />
+                android:textStyle="bold"
+                android:textSize="25sp" />
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:layout_marginTop="15dp">
 
             <TextView
-                android:id="@+id/dialog_message_text"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/dialog_sub"
-                android:textAlignment="center"
+                android:textSize="15sp"
                 android:textColor="@color/black"
-                android:textSize="16sp" />
-
-            <ImageView
-                android:id="@+id/dialog_message_image"
-                android:layout_width="332dp"
-                android:layout_height="277dp"
-                android:layout_gravity="center"
-                android:layout_marginTop="10dp"
-                android:src="@drawable/info_bat_very_row"
-                android:visibility="visible"
-                tools:ignore="ContentDescription" />
+                android:text="@string/battery_sub"/>
 
             <com.airbnb.lottie.LottieAnimationView
+                app:lottie_rawRes="@raw/batt_low_warning"
                 android:id="@+id/dialog_message_lottie"
-                android:layout_width="300dp"
-                android:layout_height="300dp"
+                android:layout_width="250dp"
+                android:layout_height="250dp"
+                android:visibility="visible"
                 android:layout_gravity="center"
                 android:layout_marginTop="10dp"
-                android:visibility="gone"
-                app:lottie_autoPlay="false"
-                app:lottie_loop="true" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10sp"
-                android:gravity="center_horizontal"
-                android:orientation="horizontal" />
-
-
+                android:layout_marginBottom="10dp"
+                app:lottie_autoPlay="true"
+                app:lottie_loop="false"/>
         </LinearLayout>
 
         <TextView
             android:id="@+id/dialog_title2"
             android:layout_width="match_parent"
-            android:layout_height="127dp"
-            android:layout_marginStart="8dp"
+            android:layout_height="wrap_content"
+            android:padding="7dp"
             android:layout_marginTop="20dp"
-            android:background="@drawable/background_orange"
+            android:background="@drawable/rectangle_round"
+            android:backgroundTint="@color/red_500"
             android:gravity="center_horizontal"
-            android:text="베터리 전압이 매우낮습니다\n기기를 충전해주세요"
-            android:textColor="@android:color/black"
-            android:textSize="27sp"
-            />
-
+            android:text="@string/battery_rect"
+            android:textStyle="bold"
+            android:textColor="@color/white"
+            android:textSize="25sp" />
     </LinearLayout>
 
 </androidx.cardview.widget.CardView>
