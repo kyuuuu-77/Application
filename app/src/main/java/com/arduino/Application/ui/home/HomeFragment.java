@@ -91,9 +91,11 @@ public class HomeFragment extends Fragment {
         homeViewModel.getAuthenticateLiveData().observe(getViewLifecycleOwner(), auth -> {
             if (auth) {         // 인증을 했으면
                 Btn_auth.setBackground(lock_blue);
+                Btn_auth.setEnabled(false);
                 Text_auth.setText("인증됨");
             } else {        // 인증을 안 했으면
                 Btn_auth.setBackground(lock_red);
+                Btn_auth.setEnabled(true);
                 Text_auth.setText("인증 필요");
             }
         });

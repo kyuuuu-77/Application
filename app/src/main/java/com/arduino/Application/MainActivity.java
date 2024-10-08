@@ -760,8 +760,11 @@ public class MainActivity extends AppCompatActivity {
                     bleAlreadyChecked = false;
                     runOnUiThread(() -> {
                         appMenu.findItem(R.id.nav_find).setEnabled(true);
+                        appMenu.findItem(R.id.nav_find).setVisible(true);
                         appMenu.findItem(R.id.nav_weight).setEnabled(true);
+                        appMenu.findItem(R.id.nav_weight).setVisible(true);
                         appMenu.findItem(R.id.nav_info).setEnabled(true);
+                        appMenu.findItem(R.id.nav_info).setVisible(true);
                         showBagDropDialog();
                     });
                 } else if (isSuitcase) {        // 스마트 캐리어일 때
@@ -935,7 +938,7 @@ public class MainActivity extends AppCompatActivity {
 
     // 배터리 정보(잔량)를 확인하는 메서드
     public void checkBattery() {
-        if (writeCharacteristic != null && checkBLE() == BluetoothGatt.STATE_CONNECTED) {
+        if (writeCharacteristic != null && checkBLE() == BluetoothGatt.STATE_CONNECTED && isAuth) {
             // 데이터 초기화
             data = null;
             sendData("menu 4");
@@ -1246,22 +1249,22 @@ public class MainActivity extends AppCompatActivity {
 
             runOnUiThread(() -> {
                 appMenu.findItem(R.id.nav_find).setEnabled(false);
-                appMenu.findItem(R.id.nav_find).setCheckable(false);
+                appMenu.findItem(R.id.nav_find).setVisible(false);
                 appMenu.findItem(R.id.nav_weight).setEnabled(false);
-                appMenu.findItem(R.id.nav_weight).setCheckable(false);
+                appMenu.findItem(R.id.nav_weight).setVisible(false);
                 appMenu.findItem(R.id.nav_info).setEnabled(false);
-                appMenu.findItem(R.id.nav_info).setCheckable(false);
+                appMenu.findItem(R.id.nav_info).setVisible(false);
             });
         } else {
             bluetoothGatt.connect();
             bagDropHandler.removeCallbacks(bagDropRunnable);
             runOnUiThread(() -> {
                 appMenu.findItem(R.id.nav_find).setEnabled(true);
-                appMenu.findItem(R.id.nav_find).setCheckable(true);
+                appMenu.findItem(R.id.nav_find).setVisible(true);
                 appMenu.findItem(R.id.nav_weight).setEnabled(true);
-                appMenu.findItem(R.id.nav_weight).setCheckable(true);
+                appMenu.findItem(R.id.nav_weight).setVisible(true);
                 appMenu.findItem(R.id.nav_info).setEnabled(true);
-                appMenu.findItem(R.id.nav_info).setCheckable(true);
+                appMenu.findItem(R.id.nav_info).setVisible(true);
             });
         }
     }
@@ -1286,11 +1289,11 @@ public class MainActivity extends AppCompatActivity {
 
                         runOnUiThread(() -> {
                             appMenu.findItem(R.id.nav_find).setEnabled(true);
-                            appMenu.findItem(R.id.nav_find).setCheckable(true);
+                            appMenu.findItem(R.id.nav_find).setVisible(true);
                             appMenu.findItem(R.id.nav_weight).setEnabled(true);
-                            appMenu.findItem(R.id.nav_weight).setCheckable(true);
+                            appMenu.findItem(R.id.nav_weight).setVisible(true);
                             appMenu.findItem(R.id.nav_bagdrop).setEnabled(true);
-                            appMenu.findItem(R.id.nav_bagdrop).setCheckable(true);
+                            appMenu.findItem(R.id.nav_bagdrop).setVisible(true);
                         });
 
                         bleAuthHandler.removeCallbacks(bleAuthRunnable);
@@ -1390,18 +1393,18 @@ public class MainActivity extends AppCompatActivity {
 
         if (!isAuth) {
             appMenu.findItem(R.id.nav_find).setEnabled(false);
-            appMenu.findItem(R.id.nav_find).setCheckable(false);
+            appMenu.findItem(R.id.nav_find).setVisible(false);
             appMenu.findItem(R.id.nav_weight).setEnabled(false);
-            appMenu.findItem(R.id.nav_weight).setCheckable(false);
+            appMenu.findItem(R.id.nav_weight).setVisible(false);
             appMenu.findItem(R.id.nav_bagdrop).setEnabled(false);
-            appMenu.findItem(R.id.nav_bagdrop).setCheckable(false);
+            appMenu.findItem(R.id.nav_bagdrop).setVisible(false);
         } else {
             appMenu.findItem(R.id.nav_find).setEnabled(true);
-            appMenu.findItem(R.id.nav_find).setCheckable(true);
+            appMenu.findItem(R.id.nav_find).setVisible(true);
             appMenu.findItem(R.id.nav_weight).setEnabled(true);
-            appMenu.findItem(R.id.nav_weight).setCheckable(true);
+            appMenu.findItem(R.id.nav_weight).setVisible(true);
             appMenu.findItem(R.id.nav_bagdrop).setEnabled(true);
-            appMenu.findItem(R.id.nav_bagdrop).setCheckable(true);
+            appMenu.findItem(R.id.nav_bagdrop).setVisible(true);
         }
     }
 
