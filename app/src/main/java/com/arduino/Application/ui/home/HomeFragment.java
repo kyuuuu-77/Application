@@ -1,6 +1,7 @@
 package com.arduino.Application.ui.home;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
@@ -11,7 +12,9 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
@@ -155,7 +158,6 @@ public class HomeFragment extends Fragment {
 
         // 인증(패스워드) 버튼
         Btn_auth.setOnClickListener(view -> {
-            // 인증과 관련된 동작 작성할 예정
             getAuth();
         });
 
@@ -163,11 +165,28 @@ public class HomeFragment extends Fragment {
     }
 
     private void getAuth() {
-        String password = null;
-        // 다이얼로그로 값을 입력 전달 받음
-        if (mainActivity != null) {
-            mainActivity.getAuth(password);
-        }
+        LayoutInflater inflater = LayoutInflater.from(getContext());
+        View dialogView = inflater.inflate(R.layout.password_main, null);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+        builder.setView(dialogView);
+
+        // 다이얼로그 안에 이미지, 텍스트 뷰, 버튼 초기화 및 선언
+        EditText getPassword = dialogView.findViewById(R.id.password_input);
+        Button checkBtn = dialogView.findViewById(R.id.confirm);
+
+        AlertDialog dialog = builder.create();
+        dialog.setCancelable(true);
+        dialog.show();
+
+        checkBtn.setOnClickListener(v -> {
+            if (mainActivity != null) {
+                String password = getPassword.getText().toString();
+                Toast.makeText(getActivity(), password + " 입력 확인!", Toast.LENGTH_SHORT).show();
+                mainActivity.getAuth(password);
+            }
+            dialog.dismiss();
+        });
     }
 
     // 블루투스를 켜는 메서드

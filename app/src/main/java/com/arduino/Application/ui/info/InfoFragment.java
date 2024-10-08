@@ -1,6 +1,7 @@
 package com.arduino.Application.ui.info;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -55,6 +56,8 @@ public class InfoFragment extends Fragment {
         infoViewModel = new ViewModelProvider(requireActivity()).get(InfoViewModel.class);
         binding = FragmentInfoBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
+
+        mainActivity = (MainActivity) getActivity();
 
         // 버튼, 텍스트뷰 및 아이콘 선언
         Btn_reset = root.findViewById(R.id.reset);
@@ -116,8 +119,10 @@ public class InfoFragment extends Fragment {
                     } else if (batt >= 60) {
                         Icon_battery.setImageResource(R.drawable.info_bat_normal);
                     } else if (batt >= 40) {
+                        showBatteryWarning();
                         Icon_battery.setImageResource(R.drawable.info_bat_low);
                     } else {
+                        showBatteryWarning();
                         Icon_battery.setImageResource(R.drawable.info_bat_very_row);
                     }
                 }
@@ -183,6 +188,19 @@ public class InfoFragment extends Fragment {
             Toast.makeText(getActivity(), "설정 초기화 완료!", Toast.LENGTH_SHORT).show();
         });
         return root;
+    }
+
+    // 배터리가 부족할 경우 경고 다이얼로그를 띄우는 메서드
+    private void showBatteryWarning() {
+        LayoutInflater inflater = LayoutInflater.from(getContext());
+        View dialogView = inflater.inflate(R.layout.custom_dialog_battery, null);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+        builder.setView(dialogView);
+
+        AlertDialog dialog = builder.create();
+        dialog.setCancelable(true);
+        dialog.show();
     }
 
     // 배터리 상태를 확인하는 메서드
