@@ -42,6 +42,8 @@ public class HomeFragment extends Fragment {
     Drawable connect_blue;
     Drawable connect_red;
     Drawable connect_fin;
+    Drawable lock_blue;
+    Drawable lock_red;
 
     Window window;
 
@@ -76,6 +78,8 @@ public class HomeFragment extends Fragment {
         connect_blue = ContextCompat.getDrawable(requireContext(), R.drawable.home_connect_on);
         connect_red = ContextCompat.getDrawable(requireContext(), R.drawable.home_connect_off);
         connect_fin = ContextCompat.getDrawable(requireContext(), R.drawable.home_connect_fin);
+        lock_blue = ContextCompat.getDrawable(requireContext(), R.drawable.home_lock_off);
+        lock_red = ContextCompat.getDrawable(requireContext(), R.drawable.home_lock_on);
 
         window = requireActivity().getWindow();
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
@@ -86,11 +90,11 @@ public class HomeFragment extends Fragment {
         // ViewModel 선언
         homeViewModel.getAuthenticateLiveData().observe(getViewLifecycleOwner(), auth -> {
             if (auth) {         // 인증을 했으면
+                Btn_auth.setBackground(lock_blue);
                 Text_auth.setText("인증됨");
-                Btn_auth.setEnabled(false);
             } else {        // 인증을 안 했으면
+                Btn_auth.setBackground(lock_red);
                 Text_auth.setText("인증 필요");
-                Btn_auth.setEnabled(true);
             }
         });
         homeViewModel.getconnectBtnLiveData().observe(getViewLifecycleOwner(), status -> {
@@ -157,9 +161,7 @@ public class HomeFragment extends Fragment {
         BtnBT_connect.setOnClickListener(view -> listPairedDevices());
 
         // 인증(패스워드) 버튼
-        Btn_auth.setOnClickListener(view -> {
-            getAuth();
-        });
+        Btn_auth.setOnClickListener(view -> getAuth());
 
         return root;
     }
@@ -182,8 +184,12 @@ public class HomeFragment extends Fragment {
         checkBtn.setOnClickListener(v -> {
             if (mainActivity != null) {
                 String password = getPassword.getText().toString();
-                Toast.makeText(getActivity(), password + " 입력 확인!", Toast.LENGTH_SHORT).show();
-                mainActivity.getAuth(password);
+                if (password.isEmpty()) {
+                    Toast.makeText(getActivity(), "입력 없음", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getActivity(), password + " 입력 확인!", Toast.LENGTH_SHORT).show();
+                    mainActivity.getAuth(password);
+                }
             }
             dialog.dismiss();
         });

@@ -1173,6 +1173,7 @@ public class MainActivity extends AppCompatActivity {
     // 인증 동작을 수행하는 메서드
     public void getAuth(String password) {
         getPassword = password;
+        bleAuthHandler.postDelayed(bleAuthRunnable, 1000);
     }
 
     // RSSI 신호 세기 정도를 전달하는 메서드
@@ -1242,17 +1243,72 @@ public class MainActivity extends AppCompatActivity {
             }
             bluetoothGatt.disconnect();     // 블루투스 연결을 끊고
             bagDropHandler.postDelayed(bagDropRunnable, 10000);     // 핸들러로 동작
-            appMenu.findItem(R.id.nav_find).setEnabled(false);
-            appMenu.findItem(R.id.nav_weight).setEnabled(false);
-            appMenu.findItem(R.id.nav_info).setEnabled(false);
+
+            runOnUiThread(() -> {
+                appMenu.findItem(R.id.nav_find).setEnabled(false);
+                appMenu.findItem(R.id.nav_find).setCheckable(false);
+                appMenu.findItem(R.id.nav_weight).setEnabled(false);
+                appMenu.findItem(R.id.nav_weight).setCheckable(false);
+                appMenu.findItem(R.id.nav_info).setEnabled(false);
+                appMenu.findItem(R.id.nav_info).setCheckable(false);
+            });
         } else {
             bluetoothGatt.connect();
             bagDropHandler.removeCallbacks(bagDropRunnable);
-            appMenu.findItem(R.id.nav_find).setEnabled(true);
-            appMenu.findItem(R.id.nav_weight).setEnabled(true);
-            appMenu.findItem(R.id.nav_info).setEnabled(true);
+            runOnUiThread(() -> {
+                appMenu.findItem(R.id.nav_find).setEnabled(true);
+                appMenu.findItem(R.id.nav_find).setCheckable(true);
+                appMenu.findItem(R.id.nav_weight).setEnabled(true);
+                appMenu.findItem(R.id.nav_weight).setCheckable(true);
+                appMenu.findItem(R.id.nav_info).setEnabled(true);
+                appMenu.findItem(R.id.nav_info).setCheckable(true);
+            });
         }
     }
+
+    // 인증을 시도하는 핸들러
+    private final Handler bleAuthHandler = new Handler();
+    private final Runnable bleAuthRunnable = new Runnable() {
+        @Override
+        public void run() {
+            if (!isAuth && writeCharacteristic != null) {
+                sendData(getPassword);
+                checkData();
+
+                if (data == null) {         // 데이터를 못 받은 경우
+                    Toast.makeText(getApplicationContext(), "캐리어와 인증 실패", Toast.LENGTH_SHORT).show();
+                    bleAuthHandler.postDelayed(this, 5000);        // 5초 마다 인증 재시도
+                } else {
+                    if (data.trim().equals("auth_suc")) {
+                        isAuth = true;
+                        Toast.makeText(getApplicationContext(), "캐리어와 인증 성공!", Toast.LENGTH_SHORT).show();
+                        checkAuth();
+
+                        runOnUiThread(() -> {
+                            appMenu.findItem(R.id.nav_find).setEnabled(true);
+                            appMenu.findItem(R.id.nav_find).setCheckable(true);
+                            appMenu.findItem(R.id.nav_weight).setEnabled(true);
+                            appMenu.findItem(R.id.nav_weight).setCheckable(true);
+                            appMenu.findItem(R.id.nav_bagdrop).setEnabled(true);
+                            appMenu.findItem(R.id.nav_bagdrop).setCheckable(true);
+                        });
+
+                        bleAuthHandler.removeCallbacks(bleAuthRunnable);
+                    } else if (data.trim().equals("auth_fail")) {
+                        isAuth = false;
+                        Toast.makeText(getApplicationContext(), "비밀번호가 틀렸습니다", Toast.LENGTH_SHORT).show();
+                        bleAuthHandler.postDelayed(this, 5000);        // 5초 마다 인증 재시도
+                    } else {
+                        isAuth = false;
+                        Toast.makeText(getApplicationContext(), "오류 발생!", Toast.LENGTH_SHORT).show();
+                        bleAuthHandler.postDelayed(this, 5000);        // 5초 마다 인증 재시도
+                    }
+                }
+            } else {
+                bleAuthHandler.postDelayed(this, 5000);        // 5초 마다 인증 재시도
+            }
+        }
+    };
 
     // 백드랍 모드의 동작을 동작시키는 핸들러
     private final Handler bagDropHandler = new Handler();
@@ -1331,6 +1387,22 @@ public class MainActivity extends AppCompatActivity {
 
         setUIColor();
         startLeScan();
+
+        if (!isAuth) {
+            appMenu.findItem(R.id.nav_find).setEnabled(false);
+            appMenu.findItem(R.id.nav_find).setCheckable(false);
+            appMenu.findItem(R.id.nav_weight).setEnabled(false);
+            appMenu.findItem(R.id.nav_weight).setCheckable(false);
+            appMenu.findItem(R.id.nav_bagdrop).setEnabled(false);
+            appMenu.findItem(R.id.nav_bagdrop).setCheckable(false);
+        } else {
+            appMenu.findItem(R.id.nav_find).setEnabled(true);
+            appMenu.findItem(R.id.nav_find).setCheckable(true);
+            appMenu.findItem(R.id.nav_weight).setEnabled(true);
+            appMenu.findItem(R.id.nav_weight).setCheckable(true);
+            appMenu.findItem(R.id.nav_bagdrop).setEnabled(true);
+            appMenu.findItem(R.id.nav_bagdrop).setCheckable(true);
+        }
     }
 
     protected void onDestroy() {

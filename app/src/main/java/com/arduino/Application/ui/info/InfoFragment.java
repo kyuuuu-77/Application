@@ -119,7 +119,6 @@ public class InfoFragment extends Fragment {
                     } else if (batt >= 60) {
                         Icon_battery.setImageResource(R.drawable.info_bat_normal);
                     } else if (batt >= 40) {
-                        showBatteryWarning();
                         Icon_battery.setImageResource(R.drawable.info_bat_low);
                     } else {
                         showBatteryWarning();
