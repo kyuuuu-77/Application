@@ -925,7 +925,8 @@ public class MainActivity extends AppCompatActivity {
     // 데이터 송신 메서드
     private void sendData(String data) {
         if (writeCharacteristic != null) {
-            byte[] bytes = data.getBytes();
+            byte[] bytes;
+            bytes = data.getBytes();
             writeCharacteristic.setValue(bytes);
             if (bluetoothGatt != null) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -1299,11 +1300,6 @@ public class MainActivity extends AppCompatActivity {
                         bleAuthHandler.removeCallbacks(bleAuthRunnable);
                     } else if (data.trim().equals("auth_fail")) {
                         isAuth = false;
-                        Toast.makeText(getApplicationContext(), "비밀번호가 틀렸습니다", Toast.LENGTH_SHORT).show();
-                        bleAuthHandler.postDelayed(this, 5000);        // 5초 마다 인증 재시도
-                    } else {
-                        isAuth = false;
-                        Toast.makeText(getApplicationContext(), "오류 발생!", Toast.LENGTH_SHORT).show();
                         bleAuthHandler.postDelayed(this, 5000);        // 5초 마다 인증 재시도
                     }
                 }

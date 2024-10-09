@@ -28,6 +28,7 @@ import java.util.concurrent.Executors;
 public class InfoFragment extends Fragment {
 
     // 버튼, 텍스트뷰 및 아이콘 초기화
+    Button Btn_update;
     Button Btn_reset;
 
     TextView Text_autoSearch;
@@ -60,6 +61,7 @@ public class InfoFragment extends Fragment {
         mainActivity = (MainActivity) getActivity();
 
         // 버튼, 텍스트뷰 및 아이콘 선언
+        Btn_update = root.findViewById(R.id.updateInfo);
         Btn_reset = root.findViewById(R.id.reset);
 
         Text_autoSearch = root.findViewById(R.id.auto_search);
@@ -184,7 +186,12 @@ public class InfoFragment extends Fragment {
             // 자동 검색, 도난방지, 도난방지 무시, 무게설정, 도착 시각 초기화
             resetSettings();
             checkAll();
-            Toast.makeText(getActivity(), "설정 초기화 완료!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), "애플리케이션 설정 초기화 중...", Toast.LENGTH_SHORT).show();
+        });
+        // 화면 갱신 버튼
+        Btn_update.setOnClickListener(view -> {
+            checkAll();
+            Toast.makeText(getActivity(), "데이터 갱신중...", Toast.LENGTH_SHORT).show();
         });
         return root;
     }
@@ -246,17 +253,7 @@ public class InfoFragment extends Fragment {
 
     // 캐리어 상태를 갱신하는 메서드
     private void checkAll() {
-        checkBattery();
-        checkRssi();
-        checkAutoSearch();
-        checkSecurity();
-        checkConnection();
-    }
-
-    public void onResume() {
-        super.onResume();
         View root = binding.getRoot();
-
         // 로딩 애니메이션 (로티 애니메이션) 및 비동기 처리 구문
         LottieAnimationView lottieView = root.findViewById(R.id.lottieView);
         View loadingOverlay = root.findViewById(R.id.loading_overlay);
@@ -271,7 +268,11 @@ public class InfoFragment extends Fragment {
         });
         executorService.execute(() -> {
             // 백그라운드 작업 처리
-            checkAll();
+            checkBattery();
+            checkRssi();
+            checkAutoSearch();
+            checkSecurity();
+            checkConnection();
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
@@ -285,6 +286,11 @@ public class InfoFragment extends Fragment {
                 Btn_reset.setEnabled(true);
             });
         });
+    }
+
+    public void onResume() {
+        super.onResume();
+        checkAll();
     }
 
     @Override

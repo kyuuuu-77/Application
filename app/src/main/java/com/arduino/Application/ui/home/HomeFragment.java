@@ -168,6 +168,7 @@ public class HomeFragment extends Fragment {
         return root;
     }
 
+    // 인증을 수행하는 메서드
     private void getAuth() {
         LayoutInflater inflater = LayoutInflater.from(getContext());
         View dialogView = inflater.inflate(R.layout.password_main, null);

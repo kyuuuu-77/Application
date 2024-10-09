@@ -114,7 +114,7 @@
 
     <!-- 다이얼로그 패스워드 화면 -->
     <string name="text_password">Password</string>
-    <string name="pwd">캐리어의 비밀번호를 입력하세요</string>
+    <string name="pwd">캐리어의 인증번호를 입력하세요</string>
     <string name="password_main">캐리어 인증</string>
 
 </resources>
