@@ -1275,13 +1275,14 @@ public class MainActivity extends AppCompatActivity {
     private final Runnable bleAuthRunnable = new Runnable() {
         @Override
         public void run() {
-            if (!isAuth && writeCharacteristic != null) {
+            // 인증받지 않았고, 송수신이 가능하고, 입력된 패스워드가 null이 아니면
+            if (!isAuth && writeCharacteristic != null && getPassword != null) {
                 sendData(getPassword);
                 checkData();
 
                 if (data == null) {         // 데이터를 못 받은 경우
                     Toast.makeText(getApplicationContext(), "캐리어와 인증 실패", Toast.LENGTH_SHORT).show();
-                    bleAuthHandler.postDelayed(this, 5000);        // 5초 마다 인증 재시도
+                    bleAuthHandler.postDelayed(this, 3000);        // 3초 마다 인증 재시도
                 } else {
                     if (data.trim().equals("auth_suc")) {
                         isAuth = true;
@@ -1296,15 +1297,20 @@ public class MainActivity extends AppCompatActivity {
                             appMenu.findItem(R.id.nav_bagdrop).setEnabled(true);
                             appMenu.findItem(R.id.nav_bagdrop).setVisible(true);
                         });
-
                         bleAuthHandler.removeCallbacks(bleAuthRunnable);
                     } else if (data.trim().equals("auth_fail")) {
                         isAuth = false;
-                        bleAuthHandler.postDelayed(this, 5000);        // 5초 마다 인증 재시도
+                        getPassword = null;
+                        Toast.makeText(getApplicationContext(), "비밀번호가 틀렸습니다", Toast.LENGTH_SHORT).show();
+                        bleAuthHandler.removeCallbacks(bleAuthRunnable);
+                    } else {
+                        isAuth = false;
+                        Toast.makeText(getApplicationContext(), "잘못된 데이터를 받았습니다!", Toast.LENGTH_SHORT).show();
+                        bleAuthHandler.postDelayed(this, 3000);        // 3초 마다 인증 재시도
                     }
                 }
             } else {
-                bleAuthHandler.postDelayed(this, 5000);        // 5초 마다 인증 재시도
+                bleAuthHandler.postDelayed(this, 3000);        // 3초 마다 인증 재시도
             }
         }
     };
@@ -1357,9 +1363,26 @@ public class MainActivity extends AppCompatActivity {
         NotificationManager manager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
         NotificationChannel channel = manager.getNotificationChannel(channel_id);
         if (channel == null) {
-            channel = new NotificationChannel(channel_id, "캐리어 연결 알림", NotificationManager.IMPORTANCE_HIGH);
-            // 채널 설정
-            channel.setDescription("캐리어 " + channel_id + " 상태를 알려줍니다.");
+            switch (channel_id) {
+                case "security":     // 도난방지 알림
+                    channel = new NotificationChannel(channel_id, "도난방지 알림", NotificationManager.IMPORTANCE_HIGH);    // 알림 이름
+
+                    channel.setDescription("도난방지 동작과 관련된 알림이 표시됩니다");    // 알림 설명
+
+                    break;
+                case "connect":       // 캐리어 연결 알림
+                    channel = new NotificationChannel(channel_id, "연결 알림", NotificationManager.IMPORTANCE_HIGH);
+                    channel.setDescription("캐리어 연결과 관련된 알림이 표시됩니다");
+                    break;
+                case "bagdrop":       // 백드랍 알림
+                    channel = new NotificationChannel(channel_id, "백드랍 모드 알림", NotificationManager.IMPORTANCE_HIGH);
+                    channel.setDescription("백드랍 모드 동작에 관련된 알림이 표시됩니다");
+                    break;
+                default:     // 기타
+                    channel = new NotificationChannel(channel_id, channel_id + " 알림", NotificationManager.IMPORTANCE_DEFAULT);
+                    channel.setDescription("기타 알림이 표시됩니다");
+                    break;
+            }
             channel.enableVibration(true);
             channel.setVibrationPattern(new long[]{100, 1000, 200, 340});
             channel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
