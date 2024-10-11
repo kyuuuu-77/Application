@@ -1364,9 +1364,7 @@ public class MainActivity extends AppCompatActivity {
             switch (channel_id) {
                 case "security":     // 도난방지 알림
                     channel = new NotificationChannel(channel_id, "도난방지 알림", NotificationManager.IMPORTANCE_HIGH);    // 알림 이름
-
                     channel.setDescription("도난방지 동작과 관련된 알림이 표시됩니다");    // 알림 설명
-
                     break;
                 case "connect":       // 캐리어 연결 알림
                     channel = new NotificationChannel(channel_id, "연결 알림", NotificationManager.IMPORTANCE_HIGH);
