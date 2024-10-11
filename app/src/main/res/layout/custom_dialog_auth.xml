@@ -28,14 +28,14 @@
                 android:layout_width="40sp"
                 android:layout_height="40sp"
                 android:importantForAccessibility="no"
-                android:src="@drawable/info_bat_very_row" />
+                android:src="@drawable/home_lock_on" />
 
             <TextView
                 android:id="@+id/dialog_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
-                android:text="@string/battery_main"
+                android:text="인증되지 않음"
                 android:textColor="@android:color/black"
                 android:textStyle="bold"
                 android:textSize="25sp" />
@@ -52,10 +52,10 @@
                 android:layout_height="wrap_content"
                 android:textSize="15sp"
                 android:textColor="@color/black"
-                android:text="@string/battery_sub"/>
+                android:text="애플리케이션과 캐리어가 서로 인증되지 않았습니다\n캐리어의 기본 기능을 사용할 수 없습니다."/>
 
             <com.airbnb.lottie.LottieAnimationView
-                app:lottie_rawRes="@raw/batt_low_warning"
+                app:lottie_rawRes="@raw/suitcase_locked"
                 android:id="@+id/dialog_message_lottie"
                 android:layout_width="250dp"
                 android:layout_height="250dp"
@@ -76,7 +76,7 @@
             android:background="@drawable/rectangle_round"
             android:backgroundTint="@color/red_500"
             android:gravity="center_horizontal"
-            android:text="@string/battery_rect"
+            android:text="인증을 진행하세요"
             android:textStyle="bold"
             android:textColor="@color/white"
             android:textSize="20sp"/>

@@ -9,8 +9,8 @@
     <string name="action_appInfo">앱 정보</string>
     <string name="splash_name">Suitcase Genie</string>
     <string name="weight_popup">Notification</string>
-    <string name="app_version">1.01</string>
-    <string name="app_date">2024.10.01/15</string>
+    <string name="app_version">1.10 beta</string>
+    <string name="app_date">2024.10.09/15</string>
     <string name="app_update_log">찾기 기능 수정, 앱 최적화 및 버그 수정, 배터리 정보 표시 개선</string>
     <string name="loading" tools:ignore="TypographyEllipsis">로드중...</string>
 
@@ -107,8 +107,14 @@
     <string name="dialogTime_setHour">hh시</string>
     <string name="dialogTime_setMin">mm분</string>
 
+    <!-- 다이얼로그 배터리 부족 화면 -->
+    <string name="battery_main">배터리 경고!</string>
+    <string name="battery_sub">캐리어의 배터리가 부족합니다.\n배터리가 부족하면 캐리어가 오동작 할 수 있습니다.</string>
+    <string name="battery_rect">캐리어를 충전해주세요!</string>
+
     <!-- 다이얼로그 패스워드 화면 -->
     <string name="text_password">Password</string>
-    <string name="pwd">비밀번호를 입력하세요</string>
+    <string name="pwd">캐리어의 인증번호를 입력하세요</string>
+    <string name="password_main">캐리어 인증</string>
 
 </resources>

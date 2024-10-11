@@ -1,6 +1,7 @@
 package com.arduino.Application.ui.home;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
@@ -11,7 +12,9 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
@@ -39,6 +42,8 @@ public class HomeFragment extends Fragment {
     Drawable connect_blue;
     Drawable connect_red;
     Drawable connect_fin;
+    Drawable lock_blue;
+    Drawable lock_red;
 
     Window window;
 
@@ -73,6 +78,8 @@ public class HomeFragment extends Fragment {
         connect_blue = ContextCompat.getDrawable(requireContext(), R.drawable.home_connect_on);
         connect_red = ContextCompat.getDrawable(requireContext(), R.drawable.home_connect_off);
         connect_fin = ContextCompat.getDrawable(requireContext(), R.drawable.home_connect_fin);
+        lock_blue = ContextCompat.getDrawable(requireContext(), R.drawable.home_lock_off);
+        lock_red = ContextCompat.getDrawable(requireContext(), R.drawable.home_lock_on);
 
         window = requireActivity().getWindow();
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
@@ -83,11 +90,13 @@ public class HomeFragment extends Fragment {
         // ViewModel 선언
         homeViewModel.getAuthenticateLiveData().observe(getViewLifecycleOwner(), auth -> {
             if (auth) {         // 인증을 했으면
-                Text_auth.setText("인증됨");
+                Btn_auth.setBackground(lock_blue);
                 Btn_auth.setEnabled(false);
+                Text_auth.setText("인증됨");
             } else {        // 인증을 안 했으면
-                Text_auth.setText("인증 필요");
+                Btn_auth.setBackground(lock_red);
                 Btn_auth.setEnabled(true);
+                Text_auth.setText("인증 필요");
             }
         });
         homeViewModel.getconnectBtnLiveData().observe(getViewLifecycleOwner(), status -> {
@@ -154,20 +163,39 @@ public class HomeFragment extends Fragment {
         BtnBT_connect.setOnClickListener(view -> listPairedDevices());
 
         // 인증(패스워드) 버튼
-        Btn_auth.setOnClickListener(view -> {
-            // 인증과 관련된 동작 작성할 예정
-            getAuth();
-        });
+        Btn_auth.setOnClickListener(view -> getAuth());
 
         return root;
     }
 
+    // 인증을 수행하는 메서드
     private void getAuth() {
-        String password = null;
-        // 다이얼로그로 값을 입력 전달 받음
-        if (mainActivity != null) {
-            mainActivity.getAuth(password);
-        }
+        LayoutInflater inflater = LayoutInflater.from(getContext());
+        View dialogView = inflater.inflate(R.layout.password_main, null);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+        builder.setView(dialogView);
+
+        // 다이얼로그 안에 이미지, 텍스트 뷰, 버튼 초기화 및 선언
+        EditText getPassword = dialogView.findViewById(R.id.password_input);
+        Button checkBtn = dialogView.findViewById(R.id.confirm);
+
+        AlertDialog dialog = builder.create();
+        dialog.setCancelable(true);
+        dialog.show();
+
+        checkBtn.setOnClickListener(v -> {
+            if (mainActivity != null) {
+                String password = getPassword.getText().toString();
+                if (password.isEmpty()) {
+                    Toast.makeText(getActivity(), "입력 없음", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getActivity(), password + " 입력 확인!", Toast.LENGTH_SHORT).show();
+                    mainActivity.getAuth(password);
+                }
+            }
+            dialog.dismiss();
+        });
     }
 
     // 블루투스를 켜는 메서드
