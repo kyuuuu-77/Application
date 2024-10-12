@@ -93,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
     private BluetoothLeScanner bluetoothLeScanner;
     private ScanCallback scanCallback;
 
-    // 필요 권한 요구 코드
+    // 필요 권한 요구 코드 (오버레이, BT, 위치)
     private static final int REQUEST_OVERLAY_PERMISSION = 1;
     private static final int BT_REQUEST_ENABLE = 1;
     private static final int BT_REQUEST_DISABLE = 3;
@@ -110,15 +110,15 @@ public class MainActivity extends AppCompatActivity {
     // 프로그램 동작을 위한 전역 변수
     private Boolean isDialogShowing = false;
     private boolean isSuitcase = false;
-    private boolean onAutoSearch = true;
+    private boolean isAutoSearch = true;
     private boolean rssiSignal = false;
     private boolean security = false;
     private boolean isConnected = false;
     private boolean isCheckDialogShowing = false;
     private boolean isFirstRssi = true;
     private boolean ignoreSecurity = false;
-    private boolean backDropMode = false;
-    private boolean bleAlreadyChecked = false;
+    private boolean isBackDropMode = false;
+    private boolean isBLEChecked = false;
     private boolean isAuth = false;
     private boolean isOverlayShowing = false;
     private final double[] weight = {0.0, 0.0};   // 무게 값, 무게 타겟 값
@@ -265,13 +265,13 @@ public class MainActivity extends AppCompatActivity {
         builder.setTitle("자동 검색")
                 .setMessage("자동 검색을 사용할까요?")
                 .setPositiveButton("사용", (dialog, which) -> {
-                    onAutoSearch = true;
+                    isAutoSearch = true;
                     infoViewModel.setAutoSearch(true);
                     Toast.makeText(this, "자동 검색이 켜졌습니다!", Toast.LENGTH_SHORT).show();
                     dialog.dismiss();
                 })
                 .setNegativeButton("사용안함", ((dialog, which) -> {
-                    onAutoSearch = false;
+                    isAutoSearch = false;
                     infoViewModel.setAutoSearch(false);
                     Toast.makeText(this, "자동 검색이 꺼집니다.", Toast.LENGTH_SHORT).show();
                     dialog.dismiss();
@@ -346,7 +346,7 @@ public class MainActivity extends AppCompatActivity {
 
     // 블루투스가 켜졌을 때 동장
     private void whenBTOn() {
-        onAutoSearch = true;
+        isAutoSearch = true;
 
         runOnUiThread(() -> {
             homeViewModel.setBluetoothStatus(1);
@@ -360,7 +360,7 @@ public class MainActivity extends AppCompatActivity {
 
     // 블루투스가 꺼졌을 때 동작
     private void whenBTOff() {
-        onAutoSearch = false;
+        isAutoSearch = false;
         BLE_status = 0;
         deviceName = null;
 
@@ -567,7 +567,7 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 if (!isDialogShowing && !isCheckDialogShowing) {
-                    if (onAutoSearch && mBluetoothDevice.getName() != null && mBluetoothDevice.getName().equals("FB301(73F06C)")) {     // 스마트 캐리어를 발견 했으면
+                    if (isAutoSearch && mBluetoothDevice.getName() != null && mBluetoothDevice.getName().equals("FB301(73F06C)")) {     // 스마트 캐리어를 발견 했으면
                         bluetoothLeScanner.stopScan(scanCallback);
                         showConnectionDialog(mBluetoothDevice);
                         isDialogShowing = true;
@@ -609,7 +609,7 @@ public class MainActivity extends AppCompatActivity {
                 })
                 .setNegativeButton("취소", (dialog, which) -> {
                     isDialogShowing = false;
-                    onAutoSearch = false;
+                    isAutoSearch = false;
                     infoViewModel.setAutoSearch(false);
                     dialog.dismiss();
                     stopLeScan();
@@ -630,7 +630,7 @@ public class MainActivity extends AppCompatActivity {
                 .setPositiveButton("확인", (dialog, which) -> {
                     ringBell(false);
                     runOnUiThread(() -> {
-                        backDropMode = false;
+                        isBackDropMode = false;
                         homeViewModel.setHomeText("스마트 캐리어에 연결됨");
                         bagDropViewModel.setBagDropText("백드랍 비활성화");
                         bagDropViewModel.setBagDropBtnText("백드랍 모드 시작");
@@ -753,10 +753,10 @@ public class MainActivity extends AppCompatActivity {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                     checkPermission();
                 }
-                if (backDropMode) {     // 백드롭 모드일 때
+                if (isBackDropMode) {     // 백드롭 모드일 때
                     bagDropHandler.removeCallbacks(bagDropRunnable);
 
-                    bleAlreadyChecked = false;
+                    isBLEChecked = false;
                     runOnUiThread(() -> {
                         appMenu.findItem(R.id.nav_find).setEnabled(true);
                         appMenu.findItem(R.id.nav_find).setVisible(true);
@@ -786,9 +786,9 @@ public class MainActivity extends AppCompatActivity {
                 runOnUiThread(() -> infoViewModel.setdeviceName(deviceName));
                 bluetoothGatt.discoverServices();
             } else if (newState == BluetoothGatt.STATE_DISCONNECTED) {      // 블루투스 디바이스와 연결이 끊긴 경우
-                if (backDropMode) {     // 백드랍 모드일 경우
-                    if (!bleAlreadyChecked) {
-                        bleAlreadyChecked = true;
+                if (isBackDropMode) {     // 백드랍 모드일 경우
+                    if (!isBLEChecked) {
+                        isBLEChecked = true;
                         security = false;
                         handler_RSSI.removeCallbacks(runnable_RSSI);
                         bluetoothGatt.disconnect();
@@ -945,23 +945,27 @@ public class MainActivity extends AppCompatActivity {
 
             checkData();
             runOnUiThread(() -> {
-                // 배터리 정보를 받지 못했으면
-                if (data == null) {
-                    infoViewModel.setBattery(-1);
-                    Toast.makeText(getApplicationContext(), "배터리 정보 취득 실패", Toast.LENGTH_SHORT).show();
-                } else {    // 수신 데이터 -> "45" = 배터리 잔량이 45%, "45+" 배터리 잔량이 45%이고 충전중임. "100+" 완충됨
-                    data = data.trim();
-                    String[] parts = data.split("/");
+                try{
+                    // 배터리 정보를 받지 못했으면
+                    if (data == null) {
+                        infoViewModel.setBattery(-1);
+                        Toast.makeText(getApplicationContext(), "배터리 정보 취득 실패", Toast.LENGTH_SHORT).show();
+                    } else {    // 수신 데이터 -> "45" = 배터리 잔량이 45%, "45+" 배터리 잔량이 45%이고 충전중임. "100+" 완충됨
+                        data = data.trim();
+                        String[] parts = data.split("/");
 
-                    String percentage = parts[0];
-                    double voltage = Double.parseDouble(parts[1]);
+                        String percentage = parts[0];
+                        double voltage = Double.parseDouble(parts[1]);
 
-                    infoViewModel.setBatteryVolt(voltage);
-                    if (percentage.contains("+")) {      // 충전중이면
-                        infoViewModel.setBattery(999);
-                    } else {        // 방전중이면
-                        infoViewModel.setBattery(Integer.parseInt(percentage));
+                        infoViewModel.setBatteryVolt(voltage);
+                        if (percentage.contains("+")) {      // 충전중이면
+                            infoViewModel.setBattery(999);
+                        } else {        // 방전중이면
+                            infoViewModel.setBattery(Integer.parseInt(percentage));
+                        }
                     }
+                } catch (NumberFormatException | NullPointerException e) {
+                    Toast.makeText(this, e.getMessage() + "에러가 발생했습니다.", Toast.LENGTH_SHORT).show();
                 }
             });
         } else {
@@ -985,36 +989,41 @@ public class MainActivity extends AppCompatActivity {
 
             checkData();
 
-            if (data.trim().equals("auth_suc")) {
-                measureWeight(maxSet);
-            }
+            try {
+                if (data != null && data.trim().equals("auth_suc")) {
+                    measureWeight(maxSet);
+                }
 
-            // 무게값을 받지 못했으면
-            if (data == null) {
+                // 무게값을 받지 못했으면
+                if (data == null) {
+                    runOnUiThread(() -> {
+                        weightViewModel.setWeightInfo(-2);
+                        weightViewModel.setWeightBtn(-1);
+                    });
+                    return -1;
+                }
+
+                double tmp_weight = Double.parseDouble(data);
+                weight[0] = tmp_weight;
+                weight[1] = maxSet;
+                runOnUiThread(() -> weightViewModel.setWeightNow(tmp_weight));
+
                 runOnUiThread(() -> {
-                    weightViewModel.setWeightInfo(-2);
-                    weightViewModel.setWeightBtn(-1);
+                    if (weight[0] > 32) {                    // 32kg 초과시
+                        weightViewModel.setWeightInfo(-999);
+                    } else if (weight[0] > weight[1]) {      // 허용무게 초과시
+                        weightViewModel.setWeightInfo(weight[0] - weight[1]);
+                    } else {                                // 무게 초과하지 않은 경우
+                        weightViewModel.setWeightInfo(0);
+                    }
                 });
+
+                runOnUiThread(() -> weightViewModel.setWeightBtn(2));
+                return weight[0];
+            } catch (NumberFormatException | NullPointerException e) {
+                Toast.makeText(this, e.getMessage() + "에러가 발생했습니다.", Toast.LENGTH_SHORT).show();
                 return -1;
             }
-
-            double tmp_weight = Double.parseDouble(data);
-            weight[0] = tmp_weight;
-            weight[1] = maxSet;
-            runOnUiThread(() -> weightViewModel.setWeightNow(tmp_weight));
-
-            runOnUiThread(() -> {
-                if (weight[0] > 32) {                    // 32kg 초과시
-                    weightViewModel.setWeightInfo(-999);
-                } else if (weight[0] > weight[1]) {      // 허용무게 초과시
-                    weightViewModel.setWeightInfo(weight[0] - weight[1]);
-                } else {                                // 무게 초과하지 않은 경우
-                    weightViewModel.setWeightInfo(0);
-                }
-            });
-
-            runOnUiThread(() -> weightViewModel.setWeightBtn(2));
-            return weight[0];
         } else {
             runOnUiThread(() -> {
                 weightViewModel.setWeightInfo(-2);
@@ -1035,7 +1044,7 @@ public class MainActivity extends AppCompatActivity {
 
     // 자동 검색 여부를 확인하는 메서드
     public void checkAutoSearch() {
-        runOnUiThread(() -> infoViewModel.setAutoSearch(onAutoSearch));
+        runOnUiThread(() -> infoViewModel.setAutoSearch(isAutoSearch));
     }
 
     // 도난방지 여부를 확인하는 메서드
@@ -1108,20 +1117,25 @@ public class MainActivity extends AppCompatActivity {
 
                 checkData();
 
-                if (data.trim().equals("auth_suc")) {
-                    ringBell(true);
-                }
+                try {
+                    if (data != null && data.trim().equals("auth_suc")) {
+                        ringBell(true);
+                    }
 
-                // 벨 울리기 실패
-                if (data == null) {
-                    runOnUiThread(() -> Toast.makeText(this, "벨을 울릴 수 없습니다.", Toast.LENGTH_SHORT).show());
-                    return -1;
-                } else if (data.trim().equals("ring_suc")) {   // 벨 울리기 성공
-                    data = "ring_suc";
-                    runOnUiThread(() -> Toast.makeText(this, "벨 울리기 성공!", Toast.LENGTH_SHORT).show());
-                    return 1;
-                } else {    // 잘못된 값을 받은 경우
-                    runOnUiThread(() -> Toast.makeText(this, "벨을 울릴 수 없습니다.\n잘못된 인자값이 전달되었습니다.", Toast.LENGTH_SHORT).show());
+                    // 벨 울리기 실패
+                    if (data == null) {
+                        runOnUiThread(() -> Toast.makeText(this, "벨을 울릴 수 없습니다.", Toast.LENGTH_SHORT).show());
+                        return -1;
+                    } else if (data.trim().equals("ring_suc")) {   // 벨 울리기 성공
+                        data = "ring_suc";
+                        runOnUiThread(() -> Toast.makeText(this, "벨 울리기 성공!", Toast.LENGTH_SHORT).show());
+                        return 1;
+                    } else {    // 잘못된 값을 받은 경우
+                        runOnUiThread(() -> Toast.makeText(this, "벨을 울릴 수 없습니다.\n잘못된 인자값이 전달되었습니다.", Toast.LENGTH_SHORT).show());
+                        return -1;
+                    }
+                } catch (NumberFormatException | NullPointerException e) {
+                    Toast.makeText(this, e.getMessage() + "에러가 발생했습니다.", Toast.LENGTH_SHORT).show();
                     return -1;
                 }
             } else {   // 벨 울리기 중지 동작
@@ -1216,7 +1230,7 @@ public class MainActivity extends AppCompatActivity {
     // 설정을 초기화 하는 메서드
     public void resetSettings() {
         // 자동검색, 도난방지, 방해금지, 무게 옵션, 무게 측정값, 시각 설정 초기화
-        onAutoSearch = true;
+        isAutoSearch = true;
         security = false;
         ignoreSecurity = false;
         setHourMin = -1;
@@ -1241,14 +1255,14 @@ public class MainActivity extends AppCompatActivity {
 
     // 백드랍 모드를 체크하는 메서드
     public boolean checkBagDrop() {
-        return backDropMode;
+        return isBackDropMode;
     }
 
     // 백드랍 모드를 설정하는 메서드
     public void setBagDrop(boolean onOff) {
-        backDropMode = onOff;
+        isBackDropMode = onOff;
 
-        if (backDropMode) {
+        if (isBackDropMode) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 checkPermission();
             }

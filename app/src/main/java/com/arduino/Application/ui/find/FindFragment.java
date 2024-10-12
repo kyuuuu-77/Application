@@ -72,6 +72,10 @@ public class FindFragment extends Fragment {
     private FindViewModel findViewModel;
     MainActivity mainActivity;
 
+    // 핸들러, Runnable 선언
+    Handler signalGraph_handler;
+    Runnable signalGraph_handler_runnable;
+
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         findViewModel = new ViewModelProvider(requireActivity()).get(FindViewModel.class);
@@ -153,20 +157,25 @@ public class FindFragment extends Fragment {
         lineChart.invalidate();
 
         // 그래프를 1초마다 갱신하기 위한 Handler와 Runnable
-        Handler signalGraph_handler = new Handler();
-        Runnable signalGraph_handler_runnable = new Runnable() {
+        signalGraph_handler = new Handler();
+        signalGraph_handler_runnable = new Runnable() {
             @Override
             public void run() {
                 entries.clear();
 
                 // 0 ~ 10 까지, length = 11
-                for (int i = values.length - 1; i > 0 ; i--) {
-                    values[i] = values[i - 1];
-                }
-                values[0] = getRSSIStrength();      // 현재의 신호세기 값을 입력
+                try {
+                    for (int i = values.length - 1; i > 0 ; i--) {
+                        values[i] = values[i - 1];
+                    }
+                    values[0] = getRSSIStrength();      // 현재의 신호세기 값을 입력
 
-                for (int i = 0; i < values.length; i++) {
-                    entries.add(new Entry(i, values[i])); // Entry 객체를 통해 x, y 값을 추가
+                    for (int i = 0; i < values.length; i++) {
+                        entries.add(new Entry(i, values[i])); // Entry 객체를 통해 x, y 값을 추가
+                    }
+                } catch (NullPointerException e) {
+                    Toast.makeText(getActivity(), e + "에러가 발생했습니다.", Toast.LENGTH_SHORT).show();
+                    signalGraph_handler.removeCallbacks(this);
                 }
 
                 dataSet.notifyDataSetChanged(); // 데이터셋 변경 알림
@@ -552,5 +561,7 @@ public class FindFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
+
+        signalGraph_handler.removeCallbacks(signalGraph_handler_runnable);
     }
 }
