@@ -350,7 +350,7 @@ public class MainActivity extends AppCompatActivity {
 
         runOnUiThread(() -> {
             homeViewModel.setBluetoothStatus(1);
-            homeViewModel.setHomeText("캐리어에 연결되지 않음");
+            homeViewModel.setHomeText("캐리어에 연결되지 않았습니다");
             homeViewModel.setBtBtn(1);
             homeViewModel.setConnectBtn(0);
             infoViewModel.setAutoSearch(true);
@@ -366,7 +366,7 @@ public class MainActivity extends AppCompatActivity {
 
         runOnUiThread(() -> {
             homeViewModel.setBluetoothStatus(0);
-            homeViewModel.setHomeText("캐리어에 연결되지 않음");
+            homeViewModel.setHomeText("캐리어에 연결되지 않았습니다");
             homeViewModel.setBtBtn(0);
             homeViewModel.setConnectBtn(-1);
             infoViewModel.setdeviceName("X");
@@ -631,7 +631,7 @@ public class MainActivity extends AppCompatActivity {
                     ringBell(false);
                     runOnUiThread(() -> {
                         isBackDropMode = false;
-                        homeViewModel.setHomeText("스마트 캐리어에 연결됨");
+                        homeViewModel.setHomeText("스마트 캐리어에 연결되었습니다");
                         bagDropViewModel.setBagDropText("백드랍 비활성화");
                         bagDropViewModel.setBagDropBtnText("백드랍 모드 시작");
                         bagDropViewModel.setRemainTimeText("null");
@@ -707,7 +707,7 @@ public class MainActivity extends AppCompatActivity {
             window.setStatusBarColor(ContextCompat.getColor(getApplicationContext(), R.color.indigo_500));
             toolbar.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.indigo_500));
 
-            homeViewModel.setHomeText("스마트 캐리어에 연결됨");
+            homeViewModel.setHomeText("스마트 캐리어에 연결되었습니다");
             homeViewModel.setConnectBtn(1);
             bagDropViewModel.setConnectText("연결됨");
             infoViewModel.setBleStatus(9);
@@ -776,7 +776,7 @@ public class MainActivity extends AppCompatActivity {
                         window.setStatusBarColor(ContextCompat.getColor(getApplicationContext(), R.color.green_500));
                         toolbar.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.green_500));
 
-                        homeViewModel.setHomeText("잘못된 디바이스에 연결됨");
+                        homeViewModel.setHomeText("잘못된 디바이스에 연결되었습니다");
                         homeViewModel.setConnectBtn(0);
                         Toast.makeText(getApplicationContext(), "연결된 디바이스는 스마트 캐리어가 아닙니다.", Toast.LENGTH_SHORT).show();
                     });
@@ -793,8 +793,8 @@ public class MainActivity extends AppCompatActivity {
                         handler_RSSI.removeCallbacks(runnable_RSSI);
                         bluetoothGatt.disconnect();
                         runOnUiThread(() -> {
-                            createNotif("bagdrop", "백드랍 모드 동작중", "백드랍 모드가 동작중입니다.\n도착 예정시각까지 캐리어와 연결을 끊습니다.");
-                            homeViewModel.setHomeText("백드랍 모드 사용중");
+                            createNotif("bagdrop", "백드랍 모드 동작중", "백드랍 모드가 동작중입니다.\n도착 예정시각 10분 전까지 캐리어와 연결을 끊습니다.");
+                            homeViewModel.setHomeText("백드랍 모드를 사용중입니다");
                             Toast.makeText(getApplicationContext(), "백드랍 모드가 계속 동작중입니다!", Toast.LENGTH_SHORT).show();
                         });
                     }
@@ -964,8 +964,11 @@ public class MainActivity extends AppCompatActivity {
                             infoViewModel.setBattery(Integer.parseInt(percentage));
                         }
                     }
-                } catch (NumberFormatException | NullPointerException e) {
+                } catch (NumberFormatException | NullPointerException | ArrayIndexOutOfBoundsException e) {
                     Toast.makeText(this, e.getMessage() + "에러가 발생했습니다.", Toast.LENGTH_SHORT).show();
+                    infoViewModel.setBattery(-1);
+                    infoViewModel.setBatteryVolt(-1);
+                    Toast.makeText(getApplicationContext(), "배터리 정보 취득 실패", Toast.LENGTH_SHORT).show();
                 }
             });
         } else {
