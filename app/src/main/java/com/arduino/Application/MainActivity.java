@@ -136,6 +136,7 @@ public class MainActivity extends AppCompatActivity {
     Toolbar toolbar;
     Menu appMenu;
 
+    private NotificationManager manager;
     private WindowManager windowManager;
     private View overlayView;
 
@@ -984,6 +985,10 @@ public class MainActivity extends AppCompatActivity {
 
             checkData();
 
+            if (data.trim().equals("auth_suc")) {
+                measureWeight(maxSet);
+            }
+
             // 무게값을 받지 못했으면
             if (data == null) {
                 runOnUiThread(() -> {
@@ -1102,6 +1107,10 @@ public class MainActivity extends AppCompatActivity {
                 sendData("menu 1");
 
                 checkData();
+
+                if (data.trim().equals("auth_suc")) {
+                    ringBell(true);
+                }
 
                 // 벨 울리기 실패
                 if (data == null) {
@@ -1275,7 +1284,7 @@ public class MainActivity extends AppCompatActivity {
         public void run() {
             // 인증받지 않았고, 송수신이 가능하고, 입력된 패스워드가 null이 아니면
             if (!isAuth && writeCharacteristic != null && getPassword != null) {
-                sendData(getPassword);
+                sendData("auth_" + getPassword);
                 checkData();
 
                 if (data == null) {         // 데이터를 못 받은 경우
@@ -1299,7 +1308,7 @@ public class MainActivity extends AppCompatActivity {
                     } else if (data.trim().equals("auth_fail")) {
                         isAuth = false;
                         getPassword = null;
-                        Toast.makeText(getApplicationContext(), "비밀번호가 틀렸습니다", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(), "비밀번호가 틀렸습니다! 다시 입력하세요.", Toast.LENGTH_SHORT).show();
                         bleAuthHandler.removeCallbacks(bleAuthRunnable);
                     } else {
                         isAuth = false;
@@ -1358,7 +1367,7 @@ public class MainActivity extends AppCompatActivity {
     private void createNotif(String channel_id, String big, String summary) {
         checkAlertPermission();
 
-        NotificationManager manager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
+        manager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
         NotificationChannel channel = manager.getNotificationChannel(channel_id);
         if (channel == null) {
             switch (channel_id) {
@@ -1425,6 +1434,10 @@ public class MainActivity extends AppCompatActivity {
 
     protected void onDestroy() {
         super.onDestroy();
+
+        if (manager != null) {  // 앱 종료시에 알림을 모두 지움
+            manager.cancelAll();
+        }
 
         stopRSSIMeasurement();          // RSSI 측정 중지
         stopLeScan();       // 리스캔 중지
