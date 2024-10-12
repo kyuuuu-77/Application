@@ -6,24 +6,33 @@ import androidx.lifecycle.ViewModel;
 
 public class HomeViewModel extends ViewModel {
 
-    private final MutableLiveData<String> connectBtnLiveData = new MutableLiveData<>();
-    private final MutableLiveData<String> bluetoothStatusLiveData = new MutableLiveData<>();
+    private final MutableLiveData<Boolean> authenticateLiveData = new MutableLiveData<>();
+    private final MutableLiveData<Integer> connectBtnLiveData = new MutableLiveData<>();
+    private final MutableLiveData<Integer> bluetoothStatusLiveData = new MutableLiveData<>();
     private final MutableLiveData<String> homeTextLiveData = new MutableLiveData<>();
-    private final MutableLiveData<String> btBtnLiveData = new MutableLiveData<>();
+    private final MutableLiveData<Integer> btBtnLiveData = new MutableLiveData<>();
 
-    // 연결 버튼 텍스트
-    public LiveData<String> getconnectBtnLiveData() {
+    // 인증 상태
+    public LiveData<Boolean> getAuthenticateLiveData() {
+        return authenticateLiveData;
+    }
+    public void setAuthenticate(boolean auth) {
+        authenticateLiveData.setValue(auth);
+    }
+
+    // 연결 버튼 상태
+    public LiveData<Integer> getconnectBtnLiveData() {
         return connectBtnLiveData;
     }
-    public void setConnectBtn(String text) {
-        connectBtnLiveData.setValue(text);
+    public void setConnectBtn(int status) {
+        connectBtnLiveData.setValue(status);
     }
 
     // 블루투스 상태
-    public LiveData<String> getBluetoothStatusLiveData() {
+    public LiveData<Integer> getBluetoothStatusLiveData() {
         return bluetoothStatusLiveData;
     }
-    public void setBluetoothStatus(String status) {
+    public void setBluetoothStatus(int status) {
         bluetoothStatusLiveData.setValue(status);
     }
 
@@ -35,11 +44,11 @@ public class HomeViewModel extends ViewModel {
         homeTextLiveData.setValue(text);
     }
 
-    // 블루투스 버튼 텍스트
-    public LiveData<String> getBtBtnLiveData() {
+    // 블루투스 버튼 상태
+    public LiveData<Integer> getBtBtnLiveData() {
         return btBtnLiveData;
     }
-    public void setBtBtn(String text) {
-        btBtnLiveData.setValue(text);
+    public void setBtBtn(int status) {
+        btBtnLiveData.setValue(status);
     }
 }

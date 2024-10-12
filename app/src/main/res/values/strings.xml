@@ -9,9 +9,9 @@
     <string name="action_appInfo">앱 정보</string>
     <string name="splash_name">Suitcase Genie</string>
     <string name="weight_popup">Notification</string>
-    <string name="app_version">1.01</string>
-    <string name="app_date">2024.10.01/15</string>
-    <string name="app_update_log">찾기 기능 수정, 앱 최적화 및 버그 수정, 배터리 정보 표시 개선</string>
+    <string name="app_version">1.10 beta</string>
+    <string name="app_date">2024.10.12/14</string>
+    <string name="app_update_log">인증 기능 추가, UI/UX 디자인 개선, 버그 수정 등</string>
     <string name="loading" tools:ignore="TypographyEllipsis">로드중...</string>
 
     <!-- 네비게이션 바 -->
@@ -22,6 +22,7 @@
     <string name="menu_info">캐리어 정보</string>
 
     <!-- 메인 화면 -->
+    <string name="authBtn_text">인증 필요</string>
     <string name="connectBtn_text">연결</string>
     <string name="BT_status">블루투스 상태</string>
     <string name="homeText">캐리어에 연결되지 않음</string>
@@ -30,12 +31,10 @@
     <!-- 캐리어 도난방지 화면 -->
     <string name="text_ignore">알림</string>
     <string name="findBtn_text">찾기</string>
-    <string name="alert_text">도난방지 기능으로\n캐리어를 안전하게 보관하세요!</string>
-    <string name="alertStatus">도난방지 꺼짐</string>
-    <string name="alert_Btn">도난방지 켜기</string>
     <string name="title_distance">캐리어와 거리</string>
     <string name="main_distance">정보없음</string>
     <string name="sub_distance">연결되지 않음</string>
+    <string name="alert_Btn">도난방지 켜기</string>
 
     <!-- 캐리어 무게측정 화면 -->
     <string name="text_reset">설정 리셋</string>
@@ -47,7 +46,7 @@
 
     <!-- 백드랍 모드 화면 -->
     <string name="textTo"><![CDATA[->]]></string>
-    <string name="timeBtn_text">시각 설정</string>
+    <string name="timeBtn_text">도착 시각</string>
     <string name="bagdrop_text">백드랍 비활성화</string>
     <string name="text_connect">캐리어 연결</string>
     <string name="text_weight">무게 측정</string>
@@ -60,6 +59,7 @@
     <string name="text_hourMin">hh시간 mm분</string>
 
     <!-- 캐리어 정보 화면 -->
+    <string name="text_refresh">갱신</string>
     <string name="text_autoSearch">자동검색 꺼짐</string>
     <string name="title_rssi">신호세기</string>
     <string name="main_rssi">측정불가</string>
@@ -107,5 +107,15 @@
     <string name="dialogTime_selectedTime">선택된 시간 :</string>
     <string name="dialogTime_setHour">hh시</string>
     <string name="dialogTime_setMin">mm분</string>
+
+    <!-- 다이얼로그 배터리 부족 화면 -->
+    <string name="battery_main">배터리 경고!</string>
+    <string name="battery_sub">캐리어의 배터리가 부족합니다.\n배터리가 부족하면 캐리어가 오동작 할 수 있습니다.</string>
+    <string name="battery_rect">캐리어를 충전해주세요!</string>
+
+    <!-- 다이얼로그 패스워드 화면 -->
+    <string name="text_password">Password</string>
+    <string name="pwd">캐리어의 인증번호를 입력하세요</string>
+    <string name="password_main">캐리어 인증</string>
 
 </resources>
