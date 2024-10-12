@@ -25,6 +25,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.SystemClock;
 import android.provider.Settings;
 import android.util.Log;
@@ -68,6 +69,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCallback;
@@ -1301,38 +1304,51 @@ public class MainActivity extends AppCompatActivity {
         public void run() {
             // 인증받지 않았고, 송수신이 가능하고, 입력된 패스워드가 null이 아니면
             if (!isAuth && writeCharacteristic != null && getPassword != null) {
-                sendData("auth_" + getPassword);
-                checkData();
+                ExecutorService executorService = Executors.newSingleThreadExecutor();
+                Handler handler = new Handler(Looper.getMainLooper());
 
-                if (data == null) {         // 데이터를 못 받은 경우
-                    Toast.makeText(getApplicationContext(), "캐리어와 인증 실패", Toast.LENGTH_SHORT).show();
-                    bleAuthHandler.postDelayed(this, 3000);        // 3초 마다 인증 재시도
-                } else {
-                    if (data.trim().equals("auth_suc")) {
-                        isAuth = true;
-                        Toast.makeText(getApplicationContext(), "캐리어와 인증 성공!", Toast.LENGTH_SHORT).show();
-                        checkAuth();
+                executorService.execute(() -> {
+                    // 백그라운드 작업 처리
+                    try {
+                        sendData("auth_" + getPassword);
+                        checkData();
 
-                        runOnUiThread(() -> {
-                            appMenu.findItem(R.id.nav_find).setEnabled(true);
-                            appMenu.findItem(R.id.nav_find).setVisible(true);
-                            appMenu.findItem(R.id.nav_weight).setEnabled(true);
-                            appMenu.findItem(R.id.nav_weight).setVisible(true);
-                            appMenu.findItem(R.id.nav_bagdrop).setEnabled(true);
-                            appMenu.findItem(R.id.nav_bagdrop).setVisible(true);
-                        });
-                        bleAuthHandler.removeCallbacks(bleAuthRunnable);
-                    } else if (data.trim().equals("auth_fail")) {
-                        isAuth = false;
-                        getPassword = null;
-                        Toast.makeText(getApplicationContext(), "비밀번호가 틀렸습니다! 다시 입력하세요.", Toast.LENGTH_SHORT).show();
-                        bleAuthHandler.removeCallbacks(bleAuthRunnable);
-                    } else {
-                        isAuth = false;
-                        Toast.makeText(getApplicationContext(), "잘못된 데이터를 받았습니다!", Toast.LENGTH_SHORT).show();
-                        bleAuthHandler.postDelayed(this, 3000);        // 3초 마다 인증 재시도
+                        if (data == null) {         // 데이터를 못 받은 경우
+                            handler.post(() -> Toast.makeText(getApplicationContext(), "캐리어와 인증 실패", Toast.LENGTH_SHORT).show());
+                            bleAuthHandler.postDelayed(this, 3000);        // 3초 마다 인증 재시도
+                        } else {
+                            if (data.trim().equals("auth_suc")) {
+                                isAuth = true;
+                                handler.post(() -> {
+                                    Toast.makeText(getApplicationContext(), "캐리어와 인증 성공!", Toast.LENGTH_SHORT).show();
+                                    checkAuth();
+                                });
+
+                                runOnUiThread(() -> {
+                                    appMenu.findItem(R.id.nav_find).setEnabled(true);
+                                    appMenu.findItem(R.id.nav_find).setVisible(true);
+                                    appMenu.findItem(R.id.nav_weight).setEnabled(true);
+                                    appMenu.findItem(R.id.nav_weight).setVisible(true);
+                                    appMenu.findItem(R.id.nav_bagdrop).setEnabled(true);
+                                    appMenu.findItem(R.id.nav_bagdrop).setVisible(true);
+                                });
+                                bleAuthHandler.removeCallbacks(bleAuthRunnable);
+                            } else if (data.trim().equals("auth_fail")) {
+                                isAuth = false;
+                                getPassword = null;
+                                handler.post(() -> Toast.makeText(getApplicationContext(), "비밀번호가 틀렸습니다! 다시 입력하세요.", Toast.LENGTH_SHORT).show());
+                                bleAuthHandler.removeCallbacks(bleAuthRunnable);
+                            } else {
+                                isAuth = false;
+                                handler.post(() ->Toast.makeText(getApplicationContext(), "잘못된 데이터를 받았습니다!", Toast.LENGTH_SHORT).show());
+                                bleAuthHandler.postDelayed(this, 3000);        // 3초 마다 인증 재시도
+                            }
+                        }
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        handler.post(() -> Toast.makeText(getApplicationContext(), "데이터 로드중 에러 발생", Toast.LENGTH_SHORT).show());
                     }
-                }
+                });
             } else {
                 bleAuthHandler.postDelayed(this, 3000);        // 3초 마다 인증 재시도
             }
@@ -1411,15 +1427,13 @@ public class MainActivity extends AppCompatActivity {
             manager.createNotificationChannel(channel);
         }
 
-        Intent notificationIntent = new Intent(getApplicationContext(), NotificationActivity.class);
-        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        PendingIntent contentIntent = PendingIntent.getActivity(getApplicationContext(), 0, notificationIntent, PendingIntent.FLAG_IMMUTABLE);
+        Intent intent = new Intent();
+        PendingIntent contentIntent = PendingIntent.getActivity(getApplicationContext(), 0, intent, PendingIntent.FLAG_IMMUTABLE);
         NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), channel_id)
                 .setSmallIcon(R.drawable.splash)
                 .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.splash))
                 .setContentTitle(big).setContentText(summary).setStyle(new NotificationCompat.BigTextStyle().bigText(summary))
-                .setPriority(NotificationCompat.PRIORITY_HIGH);
-        builder.setContentIntent(contentIntent);
+                .setPriority(NotificationCompat.PRIORITY_HIGH).setContentIntent(contentIntent).setAutoCancel(true);
         NotificationManagerCompat m = NotificationManagerCompat.from(getApplicationContext());
 
         m.notify(1, builder.build());

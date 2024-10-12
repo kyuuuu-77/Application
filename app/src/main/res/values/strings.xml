@@ -59,6 +59,7 @@
     <string name="text_hourMin">hh시간 mm분</string>
 
     <!-- 캐리어 정보 화면 -->
+    <string name="text_refresh">갱신</string>
     <string name="text_autoSearch">자동검색 꺼짐</string>
     <string name="title_rssi">신호세기</string>
     <string name="main_rssi">측정불가</string>
