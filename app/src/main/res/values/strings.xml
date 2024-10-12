@@ -10,8 +10,8 @@
     <string name="splash_name">Suitcase Genie</string>
     <string name="weight_popup">Notification</string>
     <string name="app_version">1.10 beta</string>
-    <string name="app_date">2024.10.09/15</string>
-    <string name="app_update_log">찾기 기능 수정, 앱 최적화 및 버그 수정, 배터리 정보 표시 개선</string>
+    <string name="app_date">2024.10.12/14</string>
+    <string name="app_update_log">인증 기능 추가, UI/UX 디자인 개선, 버그 수정 등</string>
     <string name="loading" tools:ignore="TypographyEllipsis">로드중...</string>
 
     <!-- 네비게이션 바 -->
@@ -59,6 +59,7 @@
     <string name="text_hourMin">hh시간 mm분</string>
 
     <!-- 캐리어 정보 화면 -->
+    <string name="text_refresh">갱신</string>
     <string name="text_autoSearch">자동검색 꺼짐</string>
     <string name="title_rssi">신호세기</string>
     <string name="main_rssi">측정불가</string>

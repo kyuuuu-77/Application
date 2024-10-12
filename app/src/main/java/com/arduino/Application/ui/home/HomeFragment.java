@@ -186,12 +186,16 @@ public class HomeFragment extends Fragment {
 
         checkBtn.setOnClickListener(v -> {
             if (mainActivity != null) {
-                String password = getPassword.getText().toString();
-                if (password.isEmpty()) {
-                    Toast.makeText(getActivity(), "입력 없음", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(getActivity(), password + " 입력 확인!", Toast.LENGTH_SHORT).show();
-                    mainActivity.getAuth(password);
+                try {
+                    String password = getPassword.getText().toString();
+                    if (password.isEmpty()) {
+                        Toast.makeText(getActivity(), "입력 없음", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(getActivity(), password + " 입력 확인!", Toast.LENGTH_SHORT).show();
+                        mainActivity.getAuth(password);
+                    }
+                } catch (NullPointerException e) {
+                    Toast.makeText(getActivity(), e + "에러가 발생했습니다.", Toast.LENGTH_SHORT).show();
                 }
             }
             dialog.dismiss();
