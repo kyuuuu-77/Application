@@ -648,9 +648,9 @@ public class MainActivity extends AppCompatActivity {
                     runOnUiThread(() -> {
                         isBackDropMode = false;
                         homeViewModel.setHomeText("스마트 캐리어에 연결되었습니다");
-                        bagDropViewModel.setBagDropText("백드랍 비활성화");
-                        bagDropViewModel.setBagDropBtnText("백드랍 모드 시작");
-                        bagDropViewModel.setRemainTimeText("null");
+                        bagDropViewModel.setBagDropStatus(false);
+                        bagDropViewModel.setBagDropBtn(false);
+                        bagDropViewModel.setRemainTime(-1);
                         createNotif("bagdrop", "백드랍 모드 종료", "스마트 캐리어와 연결되었습니다!\n이제 백드랍 모드를 종료합니다.");
                         Toast.makeText(MainActivity.this, "캐리어와 다시 연결되었으므로 백드랍 모드를 종료합니다.", Toast.LENGTH_SHORT).show();
                     });
@@ -725,7 +725,7 @@ public class MainActivity extends AppCompatActivity {
 
             homeViewModel.setHomeText("스마트 캐리어에 연결되었습니다");
             homeViewModel.setConnectBtn(1);
-            bagDropViewModel.setConnectText("연결됨");
+            bagDropViewModel.setConnectStatus(true);
             infoViewModel.setBleStatus(9);
             Toast.makeText(getApplicationContext(), "스마트 캐리어에 연결됨", Toast.LENGTH_SHORT).show();
 
@@ -756,7 +756,7 @@ public class MainActivity extends AppCompatActivity {
             findViewModel.setAlertBtn(-1);
             findViewModel.setDistance(-1);
             weightViewModel.setWeightBtn(0);
-            bagDropViewModel.setConnectText("연결되지 않음");
+            bagDropViewModel.setConnectStatus(false);
             infoViewModel.setdeviceName("X");
             infoViewModel.setRssi(999);
             infoViewModel.setSecurity(false);
@@ -1390,17 +1390,12 @@ public class MainActivity extends AppCompatActivity {
             int remain;
 
             if (currentTime > setTime) {        // 혹시나 도착이 다음날이면 -> 도착 0:05 , 현재 17:50
-                remain = setTime + 1440 - currentTime;
+                remain = setTime + (60 * 24) - currentTime;
             } else {
                 remain = setTime - currentTime;
             }
 
-            if (remain / 60 > 0) {      // 1시간 이상 남으면
-                bagDropViewModel.setRemainTimeText(remain / 60 + "시간 " + remain % 60 + "분");
-
-            } else {        // 1시간 이하인 경우
-                bagDropViewModel.setRemainTimeText(remain % 60 + "분");
-            }
+            bagDropViewModel.setRemainTime(remain);
 
             if (remain <= 10) {     // 10분 전 부터 캐리어 찾기를 시도
                 if (bluetoothGatt != null) {

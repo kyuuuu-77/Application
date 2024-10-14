@@ -62,6 +62,7 @@ public class BagDropFragment extends Fragment {
     private int arriveTime = -1;
     private boolean bagDropMode = false;
 
+    @SuppressLint("SetTextI18n")
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         bagDropViewModel = new ViewModelProvider(requireActivity()).get(BagDropViewModel.class);
@@ -96,60 +97,80 @@ public class BagDropFragment extends Fragment {
         Btn_red = ContextCompat.getDrawable(requireContext(), R.drawable.button_round_off);
 
         // ViewModel 선언
-        bagDropViewModel.getRemainTimeTextLiveData().observe(getViewLifecycleOwner(), time -> {
-            if (Objects.equals(time, "null")) {
+        // 백드랍 모드 남은 시간 (Integer)
+        bagDropViewModel.getRemainTimeLiveData().observe(getViewLifecycleOwner(), time -> {
+            if (time == -1) {
                 Linear_remain.setVisibility(View.INVISIBLE);
                 checkBagDrop();
             } else {
                 Linear_remain.setVisibility(View.VISIBLE);
-                Text_remainTime.setText(time);
+                if (time >= 60) {
+                    Text_remainTime.setText(time / 60 + "시간 " + time % 60 + "분");
+                } else {
+                    Text_remainTime.setText(time % 60 + "분");
+                }
             }
         });
-        bagDropViewModel.getBagDropTextLiveData().observe(getViewLifecycleOwner(), text -> {
-            if (Objects.equals(text, "백드랍 활성화")) {
+        
+        // 백드랍 모드 동작 여부 (Boolean)
+        bagDropViewModel.getBagDropStatusLiveData().observe(getViewLifecycleOwner(), bagDrop -> {
+            if (bagDrop) {
+                Text_bagDrop.setText("백드랍 활성화");
                 Text_bagDrop.setTextColor(ContextCompat.getColor(requireActivity(), R.color.indigo_500));
-            } else if (Objects.equals(text, "백드랍 비활성화")) {
+            } else {
+                Text_bagDrop.setText("백드랍 비활성화");
                 Text_bagDrop.setTextColor(ContextCompat.getColor(requireActivity(), R.color.orange_500));
             }
-            Text_bagDrop.setText(text);
         });
-        bagDropViewModel.getConnectTextLiveData().observe(getViewLifecycleOwner(), connect -> {
-            if (Objects.equals(connect, "연결됨")) {   // 블루투스에 연결된 경우
+        
+        // 스마트 캐리어 연결 여부 (Boolean)
+        bagDropViewModel.getConnectStatusLiveData().observe(getViewLifecycleOwner(), connect -> {
+            if (connect) {
+                Text_checkConnect.setText("연결됨");
                 Linear_connect.setBackground(layout_indigo);
                 Icon_connect.setImageResource(R.drawable.bagdrop_checked);
-            } else {        // 블루투스에 연결되지 않은 경우
+            } else {
+                Text_checkConnect.setText("연결되지 않음");
                 Linear_connect.setBackground(layout_orange);
                 Icon_connect.setImageResource(R.drawable.bagdrop_not_checked);
             }
-            Text_checkConnect.setText(connect);
         });
-        bagDropViewModel.getWeightTextLiveData().observe(getViewLifecycleOwner(), weight -> {
-            if (Objects.equals(weight, "측정되지 않음")) {    // 무게가 측정되지 않은 경우
+        
+        // 무게 측정 여부 (Double)
+        bagDropViewModel.getWeightLiveData().observe(getViewLifecycleOwner(), weight -> {
+            if (weight == -1) {     // 무게가 측정되지 않은 경우
+                Text_checkWeight.setText("측정되지 않음");
                 Linear_weight.setBackground(layout_orange);
                 Icon_weight.setImageResource(R.drawable.bagdrop_not_checked);
             } else {        // 무게가 측정된 경우
+                Text_checkWeight.setText(weight + " Kg");
                 Linear_weight.setBackground(layout_indigo);
                 Icon_weight.setImageResource(R.drawable.bagdrop_checked);
             }
-            Text_checkWeight.setText(weight);
         });
-        bagDropViewModel.getTimeTextLiveData().observe(getViewLifecycleOwner(), time -> {
-            if (Objects.equals(time, "설정되지 않음")) {      // 시간이 설정되지 않은 경우
+
+        // 시간 측정 여부 (Integer)
+        bagDropViewModel.getTimeLiveData().observe(getViewLifecycleOwner(), time -> {
+            if (time == -1) {
+                Text_checkTime.setText("설정되지 않음");
                 Linear_time.setBackground(layout_orange);
                 Icon_time.setImageResource(R.drawable.bagdrop_not_checked);
-            } else {        // 시간이 설정된 경우
+            } else {
+                Text_checkTime.setText(time / 100 + "시 " + time % 100 + "분");
                 Linear_time.setBackground(layout_indigo);
                 Icon_time.setImageResource(R.drawable.bagdrop_checked);
             }
-            Text_checkTime.setText(time);
         });
-        bagDropViewModel.getBagDropBtnTextLiveData().observe(getViewLifecycleOwner(), btnText -> {
-            if (Objects.equals(btnText, "백드랍 모드 시작")) {
-                Btn_bagDrop.setBackground(Btn_blue);
-            } else if (Objects.equals(btnText, "백드랍 모드 중지")) {
+
+        // 백드랍 모드 버튼 상태 (Boolean)
+        bagDropViewModel.getBagDropBtnLiveData().observe(getViewLifecycleOwner(), status -> {
+            if (status) {       // 백드랍 모드가 동작 중이면
+                Btn_bagDrop.setText("백드랍 모드 중지");
                 Btn_bagDrop.setBackground(Btn_red);
+            } else {
+                Btn_bagDrop.setText("백드랍 모드 시작");
+                Btn_bagDrop.setBackground(Btn_blue);
             }
-            Btn_bagDrop.setText(btnText);
         });
 
         // 버튼 이벤트 리스너
@@ -162,14 +183,14 @@ public class BagDropFragment extends Fragment {
 
             if (bagDropMode) {      // 백드랍 모드 켜짐 -> 꺼짐
                 setBagDrop(false);
-                bagDropViewModel.setBagDropBtnText("백드랍 모드 시작");
-                bagDropViewModel.setBagDropText("백드랍 비활성화");
+                bagDropViewModel.setBagDropBtn(false);
+                bagDropViewModel.setBagDropStatus(false);
                 Toast.makeText(getActivity(), "백드랍 모드가 중지됩니다.", Toast.LENGTH_SHORT).show();
                 Linear_remain.setVisibility(View.INVISIBLE);
             } else {                // 백드랍 모드 꺼짐 -> 켜짐
                 setBagDrop(true);
-                bagDropViewModel.setBagDropBtnText("백드랍 모드 중지");
-                bagDropViewModel.setBagDropText("백드랍 활성화");
+                bagDropViewModel.setBagDropBtn(true);
+                bagDropViewModel.setBagDropStatus(true);
                 Toast.makeText(getActivity(), "백드랍 모드가 시작됩니다!", Toast.LENGTH_SHORT).show();
             }
         });
@@ -262,7 +283,9 @@ public class BagDropFragment extends Fragment {
             arriveTime = checkTime();
 
             if (arriveTime != -1) {
-                bagDropViewModel.setTimeText(arriveTime / 100 + "시 " + arriveTime % 100 + "분");
+                bagDropViewModel.setTime(arriveTime);
+            } else {
+                bagDropViewModel.setTime(-1);
             }
             checkCanUseBagDrop();
 
@@ -337,22 +360,16 @@ public class BagDropFragment extends Fragment {
         super.onResume();
 
         // 캐리어 연결 여부 확인
-        if (checkConnection() == 9) {
-            // 캐리어 연결되어 있으면
-            bagDropViewModel.setConnectText("연결됨");
-        } else {
-            // 캐리어 연결되지 않았으면
-            bagDropViewModel.setConnectText("연결되지 않음");
-        }
+        bagDropViewModel.setConnectStatus(checkConnection() == 9);
 
         // 캐리어 무게 측정 여부 확인
         if (checkWeight() != 0 && checkWeight() != -1) {
             // 무게 측정결과가 0이나 -1이 아니라면 -> 한마디로 무게를 측정했으면
             double weightTmp = checkWeight();
-            bagDropViewModel.setWeightText(weightTmp + " Kg");
+            bagDropViewModel.setWeight(weightTmp);
         } else {
             // 무게를 측정하지 않았으면
-            bagDropViewModel.setWeightText("측정되지 않음");
+            bagDropViewModel.setWeight((double) -1);
         }
 
         // 도착 예정시각 설정 확인
@@ -360,22 +377,22 @@ public class BagDropFragment extends Fragment {
 
         if (arriveTime != -1) {
             // 도착 시각을 설정했으면
-            bagDropViewModel.setTimeText(arriveTime / 100 + "시 " + arriveTime % 100 + "분");
+            bagDropViewModel.setTime(arriveTime);
         } else {
             // 도착 시각을 설정하지 않았으면
-            bagDropViewModel.setTimeText("설정되지 않음");
+            bagDropViewModel.setTime(-1);
         }
 
         // 백드랍 모드 확인
         checkBagDrop();
         if (bagDropMode) {
             // 백드랍 모드가 켜져 있으면
-            bagDropViewModel.setBagDropBtnText("백드랍 모드 중지");
-            bagDropViewModel.setBagDropText("백드랍 활성화");
+            bagDropViewModel.setBagDropBtn(false);
+            bagDropViewModel.setBagDropStatus(true);
         } else {
             // 백드랍 모드가 꺼져 있으면
-            bagDropViewModel.setBagDropBtnText("백드랍 모드 시작");
-            bagDropViewModel.setBagDropText("백드랍 비활성화");
+            bagDropViewModel.setBagDropBtn(true);
+            bagDropViewModel.setBagDropStatus(false);
         }
 
         checkCanUseBagDrop();
