@@ -366,12 +366,15 @@ public class MainActivity extends AppCompatActivity {
         isAutoSearch = false;
         BLE_status = 0;
         deviceName = null;
+        isAuth = false;
+        getPassword = null;
 
         runOnUiThread(() -> {
             homeViewModel.setBluetoothStatus(0);
             homeViewModel.setHomeText("캐리어에 연결되지 않았습니다");
             homeViewModel.setBtBtn(0);
             homeViewModel.setConnectBtn(-1);
+            homeViewModel.setAuthenticate(false);
             infoViewModel.setdeviceName("X");
             infoViewModel.setAutoSearch(true);
             infoViewModel.setBleStatus(0);
@@ -1215,14 +1218,35 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // 인증 상태를 확인하는 메서드
-    public void checkAuth() {
+    public boolean checkAuth() {
         homeViewModel.setAuthenticate(isAuth);
+        return isAuth;
     }
 
     // 인증 동작을 수행하는 메서드
     public void getAuth(String password) {
         getPassword = password;
         bleAuthHandler.postDelayed(bleAuthRunnable, 1000);
+    }
+
+    public void changeAuth(String password) {
+        data = null;
+
+        sendData("change_" + password);
+        checkData();
+
+        runOnUiThread(() -> {
+            if (data == null) {         // 데이터를 못 받은 경우
+                Toast.makeText(getApplicationContext(), "인증번호 변경 실패\n잠시후 다시 시도하세요!", Toast.LENGTH_SHORT).show();
+            } else {
+                if (data.trim().equals("change_suc")) {
+                    getPassword = password;
+                    Toast.makeText(getApplicationContext(), "인증번호 변경 성공!", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getApplicationContext(), "잘못된 데이터를 받았습니다!", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
 
     // RSSI 신호 세기 정도를 전달하는 메서드
@@ -1320,14 +1344,16 @@ public class MainActivity extends AppCompatActivity {
     private final Runnable bleAuthRunnable = new Runnable() {
         @Override
         public void run() {
-            // 인증받지 않았고, 송수신이 가능하고, 입력된 패스워드가 null이 아니면
-            if (!isAuth && writeCharacteristic != null && getPassword != null) {
+            // 인증받지 않았고, 송수신이 가능하고, 입력된 패스워드가 null이 아니고, 블루투스가 켜져 있으면
+            if (!isAuth && writeCharacteristic != null && getPassword != null && mBluetoothAdapter.isEnabled()) {
                 ExecutorService executorService = Executors.newSingleThreadExecutor();
                 Handler handler = new Handler(Looper.getMainLooper());
 
                 executorService.execute(() -> {
                     // 백그라운드 작업 처리
                     try {
+                        data = null;
+
                         sendData("auth_" + getPassword);
                         checkData();
 

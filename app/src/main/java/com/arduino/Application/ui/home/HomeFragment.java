@@ -6,6 +6,8 @@ import android.bluetooth.BluetoothAdapter;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,9 +23,13 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.airbnb.lottie.LottieAnimationView;
 import com.arduino.Application.MainActivity;
 import com.arduino.Application.R;
 import com.arduino.Application.databinding.FragmentHomeBinding;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class HomeFragment extends Fragment {
 
@@ -36,6 +42,7 @@ public class HomeFragment extends Fragment {
     TextView Text_home;
     TextView Text_auth;
     TextView Text_connect;
+    TextView Text_authTitle;
 
     Drawable Btn_blue;
     Drawable Btn_red;
@@ -53,6 +60,8 @@ public class HomeFragment extends Fragment {
     private HomeViewModel homeViewModel;
     MainActivity mainActivity;
 
+    private boolean isAuth = false;
+
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         homeViewModel = new ViewModelProvider(requireActivity()).get(HomeViewModel.class);
@@ -67,10 +76,11 @@ public class HomeFragment extends Fragment {
         Btn_auth = root.findViewById(R.id.authenticate);           // 인증 버튼
         BtnBT_connect = root.findViewById(R.id.btnBT_Connect);     // 연결 버튼
 
-        Text_auth = root.findViewById(R.id.text_auth);           // 인증 버튼 텍스트 뷰
-        Text_connect = root.findViewById(R.id.connectText);      // 연결 버튼 텍스트 뷰
-        Text_BTStatus = root.findViewById(R.id.BT_Status);       // 블루투스 상태 텍스트 뷰
-        Text_home = root.findViewById(R.id.text_home);           // 홈 텍스트 뷰
+        Text_auth = root.findViewById(R.id.text_auth);           // 인증 버튼 텍스트
+        Text_connect = root.findViewById(R.id.connectText);      // 연결 버튼 텍스트
+        Text_BTStatus = root.findViewById(R.id.BT_Status);       // 블루투스 상태 텍스트
+        Text_home = root.findViewById(R.id.text_home);           // 홈 텍스트
+        Text_authTitle = root.findViewById(R.id.auth_title);     // 인증화면 타이틀
 
         // Drawable 선언
         Btn_blue = ContextCompat.getDrawable(requireContext(), R.drawable.button_round);
@@ -90,12 +100,12 @@ public class HomeFragment extends Fragment {
         // ViewModel 선언
         homeViewModel.getAuthenticateLiveData().observe(getViewLifecycleOwner(), auth -> {
             if (auth) {         // 인증을 했으면
+                isAuth = true;
                 Btn_auth.setBackground(lock_blue);
-                Btn_auth.setEnabled(false);
                 Text_auth.setText("인증됨");
             } else {        // 인증을 안 했으면
+                isAuth = false;
                 Btn_auth.setBackground(lock_red);
-                Btn_auth.setEnabled(true);
                 Text_auth.setText("인증 필요");
             }
         });
@@ -163,7 +173,13 @@ public class HomeFragment extends Fragment {
         BtnBT_connect.setOnClickListener(view -> listPairedDevices());
 
         // 인증(패스워드) 버튼
-        Btn_auth.setOnClickListener(view -> getAuth());
+        Btn_auth.setOnClickListener(view -> {
+            if (isAuth) {       // 인증한 상태이면 비밀번호 변경
+                changeAuth();
+            } else {            // 인증하지 않은 상태이면 인증 화면
+                getAuth();
+            }
+        });
 
         return root;
     }
@@ -177,8 +193,16 @@ public class HomeFragment extends Fragment {
         builder.setView(dialogView);
 
         // 다이얼로그 안에 이미지, 텍스트 뷰, 버튼 초기화 및 선언
+        View passwordLayout = dialogView.findViewById(R.id.password_layout);
+        View changeLayout = dialogView.findViewById(R.id.password_change_layout);
+        TextView title = dialogView.findViewById(R.id.auth_title);
         EditText getPassword = dialogView.findViewById(R.id.password_input);
         Button checkBtn = dialogView.findViewById(R.id.confirm);
+
+        passwordLayout.setVisibility(View.VISIBLE);
+        changeLayout.setVisibility(View.GONE);
+
+        title.setText("캐리어 인증");
 
         AlertDialog dialog = builder.create();
         dialog.setCancelable(true);
@@ -193,6 +217,74 @@ public class HomeFragment extends Fragment {
                     } else {
                         Toast.makeText(getActivity(), password + " 입력 확인!", Toast.LENGTH_SHORT).show();
                         mainActivity.getAuth(password);
+                    }
+                } catch (NullPointerException e) {
+                    Toast.makeText(getActivity(), e + "에러가 발생했습니다.", Toast.LENGTH_SHORT).show();
+                }
+            }
+            dialog.dismiss();
+        });
+    }
+
+    // 인증 번호를 변경하는 메서드
+    private void changeAuth() {
+        View root = binding.getRoot();
+        // 로딩 애니메이션 (로티 애니메이션) 및 비동기 처리 구문
+        LottieAnimationView lottieView = root.findViewById(R.id.lottieView);
+        View loadingOverlay = root.findViewById(R.id.loading_overlay);
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+        Handler handler = new Handler(Looper.getMainLooper());
+
+        LayoutInflater inflater = LayoutInflater.from(getContext());
+        View dialogView = inflater.inflate(R.layout.password_main, null);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+        builder.setView(dialogView);
+
+        // 다이얼로그 안에 이미지, 텍스트 뷰, 버튼 초기화 및 선언
+        View passwordLayout = dialogView.findViewById(R.id.password_layout);
+        View changeLayout = dialogView.findViewById(R.id.password_change_layout);
+        TextView title = dialogView.findViewById(R.id.auth_title);
+        EditText getPassword = dialogView.findViewById(R.id.new_password_input);
+        Button checkBtn = dialogView.findViewById(R.id.confirm);
+
+        passwordLayout.setVisibility(View.GONE);
+        changeLayout.setVisibility(View.VISIBLE);
+        title.setText("인증번호 변경");
+
+        AlertDialog dialog = builder.create();
+        dialog.setCancelable(true);
+        dialog.show();
+
+        checkBtn.setOnClickListener(v -> {
+            if (mainActivity != null) {
+                try {
+                    String password = getPassword.getText().toString();
+                    if (password.isEmpty()) {
+                        Toast.makeText(getActivity(), "입력 없음", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(getActivity(), password + " 입력 확인!", Toast.LENGTH_SHORT).show();
+
+                        handler.post(() -> {
+                            loadingOverlay.setVisibility(View.VISIBLE);
+                            lottieView.setVisibility(View.VISIBLE);
+                            lottieView.playAnimation();
+                        });
+                        executorService.execute(() -> {
+                            // 백그라운드 작업 처리
+                            mainActivity.changeAuth(password);
+                            try {
+                                Thread.sleep(1000);
+                            } catch (InterruptedException e) {
+                                handler.post(() -> Toast.makeText(getActivity(), "데이터 로드중 에러 발생", Toast.LENGTH_SHORT).show());
+                            }
+
+                            handler.post(() -> {
+                                loadingOverlay.setVisibility(View.GONE);
+                                lottieView.cancelAnimation();
+                                lottieView.setVisibility(View.GONE);
+                            });
+                        });
                     }
                 } catch (NullPointerException e) {
                     Toast.makeText(getActivity(), e + "에러가 발생했습니다.", Toast.LENGTH_SHORT).show();
@@ -250,16 +342,18 @@ public class HomeFragment extends Fragment {
     }
 
     // 인증 상태를 확인하는 메서드
-    private void checkAuth() {
+    private boolean checkAuth() {
         if (mainActivity != null) {
-            mainActivity.checkAuth();
+            return mainActivity.checkAuth();
+        } else {
+            return false;
         }
     }
 
     public void onResume() {
         super.onResume();
 
-        checkAuth();
+        isAuth = checkAuth();
 
         if (mBluetoothAdapter == null) {        // 블루투스를 지원하지 않는 경우
             homeViewModel.setBluetoothStatus(-1);
