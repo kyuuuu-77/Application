@@ -27,7 +27,6 @@ import com.arduino.Application.databinding.FragmentBagdropBinding;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class BagDropFragment extends Fragment {
 
