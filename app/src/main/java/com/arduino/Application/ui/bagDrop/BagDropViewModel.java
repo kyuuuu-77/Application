@@ -13,7 +13,7 @@ public class BagDropViewModel extends ViewModel {
     private final MutableLiveData<Integer> timeLiveData = new MutableLiveData<>();
     private final MutableLiveData<Boolean> bagDropBtnLiveData = new MutableLiveData<>();
 
-    // 남은 시간 텍스트
+    // 남은 시간
     public LiveData<Integer> getRemainTimeLiveData() {
         return remainTimeLiveData;
     }
@@ -21,7 +21,7 @@ public class BagDropViewModel extends ViewModel {
         remainTimeLiveData.setValue(time);
     }
 
-    // 백드랍 모드 활성화 여부 텍스트
+    // 백드랍 모드 활성화 여부
     public LiveData<Boolean> getBagDropStatusLiveData() {
         return bagDropStatusLiveData;
     }
@@ -29,7 +29,7 @@ public class BagDropViewModel extends ViewModel {
         bagDropStatusLiveData.setValue(bagDrop);
     }
 
-    // 캐리어 연결 여부 텍스트
+    // 캐리어 연결 여부
     public LiveData<Boolean> getConnectStatusLiveData() {
         return connectStatusLiveData;
     }
@@ -37,7 +37,7 @@ public class BagDropViewModel extends ViewModel {
         connectStatusLiveData.setValue(connect);
     }
 
-    // 무게 측정 여부 텍스트
+    // 무게 측정 여부
     public LiveData<Double> getWeightLiveData() {
         return weightLiveData;
     }
@@ -45,7 +45,7 @@ public class BagDropViewModel extends ViewModel {
         weightLiveData.setValue(weight);
     }
 
-    // 도착 예정시각 텍스트
+    // 도착 예정시각
     public LiveData<Integer> getTimeLiveData() {
         return timeLiveData;
     }
@@ -53,7 +53,7 @@ public class BagDropViewModel extends ViewModel {
         timeLiveData.setValue(time);
     }
 
-    // 백드랍 모드 버튼 텍스트
+    // 백드랍 모드 버튼 상태
     public LiveData<Boolean> getBagDropBtnLiveData() {
         return bagDropBtnLiveData;
     }

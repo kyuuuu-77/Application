@@ -386,11 +386,11 @@ public class BagDropFragment extends Fragment {
         checkBagDrop();
         if (bagDropMode) {
             // 백드랍 모드가 켜져 있으면
-            bagDropViewModel.setBagDropBtn(false);
+            bagDropViewModel.setBagDropBtn(true);
             bagDropViewModel.setBagDropStatus(true);
         } else {
             // 백드랍 모드가 꺼져 있으면
-            bagDropViewModel.setBagDropBtn(true);
+            bagDropViewModel.setBagDropBtn(false);
             bagDropViewModel.setBagDropStatus(false);
         }
 
