@@ -25,8 +25,8 @@
 
             <ImageView
                 android:id="@+id/dialog_icon"
-                android:layout_width="40sp"
-                android:layout_height="40sp"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
                 android:importantForAccessibility="no"
                 android:src="@drawable/info_bat_very_row" />
 

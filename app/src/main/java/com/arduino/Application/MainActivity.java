@@ -600,6 +600,19 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    // 인증이 되지 않은 경우 경고를 띄우는 메서드
+    private void showAuthDialog() {
+        LayoutInflater inflater = LayoutInflater.from(this);
+        View dialogView = inflater.inflate(R.layout.custom_dialog_auth, null);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setView(dialogView);
+
+        AlertDialog dialog = builder.create();
+        dialog.setCancelable(true);
+        dialog.show();
+    }
+
     // 스마트 캐리어를 자동으로 발견했을때 연결 시도 다이얼로그를 띄우는 메서드
     private void showConnectionDialog(final BluetoothDevice device) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -715,6 +728,11 @@ public class MainActivity extends AppCompatActivity {
             bagDropViewModel.setConnectText("연결됨");
             infoViewModel.setBleStatus(9);
             Toast.makeText(getApplicationContext(), "스마트 캐리어에 연결됨", Toast.LENGTH_SHORT).show();
+
+            if (!isAuth && getPassword == null) {
+                Toast.makeText(this, "캐리어와 인증을 진행하세요!", Toast.LENGTH_SHORT).show();
+                showAuthDialog();
+            }
         });
     }
 
