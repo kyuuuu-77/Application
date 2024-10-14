@@ -366,12 +366,15 @@ public class MainActivity extends AppCompatActivity {
         isAutoSearch = false;
         BLE_status = 0;
         deviceName = null;
+        isAuth = false;
+        getPassword = null;
 
         runOnUiThread(() -> {
             homeViewModel.setBluetoothStatus(0);
             homeViewModel.setHomeText("캐리어에 연결되지 않았습니다");
             homeViewModel.setBtBtn(0);
             homeViewModel.setConnectBtn(-1);
+            homeViewModel.setAuthenticate(false);
             infoViewModel.setdeviceName("X");
             infoViewModel.setAutoSearch(true);
             infoViewModel.setBleStatus(0);
@@ -600,6 +603,19 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    // 인증이 되지 않은 경우 경고를 띄우는 메서드
+    private void showAuthDialog() {
+        LayoutInflater inflater = LayoutInflater.from(this);
+        View dialogView = inflater.inflate(R.layout.custom_dialog_auth, null);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setView(dialogView);
+
+        AlertDialog dialog = builder.create();
+        dialog.setCancelable(true);
+        dialog.show();
+    }
+
     // 스마트 캐리어를 자동으로 발견했을때 연결 시도 다이얼로그를 띄우는 메서드
     private void showConnectionDialog(final BluetoothDevice device) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -635,9 +651,9 @@ public class MainActivity extends AppCompatActivity {
                     runOnUiThread(() -> {
                         isBackDropMode = false;
                         homeViewModel.setHomeText("스마트 캐리어에 연결되었습니다");
-                        bagDropViewModel.setBagDropText("백드랍 비활성화");
-                        bagDropViewModel.setBagDropBtnText("백드랍 모드 시작");
-                        bagDropViewModel.setRemainTimeText("null");
+                        bagDropViewModel.setBagDropStatus(false);
+                        bagDropViewModel.setBagDropBtn(false);
+                        bagDropViewModel.setRemainTime(-1);
                         createNotif("bagdrop", "백드랍 모드 종료", "스마트 캐리어와 연결되었습니다!\n이제 백드랍 모드를 종료합니다.");
                         Toast.makeText(MainActivity.this, "캐리어와 다시 연결되었으므로 백드랍 모드를 종료합니다.", Toast.LENGTH_SHORT).show();
                     });
@@ -712,9 +728,14 @@ public class MainActivity extends AppCompatActivity {
 
             homeViewModel.setHomeText("스마트 캐리어에 연결되었습니다");
             homeViewModel.setConnectBtn(1);
-            bagDropViewModel.setConnectText("연결됨");
+            bagDropViewModel.setConnectStatus(true);
             infoViewModel.setBleStatus(9);
             Toast.makeText(getApplicationContext(), "스마트 캐리어에 연결됨", Toast.LENGTH_SHORT).show();
+
+            if (!isAuth && getPassword == null) {
+                Toast.makeText(this, "캐리어와 인증을 진행하세요!", Toast.LENGTH_SHORT).show();
+                showAuthDialog();
+            }
         });
     }
 
@@ -738,7 +759,7 @@ public class MainActivity extends AppCompatActivity {
             findViewModel.setAlertBtn(-1);
             findViewModel.setDistance(-1);
             weightViewModel.setWeightBtn(0);
-            bagDropViewModel.setConnectText("연결되지 않음");
+            bagDropViewModel.setConnectStatus(false);
             infoViewModel.setdeviceName("X");
             infoViewModel.setRssi(999);
             infoViewModel.setSecurity(false);
@@ -1197,14 +1218,35 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // 인증 상태를 확인하는 메서드
-    public void checkAuth() {
+    public boolean checkAuth() {
         homeViewModel.setAuthenticate(isAuth);
+        return isAuth;
     }
 
     // 인증 동작을 수행하는 메서드
     public void getAuth(String password) {
         getPassword = password;
         bleAuthHandler.postDelayed(bleAuthRunnable, 1000);
+    }
+
+    public void changeAuth(String password) {
+        data = null;
+
+        sendData("change_" + password);
+        checkData();
+
+        runOnUiThread(() -> {
+            if (data == null) {         // 데이터를 못 받은 경우
+                Toast.makeText(getApplicationContext(), "인증번호 변경 실패\n잠시후 다시 시도하세요!", Toast.LENGTH_SHORT).show();
+            } else {
+                if (data.trim().equals("change_suc")) {
+                    getPassword = password;
+                    Toast.makeText(getApplicationContext(), "인증번호 변경 성공!", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getApplicationContext(), "잘못된 데이터를 받았습니다!", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
 
     // RSSI 신호 세기 정도를 전달하는 메서드
@@ -1302,14 +1344,16 @@ public class MainActivity extends AppCompatActivity {
     private final Runnable bleAuthRunnable = new Runnable() {
         @Override
         public void run() {
-            // 인증받지 않았고, 송수신이 가능하고, 입력된 패스워드가 null이 아니면
-            if (!isAuth && writeCharacteristic != null && getPassword != null) {
+            // 인증받지 않았고, 송수신이 가능하고, 입력된 패스워드가 null이 아니고, 블루투스가 켜져 있으면
+            if (!isAuth && writeCharacteristic != null && getPassword != null && mBluetoothAdapter.isEnabled()) {
                 ExecutorService executorService = Executors.newSingleThreadExecutor();
                 Handler handler = new Handler(Looper.getMainLooper());
 
                 executorService.execute(() -> {
                     // 백그라운드 작업 처리
                     try {
+                        data = null;
+
                         sendData("auth_" + getPassword);
                         checkData();
 
@@ -1372,17 +1416,12 @@ public class MainActivity extends AppCompatActivity {
             int remain;
 
             if (currentTime > setTime) {        // 혹시나 도착이 다음날이면 -> 도착 0:05 , 현재 17:50
-                remain = setTime + 1440 - currentTime;
+                remain = setTime + (60 * 24) - currentTime;
             } else {
                 remain = setTime - currentTime;
             }
 
-            if (remain / 60 > 0) {      // 1시간 이상 남으면
-                bagDropViewModel.setRemainTimeText(remain / 60 + "시간 " + remain % 60 + "분");
-
-            } else {        // 1시간 이하인 경우
-                bagDropViewModel.setRemainTimeText(remain % 60 + "분");
-            }
+            bagDropViewModel.setRemainTime(remain);
 
             if (remain <= 10) {     // 10분 전 부터 캐리어 찾기를 시도
                 if (bluetoothGatt != null) {

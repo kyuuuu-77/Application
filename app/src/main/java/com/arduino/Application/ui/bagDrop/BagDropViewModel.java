@@ -6,59 +6,59 @@ import androidx.lifecycle.ViewModel;
 
 public class BagDropViewModel extends ViewModel {
 
-    private final MutableLiveData<String> remainTimeTextLiveData = new MutableLiveData<>();
-    private final MutableLiveData<String> bagDropTextLiveData = new MutableLiveData<>();
-    private final MutableLiveData<String> connectTextLiveData = new MutableLiveData<>();
-    private final MutableLiveData<String> weightTextLiveData = new MutableLiveData<>();
-    private final MutableLiveData<String> timeTextLiveData = new MutableLiveData<>();
-    private final MutableLiveData<String> bagDropBtnTextLiveData = new MutableLiveData<>();
+    private final MutableLiveData<Integer> remainTimeLiveData = new MutableLiveData<>();
+    private final MutableLiveData<Boolean> bagDropStatusLiveData = new MutableLiveData<>();
+    private final MutableLiveData<Boolean> connectStatusLiveData = new MutableLiveData<>();
+    private final MutableLiveData<Double> weightLiveData = new MutableLiveData<>();
+    private final MutableLiveData<Integer> timeLiveData = new MutableLiveData<>();
+    private final MutableLiveData<Boolean> bagDropBtnLiveData = new MutableLiveData<>();
 
-    // 남은 시간 텍스트
-    public LiveData<String> getRemainTimeTextLiveData() {
-        return remainTimeTextLiveData;
+    // 남은 시간
+    public LiveData<Integer> getRemainTimeLiveData() {
+        return remainTimeLiveData;
     }
-    public void setRemainTimeText(String time) {
-        remainTimeTextLiveData.setValue(time);
-    }
-
-    // 백드랍 모드 활성화 여부 텍스트
-    public LiveData<String> getBagDropTextLiveData() {
-        return bagDropTextLiveData;
-    }
-    public void setBagDropText(String text) {
-        bagDropTextLiveData.setValue(text);
+    public void setRemainTime(Integer time) {
+        remainTimeLiveData.setValue(time);
     }
 
-    // 캐리어 연결 여부 텍스트
-    public LiveData<String> getConnectTextLiveData() {
-        return connectTextLiveData;
+    // 백드랍 모드 활성화 여부
+    public LiveData<Boolean> getBagDropStatusLiveData() {
+        return bagDropStatusLiveData;
     }
-    public void setConnectText(String connect) {
-        connectTextLiveData.setValue(connect);
-    }
-
-    // 무게 측정 여부 텍스트
-    public LiveData<String> getWeightTextLiveData() {
-        return weightTextLiveData;
-    }
-    public void setWeightText(String weight) {
-        weightTextLiveData.setValue(weight);
+    public void setBagDropStatus(Boolean bagDrop) {
+        bagDropStatusLiveData.setValue(bagDrop);
     }
 
-    // 도착 예정시각 텍스트
-    public LiveData<String> getTimeTextLiveData() {
-        return timeTextLiveData;
+    // 캐리어 연결 여부
+    public LiveData<Boolean> getConnectStatusLiveData() {
+        return connectStatusLiveData;
     }
-    public void setTimeText(String time) {
-        timeTextLiveData.setValue(time);
+    public void setConnectStatus(Boolean connect) {
+        connectStatusLiveData.setValue(connect);
     }
 
-    // 백드랍 모드 버튼 텍스트
-    public LiveData<String> getBagDropBtnTextLiveData() {
-        return bagDropBtnTextLiveData;
+    // 무게 측정 여부
+    public LiveData<Double> getWeightLiveData() {
+        return weightLiveData;
     }
-    public void setBagDropBtnText(String btnText) {
-        bagDropBtnTextLiveData.setValue(btnText);
+    public void setWeight(Double weight) {
+        weightLiveData.setValue(weight);
+    }
+
+    // 도착 예정시각
+    public LiveData<Integer> getTimeLiveData() {
+        return timeLiveData;
+    }
+    public void setTime(int time) {
+        timeLiveData.setValue(time);
+    }
+
+    // 백드랍 모드 버튼 상태
+    public LiveData<Boolean> getBagDropBtnLiveData() {
+        return bagDropBtnLiveData;
+    }
+    public void setBagDropBtn(Boolean status) {
+        bagDropBtnLiveData.setValue(status);
     }
 
 }
