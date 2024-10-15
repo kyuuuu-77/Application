@@ -53,6 +53,11 @@ public class BagDropFragment extends Fragment {
     private BagDropViewModel bagDropViewModel;
     MainActivity mainActivity;
 
+    // 선택 된 시간과 분을 저장
+    private int selectedHour;
+    private int selectedMin;
+
+    // 백드랍 Fragment 전역 변수
     private int arriveTime = -1;
     private boolean bagDropMode = false;
 
@@ -105,7 +110,7 @@ public class BagDropFragment extends Fragment {
                 }
             }
         });
-        
+
         // 백드랍 모드 동작 여부 (Boolean)
         bagDropViewModel.getBagDropStatusLiveData().observe(getViewLifecycleOwner(), bagDrop -> {
             if (bagDrop) {
@@ -116,7 +121,7 @@ public class BagDropFragment extends Fragment {
                 Text_bagDrop.setTextColor(ContextCompat.getColor(requireActivity(), R.color.orange_500));
             }
         });
-        
+
         // 스마트 캐리어 연결 여부 (Boolean)
         bagDropViewModel.getConnectStatusLiveData().observe(getViewLifecycleOwner(), connect -> {
             if (connect) {
@@ -129,7 +134,7 @@ public class BagDropFragment extends Fragment {
                 Icon_connect.setImageResource(R.drawable.bagdrop_not_checked);
             }
         });
-        
+
         // 무게 측정 여부 (Double)
         bagDropViewModel.getWeightLiveData().observe(getViewLifecycleOwner(), weight -> {
             if (weight == -1) {     // 무게가 측정되지 않은 경우
@@ -196,9 +201,6 @@ public class BagDropFragment extends Fragment {
         }
         return root;
     }
-
-    private int selectedHour;
-    private int selectedMin;
 
     // 커스텀 다이얼로그를 표시하는 메서드
     @SuppressLint({"DefaultLocale", "SetTextI18n"})
