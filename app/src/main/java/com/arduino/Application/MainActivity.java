@@ -44,8 +44,8 @@ import com.arduino.Application.ui.bagDrop.BagDropViewModel;
 import com.arduino.Application.ui.find.FindViewModel;
 import com.arduino.Application.ui.home.HomeViewModel;
 import com.arduino.Application.ui.info.InfoViewModel;
-import com.arduino.Application.ui.weight.WeightViewModel;
 import com.arduino.Application.ui.lock.LockViewModel;
+import com.arduino.Application.ui.weight.WeightViewModel;
 import com.google.android.material.navigation.NavigationView;
 
 import androidx.annotation.RequiresApi;
@@ -107,6 +107,7 @@ public class MainActivity extends AppCompatActivity {
     // viewModel 선언 및 초기화
     private HomeViewModel homeViewModel;
     private FindViewModel findViewModel;
+    private LockViewModel lockViewModel;
     private WeightViewModel weightViewModel;
     private BagDropViewModel bagDropViewModel;
     private InfoViewModel infoViewModel;
@@ -126,6 +127,7 @@ public class MainActivity extends AppCompatActivity {
     private boolean isAuth = false;
     private boolean isOverlayShowing = false;
     private final double[] weight = {0.0, 0.0};   // 무게 값, 무게 타겟 값
+    private boolean isLock = false;
     private String data;
     private String deviceName = null;   // ble 디바이스 이름
     private String getPassword;
@@ -191,6 +193,7 @@ public class MainActivity extends AppCompatActivity {
         // 각 Fragment의 viewModel 정의
         homeViewModel = new ViewModelProvider(this).get(HomeViewModel.class);
         weightViewModel = new ViewModelProvider(this).get(WeightViewModel.class);
+        lockViewModel = new ViewModelProvider(this).get(LockViewModel.class);
         findViewModel = new ViewModelProvider(this).get(FindViewModel.class);
         bagDropViewModel = new ViewModelProvider(this).get(BagDropViewModel.class);
         infoViewModel = new ViewModelProvider(this).get(InfoViewModel.class);
@@ -1300,6 +1303,24 @@ public class MainActivity extends AppCompatActivity {
     // 시간 설정을 체크하는 메서드
     public int checkTime() {
         return setHourMin;
+    }
+
+    // 캐리어 잠금 여부를 확인하는 메서드
+    public boolean checkLock() {
+        lockViewModel.setLockStatus(isLock);
+        return isLock;
+    }
+
+    // 캐리어를 잠그는 메서드
+    public void setLock() {
+        isLock = true;
+        lockViewModel.setLockStatus(true);
+    }
+
+    // 캐리어 잠금을 해제하는 메서드
+    public void setUnlock() {
+        isLock = false;
+        lockViewModel.setLockStatus(false);
     }
 
     // 백드랍 모드를 체크하는 메서드
