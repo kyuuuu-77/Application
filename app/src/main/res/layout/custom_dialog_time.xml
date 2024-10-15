@@ -14,7 +14,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="20dp">
+        android:padding="30dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -26,8 +26,8 @@
 
             <ImageView
                 android:id="@+id/dialog_icon"
-                android:layout_width="32sp"
-                android:layout_height="32sp"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
                 android:importantForAccessibility="no"
                 android:src="@drawable/bagdrop_time" />
 
@@ -36,70 +36,28 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
-                android:textSize="23sp"
-                android:textColor="@android:color/black"
+                android:textStyle="bold"
+                android:textSize="25sp"
+                android:textColor="@color/black"
                 android:text="@string/dialogTime_main" />
         </LinearLayout>
 
-        <LinearLayout
+        <TimePicker
+            android:id="@+id/time_picker"
             android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:gravity="center"
-            android:background="@drawable/background_indigo"
-            android:layout_marginBottom="20dp">
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="20dp">
-
-                <Spinner
-                    android:id="@+id/hour_spinner"
-                    android:layout_width="50dp"
-                    android:layout_height="30dp"
-                    android:background="@drawable/background_spinner"
-                    tools:ignore="TouchTargetSizeCheck,TextSizeCheck" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/dialogTime_hour"
-                    android:textStyle="bold"
-                    android:textSize="20sp"
-                    android:textColor="@color/white"
-                    android:layout_marginStart="7dp"/>
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
-
-                <Spinner
-                    android:id="@+id/minute_spinner"
-                    android:layout_width="50dp"
-                    android:layout_height="30dp"
-                    android:background="@drawable/background_spinner"
-                    tools:ignore="TouchTargetSizeCheck,TextSizeCheck" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/dialogTime_min"
-                    android:textStyle="bold"
-                    android:textSize="20sp"
-                    android:textColor="@color/white"
-                    android:layout_marginStart="7dp"/>
-            </LinearLayout>
-
-        </LinearLayout>
+            android:layout_height="wrap_content"
+            android:timePickerMode="clock"
+            android:headerBackground="@color/indigo_500"
+            android:numbersSelectorColor="@color/indigo_500">
+        </TimePicker>
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="80dp"
+            android:layout_height="70dp"
             android:gravity="center"
             android:layout_marginBottom="20dp"
-            android:background="@drawable/background_indigo"
-            android:elevation="5dp">
+            android:layout_marginTop="20dp"
+            android:background="@drawable/background_indigo">
 
             <TextView
                 android:layout_width="wrap_content"
