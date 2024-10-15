@@ -45,6 +45,7 @@ import com.arduino.Application.ui.find.FindViewModel;
 import com.arduino.Application.ui.home.HomeViewModel;
 import com.arduino.Application.ui.info.InfoViewModel;
 import com.arduino.Application.ui.weight.WeightViewModel;
+import com.arduino.Application.ui.lock.LockViewModel;
 import com.google.android.material.navigation.NavigationView;
 
 import androidx.annotation.RequiresApi;
@@ -164,7 +165,7 @@ public class MainActivity extends AppCompatActivity {
 
         // 앱서랍 설정
         mAppBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.nav_home, R.id.nav_find, R.id.nav_weight, R.id.nav_bagdrop, R.id.nav_info)
+                R.id.nav_home, R.id.nav_find, R.id.nav_lock, R.id.nav_weight, R.id.nav_bagdrop, R.id.nav_info)
                 .setOpenableLayout(drawer)
                 .build();
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
