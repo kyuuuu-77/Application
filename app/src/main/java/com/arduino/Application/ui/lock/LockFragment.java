@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
@@ -35,7 +36,7 @@ public class LockFragment extends Fragment {
     Drawable Btn_red;
 
     private FragmentLockBinding binding;
-    private LockViewModel lockViewModel;
+    View root;
     MainActivity mainActivity;
     
     private boolean lockStatus = false;
@@ -43,10 +44,10 @@ public class LockFragment extends Fragment {
     @SuppressLint("SetTextI18n")
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        lockViewModel = new ViewModelProvider(requireActivity()).get(LockViewModel.class);
+        LockViewModel lockViewModel = new ViewModelProvider(requireActivity()).get(LockViewModel.class);
 
         binding = FragmentLockBinding.inflate(inflater, container, false);
-        View root = binding.getRoot();
+        root = binding.getRoot();
 
         mainActivity = (MainActivity) getActivity();
 
@@ -59,10 +60,6 @@ public class LockFragment extends Fragment {
 
         // 로디 애니메이션 설정
         LottieAnimationView lottieLock = root.findViewById(R.id.lock_lottie);
-
-        // 비동기 설정
-        ExecutorService executorService = Executors.newSingleThreadExecutor();
-        Handler handler = new Handler(Looper.getMainLooper());
 
         // ViewModel 선언
         lockViewModel.getLockStatusLiveData().observe(getViewLifecycleOwner(), status -> {
@@ -89,11 +86,9 @@ public class LockFragment extends Fragment {
 
         // 버튼 이벤트 리스너
         Btn_lock.setOnClickListener(view -> {
-            if (lockStatus) {       // 잠긴 상태일 경우에 잠금해제
-                lockControl(false);
-            } else {        // 잠기지 않은 상태일 경우에 잠금
-                lockControl(true);
-            }
+            // 잠긴 상태일 경우에 잠금해제
+            // 잠기지 않은 상태일 경우에 잠금
+            lockControl(!lockStatus);
         });
 
         return root;
@@ -105,15 +100,42 @@ public class LockFragment extends Fragment {
             lockStatus = mainActivity.checkLock();
         }
     }
-    
+
+    // 캐리어를 잠그거나 잠금 해제하는 메서드
     private void lockControl(Boolean onOff) {
-        if (mainActivity != null) {
-            if (onOff) {        // 잠그는 메서드
-                mainActivity.setLock();
-            } else {            // 잠금 해제 메서드
-                mainActivity.setUnlock();
+        LottieAnimationView lottieView = root.findViewById(R.id.lottieView);
+        View loadingOverlay = root.findViewById(R.id.loading_overlay);
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+        Handler handler = new Handler(Looper.getMainLooper());
+
+        handler.post(() -> {
+            loadingOverlay.setVisibility(View.VISIBLE);
+            lottieView.setVisibility(View.VISIBLE);
+            lottieView.playAnimation();
+            Btn_lock.setEnabled(false);
+        });
+        executorService.execute(() -> {
+            // 백그라운드 작업 처리
+            if (mainActivity != null) {
+                if (onOff) {        // 잠그는 메서드
+                    mainActivity.setLock();
+                } else {            // 잠금 해제 메서드
+                    mainActivity.setUnlock();
+                }
             }
-        }
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                handler.post(() -> Toast.makeText(getActivity(), "데이터 로드중 에러 발생", Toast.LENGTH_SHORT).show());
+            }
+
+            handler.post(() -> {
+                loadingOverlay.setVisibility(View.GONE);
+                lottieView.cancelAnimation();
+                lottieView.setVisibility(View.GONE);
+                Btn_lock.setEnabled(true);
+            });
+        });
     }
 
     @SuppressLint("ResourceAsColor")
