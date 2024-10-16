@@ -44,11 +44,11 @@ esp32기반
 ###### *Android 9.0 Pie (API 28) ~ Android 14 (API 34)* 
 
 - `Development version`
-2024.10.01 15:00 (KST) 1.01 (Master branch 기준)
+2024.10.16 13:53 (KST) 1.2 (Master branch 기준)
 
 
 
 
 
-📌 *updated 2024.10.05*
+📌 *updated 2024.10.16*
 
