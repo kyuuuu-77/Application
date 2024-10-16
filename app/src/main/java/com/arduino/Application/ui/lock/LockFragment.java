@@ -86,9 +86,7 @@ public class LockFragment extends Fragment {
         });
 
         // 버튼 이벤트 리스너
-        Btn_lock.setOnClickListener(view -> {
-            lockControl(!lockStatus);
-        });
+        Btn_lock.setOnClickListener(view -> lockControl(!lockStatus));
 
         return root;
     }
