@@ -80,14 +80,13 @@ public class LockFragment extends Fragment {
                 Btn_lock.setBackground(Btn_blue);
 
                 lottieLock.setAnimation(R.raw.lock_off);
-                lottieLock.cancelAnimation();
+                lottieLock.playAnimation();
+                lottieLock.setRepeatCount(1);
             }
         });
 
         // 버튼 이벤트 리스너
         Btn_lock.setOnClickListener(view -> {
-            // 잠긴 상태일 경우에 잠금해제
-            // 잠기지 않은 상태일 경우에 잠금
             lockControl(!lockStatus);
         });
 
@@ -96,9 +95,35 @@ public class LockFragment extends Fragment {
 
     // 캐리어 잠금 여부를 확인하는 메서드
     private void checkLock() {
-        if (mainActivity != null) {
-            lockStatus = mainActivity.checkLock();
-        }
+        LottieAnimationView lottieView = root.findViewById(R.id.lottieView);
+        View loadingOverlay = root.findViewById(R.id.loading_overlay);
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+        Handler handler = new Handler(Looper.getMainLooper());
+
+        handler.post(() -> {
+            loadingOverlay.setVisibility(View.VISIBLE);
+            lottieView.setVisibility(View.VISIBLE);
+            lottieView.playAnimation();
+            Btn_lock.setEnabled(false);
+        });
+        executorService.execute(() -> {
+            // 백그라운드 작업 처리
+            if (mainActivity != null) {
+                lockStatus = mainActivity.checkLock();
+            }
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                handler.post(() -> Toast.makeText(getActivity(), "데이터 로드중 에러 발생", Toast.LENGTH_SHORT).show());
+            }
+
+            handler.post(() -> {
+                loadingOverlay.setVisibility(View.GONE);
+                lottieView.cancelAnimation();
+                lottieView.setVisibility(View.GONE);
+                Btn_lock.setEnabled(true);
+            });
+        });
     }
 
     // 캐리어를 잠그거나 잠금 해제하는 메서드

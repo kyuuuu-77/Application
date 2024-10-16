@@ -1307,7 +1307,24 @@ public class MainActivity extends AppCompatActivity {
 
     // 캐리어 잠금 여부를 확인하는 메서드
     public boolean checkLock() {
-        lockViewModel.setLockStatus(isLock);
+        if (writeCharacteristic != null) {
+            data = null;
+            sendData("check_lock");
+
+            checkData();
+
+            if (data == null) {     // 통신이 제대로 되지 않은 경우
+                runOnUiThread(() -> Toast.makeText(this, "통신에 문제가 있어서 동작을 수행할 수 없습니다.", Toast.LENGTH_SHORT).show());
+            } else if (data.trim().equals("lock_on")) {
+                isLock = true;
+            } else if (data.trim().equals("lock_off")){
+                isLock = false;
+            }
+        } else {
+            runOnUiThread(() -> Toast.makeText(this, "캐리어와 연결을 확인하세요.", Toast.LENGTH_SHORT).show());
+        }
+
+        runOnUiThread(() -> lockViewModel.setLockStatus(isLock));
         return isLock;
     }
 
@@ -1324,7 +1341,7 @@ public class MainActivity extends AppCompatActivity {
             } else if (data.trim().equals("lock_suc")) {
                 runOnUiThread(() -> Toast.makeText(this, "성공적으로 잠궜습니다!", Toast.LENGTH_SHORT).show());
                 isLock = true;
-                lockViewModel.setLockStatus(true);
+                runOnUiThread(() -> lockViewModel.setLockStatus(true));
             } else {
                 runOnUiThread(() -> Toast.makeText(this, "잘못된 인자 값을 받았습니다.", Toast.LENGTH_SHORT).show());
             }
@@ -1346,7 +1363,7 @@ public class MainActivity extends AppCompatActivity {
             } else if (data.trim().equals("unlock_suc")) {
                 runOnUiThread(() -> Toast.makeText(this, "성공적으로 잠금 해제가 되었습니다!", Toast.LENGTH_SHORT).show());
                 isLock = false;
-                lockViewModel.setLockStatus(false);
+                runOnUiThread(() ->lockViewModel.setLockStatus(false));
             } else {
                 runOnUiThread(() -> Toast.makeText(this, "잘못된 인자 값을 받았습니다.", Toast.LENGTH_SHORT).show());
             }
