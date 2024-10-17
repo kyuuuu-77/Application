@@ -368,6 +368,7 @@ public class MainActivity extends AppCompatActivity {
     // 블루투스가 꺼졌을 때 동작
     private void whenBTOff() {
         isAutoSearch = false;
+        security = false;
         BLE_status = 0;
         deviceName = null;
         isAuth = false;
@@ -382,6 +383,7 @@ public class MainActivity extends AppCompatActivity {
             infoViewModel.setdeviceName("X");
             infoViewModel.setAutoSearch(true);
             infoViewModel.setBleStatus(0);
+            infoViewModel.setSecurity(false);
             Toast.makeText(getApplicationContext(), "블루투스 비활성화", Toast.LENGTH_SHORT).show();
         });
     }
@@ -772,6 +774,44 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    // 캐리어 기능 메뉴를 활성화 시키는 메서드
+    private void activeMenu(boolean isBackDrop) {
+        runOnUiThread(() -> {
+            appMenu.findItem(R.id.nav_find).setEnabled(true);
+            appMenu.findItem(R.id.nav_find).setVisible(true);
+            appMenu.findItem(R.id.nav_lock).setEnabled(true);
+            appMenu.findItem(R.id.nav_lock).setVisible(true);
+            appMenu.findItem(R.id.nav_weight).setEnabled(true);
+            appMenu.findItem(R.id.nav_weight).setVisible(true);
+            if (isBackDrop) {
+                appMenu.findItem(R.id.nav_info).setEnabled(true);
+                appMenu.findItem(R.id.nav_info).setVisible(true);
+            } else {
+                appMenu.findItem(R.id.nav_bagdrop).setEnabled(true);
+                appMenu.findItem(R.id.nav_bagdrop).setVisible(true);
+            }
+        });
+    }
+
+    // 캐리어 기능 메뉴를 활성화 시키는 메서드
+    private void inactiveMenu(boolean isBackDrop) {
+        runOnUiThread(() -> {
+            appMenu.findItem(R.id.nav_find).setEnabled(false);
+            appMenu.findItem(R.id.nav_find).setVisible(false);
+            appMenu.findItem(R.id.nav_lock).setEnabled(false);
+            appMenu.findItem(R.id.nav_lock).setVisible(false);
+            appMenu.findItem(R.id.nav_weight).setEnabled(false);
+            appMenu.findItem(R.id.nav_weight).setVisible(false);
+            if (isBackDrop) {
+                appMenu.findItem(R.id.nav_info).setEnabled(false);
+                appMenu.findItem(R.id.nav_info).setVisible(false);
+            } else {
+                appMenu.findItem(R.id.nav_bagdrop).setEnabled(false);
+                appMenu.findItem(R.id.nav_bagdrop).setVisible(false);
+            }
+        });
+    }
+
     // BLE 통신을 위한 BluetoothGatt 객체 생성
     private final BluetoothGattCallback bluetoothGattCallback = new BluetoothGattCallback() {
         @Override
@@ -785,15 +825,8 @@ public class MainActivity extends AppCompatActivity {
                     bagDropHandler.removeCallbacks(bagDropRunnable);
 
                     isBLEChecked = false;
-                    runOnUiThread(() -> {
-                        appMenu.findItem(R.id.nav_find).setEnabled(true);
-                        appMenu.findItem(R.id.nav_find).setVisible(true);
-                        appMenu.findItem(R.id.nav_weight).setEnabled(true);
-                        appMenu.findItem(R.id.nav_weight).setVisible(true);
-                        appMenu.findItem(R.id.nav_info).setEnabled(true);
-                        appMenu.findItem(R.id.nav_info).setVisible(true);
-                        showBagDropDialog();
-                    });
+                    activeMenu(true);
+                    runOnUiThread(() -> showBagDropDialog());
                 } else if (isSuitcase) {        // 스마트 캐리어일 때
                     reconnectHandler.removeCallbacks(reconnectRunnable);
 
@@ -1386,27 +1419,13 @@ public class MainActivity extends AppCompatActivity {
                 checkPermission();
             }
             bluetoothGatt.disconnect();     // 블루투스 연결을 끊고
-            bagDropHandler.postDelayed(bagDropRunnable, 10000);     // 핸들러로 동작
+            bagDropHandler.postDelayed(bagDropRunnable, 10000);     // 핸들러 동작
 
-            runOnUiThread(() -> {
-                appMenu.findItem(R.id.nav_find).setEnabled(false);
-                appMenu.findItem(R.id.nav_find).setVisible(false);
-                appMenu.findItem(R.id.nav_weight).setEnabled(false);
-                appMenu.findItem(R.id.nav_weight).setVisible(false);
-                appMenu.findItem(R.id.nav_info).setEnabled(false);
-                appMenu.findItem(R.id.nav_info).setVisible(false);
-            });
+            inactiveMenu(true);
         } else {
             bluetoothGatt.connect();
             bagDropHandler.removeCallbacks(bagDropRunnable);
-            runOnUiThread(() -> {
-                appMenu.findItem(R.id.nav_find).setEnabled(true);
-                appMenu.findItem(R.id.nav_find).setVisible(true);
-                appMenu.findItem(R.id.nav_weight).setEnabled(true);
-                appMenu.findItem(R.id.nav_weight).setVisible(true);
-                appMenu.findItem(R.id.nav_info).setEnabled(true);
-                appMenu.findItem(R.id.nav_info).setVisible(true);
-            });
+            activeMenu(true);
         }
     }
 
@@ -1439,14 +1458,7 @@ public class MainActivity extends AppCompatActivity {
                                     checkAuth();
                                 });
 
-                                runOnUiThread(() -> {
-                                    appMenu.findItem(R.id.nav_find).setEnabled(true);
-                                    appMenu.findItem(R.id.nav_find).setVisible(true);
-                                    appMenu.findItem(R.id.nav_weight).setEnabled(true);
-                                    appMenu.findItem(R.id.nav_weight).setVisible(true);
-                                    appMenu.findItem(R.id.nav_bagdrop).setEnabled(true);
-                                    appMenu.findItem(R.id.nav_bagdrop).setVisible(true);
-                                });
+                                activeMenu(false);
                                 bleAuthHandler.removeCallbacks(bleAuthRunnable);
                             } else if (data.trim().equals("auth_fail")) {
                                 isAuth = false;
@@ -1557,19 +1569,9 @@ public class MainActivity extends AppCompatActivity {
         startLeScan();
 
         if (!isAuth) {
-            appMenu.findItem(R.id.nav_find).setEnabled(false);
-            appMenu.findItem(R.id.nav_find).setVisible(false);
-            appMenu.findItem(R.id.nav_weight).setEnabled(false);
-            appMenu.findItem(R.id.nav_weight).setVisible(false);
-            appMenu.findItem(R.id.nav_bagdrop).setEnabled(false);
-            appMenu.findItem(R.id.nav_bagdrop).setVisible(false);
+            inactiveMenu(false);
         } else {
-            appMenu.findItem(R.id.nav_find).setEnabled(true);
-            appMenu.findItem(R.id.nav_find).setVisible(true);
-            appMenu.findItem(R.id.nav_weight).setEnabled(true);
-            appMenu.findItem(R.id.nav_weight).setVisible(true);
-            appMenu.findItem(R.id.nav_bagdrop).setEnabled(true);
-            appMenu.findItem(R.id.nav_bagdrop).setVisible(true);
+            activeMenu(false);
         }
     }
 
