@@ -9,9 +9,9 @@
     <string name="action_appInfo">앱 정보</string>
     <string name="splash_name">Suitcase Genie</string>
     <string name="weight_popup">Notification</string>
-    <string name="app_version">1.2</string>
-    <string name="app_date">2024.10.14/21</string>
-    <string name="app_update_log">인증 기능 개선, UI/UX 디자인 개선, 버그 수정, 최적화 등</string>
+    <string name="app_version">1.30</string>
+    <string name="app_date">2024.10.17/15</string>
+    <string name="app_update_log">캐리어를 잠그는 기능이 새로 추가되었습니다!\n알림 기능 추가, UI/UX 디자인 개선, 버그 수정, 최적화 등</string>
     <string name="loading" tools:ignore="TypographyEllipsis">로드중...</string>
 
     <!-- 네비게이션 바 -->
@@ -35,6 +35,12 @@
     <string name="main_distance">정보없음</string>
     <string name="sub_distance">연결되지 않음</string>
     <string name="alert_Btn">도난방지 켜기</string>
+
+    <!-- 캐리어 잠금 화면 -->
+    <string name="text_lock_status">잠금 해제 상태</string>
+    <string name="lock_info_title">캐리어 잠금 기능이란 ?</string>
+    <string name="lock_info_main">캐리어가 잠긴 경우 움직임이 감지될 시 캐리어에서 경고음이 울리고\n앱에서 알림으로 경고를 띄웁니다</string>
+    <string name="text_lock_btn">캐리어 잠그기</string>
 
     <!-- 캐리어 무게측정 화면 -->
     <string name="text_reset">설정 리셋</string>

@@ -44,6 +44,7 @@ import com.arduino.Application.ui.bagDrop.BagDropViewModel;
 import com.arduino.Application.ui.find.FindViewModel;
 import com.arduino.Application.ui.home.HomeViewModel;
 import com.arduino.Application.ui.info.InfoViewModel;
+import com.arduino.Application.ui.lock.LockViewModel;
 import com.arduino.Application.ui.weight.WeightViewModel;
 import com.google.android.material.navigation.NavigationView;
 
@@ -106,6 +107,7 @@ public class MainActivity extends AppCompatActivity {
     // viewModel 선언 및 초기화
     private HomeViewModel homeViewModel;
     private FindViewModel findViewModel;
+    private LockViewModel lockViewModel;
     private WeightViewModel weightViewModel;
     private BagDropViewModel bagDropViewModel;
     private InfoViewModel infoViewModel;
@@ -125,6 +127,7 @@ public class MainActivity extends AppCompatActivity {
     private boolean isAuth = false;
     private boolean isOverlayShowing = false;
     private final double[] weight = {0.0, 0.0};   // 무게 값, 무게 타겟 값
+    private boolean isLock = false;
     private String data;
     private String deviceName = null;   // ble 디바이스 이름
     private String getPassword;
@@ -164,7 +167,7 @@ public class MainActivity extends AppCompatActivity {
 
         // 앱서랍 설정
         mAppBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.nav_home, R.id.nav_find, R.id.nav_weight, R.id.nav_bagdrop, R.id.nav_info)
+                R.id.nav_home, R.id.nav_find, R.id.nav_lock, R.id.nav_weight, R.id.nav_bagdrop, R.id.nav_info)
                 .setOpenableLayout(drawer)
                 .build();
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
@@ -190,6 +193,7 @@ public class MainActivity extends AppCompatActivity {
         // 각 Fragment의 viewModel 정의
         homeViewModel = new ViewModelProvider(this).get(HomeViewModel.class);
         weightViewModel = new ViewModelProvider(this).get(WeightViewModel.class);
+        lockViewModel = new ViewModelProvider(this).get(LockViewModel.class);
         findViewModel = new ViewModelProvider(this).get(FindViewModel.class);
         bagDropViewModel = new ViewModelProvider(this).get(BagDropViewModel.class);
         infoViewModel = new ViewModelProvider(this).get(InfoViewModel.class);
@@ -364,6 +368,7 @@ public class MainActivity extends AppCompatActivity {
     // 블루투스가 꺼졌을 때 동작
     private void whenBTOff() {
         isAutoSearch = false;
+        security = false;
         BLE_status = 0;
         deviceName = null;
         isAuth = false;
@@ -378,6 +383,7 @@ public class MainActivity extends AppCompatActivity {
             infoViewModel.setdeviceName("X");
             infoViewModel.setAutoSearch(true);
             infoViewModel.setBleStatus(0);
+            infoViewModel.setSecurity(false);
             Toast.makeText(getApplicationContext(), "블루투스 비활성화", Toast.LENGTH_SHORT).show();
         });
     }
@@ -768,6 +774,44 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    // 캐리어 기능 메뉴를 활성화 시키는 메서드
+    private void activeMenu(boolean isBackDrop) {
+        runOnUiThread(() -> {
+            appMenu.findItem(R.id.nav_find).setEnabled(true);
+            appMenu.findItem(R.id.nav_find).setVisible(true);
+            appMenu.findItem(R.id.nav_lock).setEnabled(true);
+            appMenu.findItem(R.id.nav_lock).setVisible(true);
+            appMenu.findItem(R.id.nav_weight).setEnabled(true);
+            appMenu.findItem(R.id.nav_weight).setVisible(true);
+            if (isBackDrop) {
+                appMenu.findItem(R.id.nav_info).setEnabled(true);
+                appMenu.findItem(R.id.nav_info).setVisible(true);
+            } else {
+                appMenu.findItem(R.id.nav_bagdrop).setEnabled(true);
+                appMenu.findItem(R.id.nav_bagdrop).setVisible(true);
+            }
+        });
+    }
+
+    // 캐리어 기능 메뉴를 활성화 시키는 메서드
+    private void inactiveMenu(boolean isBackDrop) {
+        runOnUiThread(() -> {
+            appMenu.findItem(R.id.nav_find).setEnabled(false);
+            appMenu.findItem(R.id.nav_find).setVisible(false);
+            appMenu.findItem(R.id.nav_lock).setEnabled(false);
+            appMenu.findItem(R.id.nav_lock).setVisible(false);
+            appMenu.findItem(R.id.nav_weight).setEnabled(false);
+            appMenu.findItem(R.id.nav_weight).setVisible(false);
+            if (isBackDrop) {
+                appMenu.findItem(R.id.nav_info).setEnabled(false);
+                appMenu.findItem(R.id.nav_info).setVisible(false);
+            } else {
+                appMenu.findItem(R.id.nav_bagdrop).setEnabled(false);
+                appMenu.findItem(R.id.nav_bagdrop).setVisible(false);
+            }
+        });
+    }
+
     // BLE 통신을 위한 BluetoothGatt 객체 생성
     private final BluetoothGattCallback bluetoothGattCallback = new BluetoothGattCallback() {
         @Override
@@ -781,15 +825,8 @@ public class MainActivity extends AppCompatActivity {
                     bagDropHandler.removeCallbacks(bagDropRunnable);
 
                     isBLEChecked = false;
-                    runOnUiThread(() -> {
-                        appMenu.findItem(R.id.nav_find).setEnabled(true);
-                        appMenu.findItem(R.id.nav_find).setVisible(true);
-                        appMenu.findItem(R.id.nav_weight).setEnabled(true);
-                        appMenu.findItem(R.id.nav_weight).setVisible(true);
-                        appMenu.findItem(R.id.nav_info).setEnabled(true);
-                        appMenu.findItem(R.id.nav_info).setVisible(true);
-                        showBagDropDialog();
-                    });
+                    activeMenu(true);
+                    runOnUiThread(() -> showBagDropDialog());
                 } else if (isSuitcase) {        // 스마트 캐리어일 때
                     reconnectHandler.removeCallbacks(reconnectRunnable);
 
@@ -1301,6 +1338,73 @@ public class MainActivity extends AppCompatActivity {
         return setHourMin;
     }
 
+    // 캐리어 잠금 여부를 확인하는 메서드
+    public boolean checkLock() {
+        if (writeCharacteristic != null) {
+            data = null;
+            sendData("check_lock");
+
+            checkData();
+
+            if (data == null) {     // 통신이 제대로 되지 않은 경우
+                runOnUiThread(() -> Toast.makeText(this, "통신에 문제가 있어서 동작을 수행할 수 없습니다.", Toast.LENGTH_SHORT).show());
+            } else if (data.trim().equals("lock_on")) {
+                isLock = true;
+            } else if (data.trim().equals("lock_off")){
+                isLock = false;
+            }
+        } else {
+            runOnUiThread(() -> Toast.makeText(this, "캐리어와 연결을 확인하세요.", Toast.LENGTH_SHORT).show());
+        }
+
+        runOnUiThread(() -> lockViewModel.setLockStatus(isLock));
+        return isLock;
+    }
+
+    // 캐리어를 잠그는 메서드
+    public void setLock() {
+        if (writeCharacteristic != null) {
+            data = null;
+            sendData("lock_on");
+
+            checkData();
+
+            if (data == null) {     // 통신이 제대로 되지 않은 경우
+                runOnUiThread(() -> Toast.makeText(this, "통신에 문제가 있어서 동작을 수행할 수 없습니다.", Toast.LENGTH_SHORT).show());
+            } else if (data.trim().equals("lock_suc")) {
+                runOnUiThread(() -> Toast.makeText(this, "성공적으로 잠궜습니다!", Toast.LENGTH_SHORT).show());
+                isLock = true;
+                runOnUiThread(() -> lockViewModel.setLockStatus(true));
+            } else {
+                runOnUiThread(() -> Toast.makeText(this, "잘못된 인자 값을 받았습니다.", Toast.LENGTH_SHORT).show());
+            }
+        } else {
+            runOnUiThread(() -> Toast.makeText(this, "캐리어와 연결을 확인하세요.", Toast.LENGTH_SHORT).show());
+        }
+    }
+
+    // 캐리어 잠금을 해제하는 메서드
+    public void setUnlock() {
+        if (writeCharacteristic != null) {
+            data = null;
+            sendData("lock_off");
+
+            checkData();
+
+            if (data == null) {     // 통신이 제대로 되지 않은 경우
+                runOnUiThread(() -> Toast.makeText(this, "통신에 문제가 있어서 동작을 수행할 수 없습니다.", Toast.LENGTH_SHORT).show());
+            } else if (data.trim().equals("unlock_suc")) {
+                runOnUiThread(() -> Toast.makeText(this, "성공적으로 잠금 해제가 되었습니다!", Toast.LENGTH_SHORT).show());
+                isLock = false;
+                runOnUiThread(() ->lockViewModel.setLockStatus(false));
+            } else {
+                runOnUiThread(() -> Toast.makeText(this, "잘못된 인자 값을 받았습니다.", Toast.LENGTH_SHORT).show());
+            }
+        } else {
+            runOnUiThread(() -> Toast.makeText(this, "캐리어와 연결을 확인하세요.", Toast.LENGTH_SHORT).show());
+        }
+    }
+
     // 백드랍 모드를 체크하는 메서드
     public boolean checkBagDrop() {
         return isBackDropMode;
@@ -1315,27 +1419,13 @@ public class MainActivity extends AppCompatActivity {
                 checkPermission();
             }
             bluetoothGatt.disconnect();     // 블루투스 연결을 끊고
-            bagDropHandler.postDelayed(bagDropRunnable, 10000);     // 핸들러로 동작
+            bagDropHandler.postDelayed(bagDropRunnable, 10000);     // 핸들러 동작
 
-            runOnUiThread(() -> {
-                appMenu.findItem(R.id.nav_find).setEnabled(false);
-                appMenu.findItem(R.id.nav_find).setVisible(false);
-                appMenu.findItem(R.id.nav_weight).setEnabled(false);
-                appMenu.findItem(R.id.nav_weight).setVisible(false);
-                appMenu.findItem(R.id.nav_info).setEnabled(false);
-                appMenu.findItem(R.id.nav_info).setVisible(false);
-            });
+            inactiveMenu(true);
         } else {
             bluetoothGatt.connect();
             bagDropHandler.removeCallbacks(bagDropRunnable);
-            runOnUiThread(() -> {
-                appMenu.findItem(R.id.nav_find).setEnabled(true);
-                appMenu.findItem(R.id.nav_find).setVisible(true);
-                appMenu.findItem(R.id.nav_weight).setEnabled(true);
-                appMenu.findItem(R.id.nav_weight).setVisible(true);
-                appMenu.findItem(R.id.nav_info).setEnabled(true);
-                appMenu.findItem(R.id.nav_info).setVisible(true);
-            });
+            activeMenu(true);
         }
     }
 
@@ -1368,14 +1458,7 @@ public class MainActivity extends AppCompatActivity {
                                     checkAuth();
                                 });
 
-                                runOnUiThread(() -> {
-                                    appMenu.findItem(R.id.nav_find).setEnabled(true);
-                                    appMenu.findItem(R.id.nav_find).setVisible(true);
-                                    appMenu.findItem(R.id.nav_weight).setEnabled(true);
-                                    appMenu.findItem(R.id.nav_weight).setVisible(true);
-                                    appMenu.findItem(R.id.nav_bagdrop).setEnabled(true);
-                                    appMenu.findItem(R.id.nav_bagdrop).setVisible(true);
-                                });
+                                activeMenu(false);
                                 bleAuthHandler.removeCallbacks(bleAuthRunnable);
                             } else if (data.trim().equals("auth_fail")) {
                                 isAuth = false;
@@ -1486,19 +1569,9 @@ public class MainActivity extends AppCompatActivity {
         startLeScan();
 
         if (!isAuth) {
-            appMenu.findItem(R.id.nav_find).setEnabled(false);
-            appMenu.findItem(R.id.nav_find).setVisible(false);
-            appMenu.findItem(R.id.nav_weight).setEnabled(false);
-            appMenu.findItem(R.id.nav_weight).setVisible(false);
-            appMenu.findItem(R.id.nav_bagdrop).setEnabled(false);
-            appMenu.findItem(R.id.nav_bagdrop).setVisible(false);
+            inactiveMenu(false);
         } else {
-            appMenu.findItem(R.id.nav_find).setEnabled(true);
-            appMenu.findItem(R.id.nav_find).setVisible(true);
-            appMenu.findItem(R.id.nav_weight).setEnabled(true);
-            appMenu.findItem(R.id.nav_weight).setVisible(true);
-            appMenu.findItem(R.id.nav_bagdrop).setEnabled(true);
-            appMenu.findItem(R.id.nav_bagdrop).setVisible(true);
+            activeMenu(false);
         }
     }
 
