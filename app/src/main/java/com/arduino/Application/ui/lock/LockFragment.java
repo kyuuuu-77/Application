@@ -112,7 +112,7 @@ public class LockFragment extends Fragment {
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
-                handler.post(() -> Toast.makeText(getActivity(), "데이터 로드중 에러 발생", Toast.LENGTH_SHORT).show());
+                handler.post(() -> Toast.makeText(getActivity(), "로드중 에러 발생", Toast.LENGTH_SHORT).show());
             }
 
             handler.post(() -> {
@@ -149,7 +149,7 @@ public class LockFragment extends Fragment {
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
-                handler.post(() -> Toast.makeText(getActivity(), "데이터 로드중 에러 발생", Toast.LENGTH_SHORT).show());
+                handler.post(() -> Toast.makeText(getActivity(), "로드중 에러 발생", Toast.LENGTH_SHORT).show());
             }
 
             handler.post(() -> {

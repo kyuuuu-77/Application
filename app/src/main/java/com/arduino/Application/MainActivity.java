@@ -1267,23 +1267,27 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void changeAuth(String password) {
-        data = null;
+        if (writeCharacteristic != null && mBluetoothAdapter.isEnabled()) {
+            data = null;
 
-        sendData("change_" + password);
-        checkData();
+            sendData("change_" + password);
+            checkData();
 
-        runOnUiThread(() -> {
-            if (data == null) {         // 데이터를 못 받은 경우
-                Toast.makeText(getApplicationContext(), "인증번호 변경 실패\n잠시후 다시 시도하세요!", Toast.LENGTH_SHORT).show();
-            } else {
-                if (data.trim().equals("change_suc")) {
-                    getPassword = password;
-                    Toast.makeText(getApplicationContext(), "인증번호 변경 성공!", Toast.LENGTH_SHORT).show();
+            runOnUiThread(() -> {
+                if (data == null) {         // 데이터를 못 받은 경우
+                    Toast.makeText(getApplicationContext(), "인증번호 변경 실패\n잠시후 다시 시도하세요!", Toast.LENGTH_SHORT).show();
                 } else {
-                    Toast.makeText(getApplicationContext(), "잘못된 데이터를 받았습니다!", Toast.LENGTH_SHORT).show();
+                    if (data.trim().equals("change_suc")) {
+                        getPassword = password;
+                        Toast.makeText(getApplicationContext(), "인증번호 변경 성공!", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(getApplicationContext(), "잘못된 데이터를 받았습니다!", Toast.LENGTH_SHORT).show();
+                    }
                 }
-            }
-        });
+            });
+        } else {
+            runOnUiThread(() -> Toast.makeText(getApplicationContext(), "캐리어와 연결이 되어 있지 않습니다", Toast.LENGTH_SHORT).show());
+        }
     }
 
     // RSSI 신호 세기 정도를 전달하는 메서드

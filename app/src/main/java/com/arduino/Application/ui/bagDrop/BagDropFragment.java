@@ -184,7 +184,7 @@ public class BagDropFragment extends Fragment {
                 setBagDrop(false);
                 bagDropViewModel.setBagDropBtn(false);
                 bagDropViewModel.setBagDropStatus(false);
-                Toast.makeText(getActivity(), "백드랍 모드가 중지됩니다.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), "백드랍 모드가 중지됩니다", Toast.LENGTH_SHORT).show();
                 Linear_remain.setVisibility(View.INVISIBLE);
             } else {                // 백드랍 모드 꺼짐 -> 켜짐
                 setBagDrop(true);
@@ -348,7 +348,6 @@ public class BagDropFragment extends Fragment {
             bagDropViewModel.setBagDropBtn(false);
             bagDropViewModel.setBagDropStatus(false);
         }
-
         checkCanUseBagDrop();
     }
 

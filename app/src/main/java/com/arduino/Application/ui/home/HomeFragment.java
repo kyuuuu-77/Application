@@ -98,6 +98,7 @@ public class HomeFragment extends Fragment {
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
         // ViewModel 선언
+        // 캐리어 인증 상태 (Boolean)
         homeViewModel.getAuthenticateLiveData().observe(getViewLifecycleOwner(), auth -> {
             if (auth) {         // 인증을 했으면
                 isAuth = true;
@@ -109,6 +110,8 @@ public class HomeFragment extends Fragment {
                 Text_auth.setText("인증 필요");
             }
         });
+
+        // BLE 디바이스 연결 상태 (Integer)
         homeViewModel.getconnectBtnLiveData().observe(getViewLifecycleOwner(), status -> {
             if (status == -1) {        // 연결 불가능한 경우(연결 불가)
                 Text_connect.setText("연결 불가");
@@ -124,6 +127,8 @@ public class HomeFragment extends Fragment {
                 BtnBT_connect.setBackground(connect_fin);
             }
         });
+
+        // 블루투스 상태 (Integer)
         homeViewModel.getBluetoothStatusLiveData().observe(getViewLifecycleOwner(), status -> {
             if (status == -1) {     // 블루투스를 사용할 수 없는 경우
                 Text_BTStatus.setText("블루투스를 사용할 수 없습니다");
@@ -134,7 +139,12 @@ public class HomeFragment extends Fragment {
                 Text_BTStatus.setText("블루투스 활성화");
             }
         });
+
+
+        // 홈 텍스트 상태 (Integer)
         homeViewModel.getHomeTextLiveData().observe(getViewLifecycleOwner(), text -> Text_home.setText(text));
+
+        // 블루투스 버튼 상태 (Integer)
         homeViewModel.getBtBtnLiveData().observe(getViewLifecycleOwner(), status -> {
             if (status == -1) {         // 블루투스를 사용할 수 없는 경우
                 BtnBT.setText("블루투스 사용불가");
@@ -213,7 +223,7 @@ public class HomeFragment extends Fragment {
                 try {
                     String password = getPassword.getText().toString();
                     if (password.isEmpty()) {
-                        Toast.makeText(getActivity(), "입력 없음", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(), "비밀번호 입력 없음", Toast.LENGTH_SHORT).show();
                     } else {
                         Toast.makeText(getActivity(), password + " 입력 확인!", Toast.LENGTH_SHORT).show();
                         mainActivity.getAuth(password);
@@ -261,7 +271,7 @@ public class HomeFragment extends Fragment {
                 try {
                     String password = getPassword.getText().toString();
                     if (password.isEmpty()) {
-                        Toast.makeText(getActivity(), "입력 없음", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(), "비밀번호 입력 없음", Toast.LENGTH_SHORT).show();
                     } else {
                         Toast.makeText(getActivity(), password + " 입력 확인!", Toast.LENGTH_SHORT).show();
 
@@ -276,7 +286,7 @@ public class HomeFragment extends Fragment {
                             try {
                                 Thread.sleep(1000);
                             } catch (InterruptedException e) {
-                                handler.post(() -> Toast.makeText(getActivity(), "데이터 로드중 에러 발생", Toast.LENGTH_SHORT).show());
+                                handler.post(() -> Toast.makeText(getActivity(), "로드중 에러 발생", Toast.LENGTH_SHORT).show());
                             }
 
                             handler.post(() -> {
