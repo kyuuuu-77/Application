@@ -49,8 +49,8 @@ public class HomeFragment extends Fragment {
     Drawable connect_blue;
     Drawable connect_red;
     Drawable connect_fin;
-    Drawable lock_blue;
-    Drawable lock_red;
+    Drawable auth_blue;
+    Drawable auth_red;
 
     Window window;
 
@@ -88,8 +88,8 @@ public class HomeFragment extends Fragment {
         connect_blue = ContextCompat.getDrawable(requireContext(), R.drawable.home_connect_on);
         connect_red = ContextCompat.getDrawable(requireContext(), R.drawable.home_connect_off);
         connect_fin = ContextCompat.getDrawable(requireContext(), R.drawable.home_connect_fin);
-        lock_blue = ContextCompat.getDrawable(requireContext(), R.drawable.home_lock_off);
-        lock_red = ContextCompat.getDrawable(requireContext(), R.drawable.home_lock_on);
+        auth_blue = ContextCompat.getDrawable(requireContext(), R.drawable.home_auth_on);
+        auth_red = ContextCompat.getDrawable(requireContext(), R.drawable.home_auth_off);
 
         window = requireActivity().getWindow();
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
@@ -102,11 +102,11 @@ public class HomeFragment extends Fragment {
         homeViewModel.getAuthenticateLiveData().observe(getViewLifecycleOwner(), auth -> {
             if (auth) {         // 인증을 했으면
                 isAuth = true;
-                Btn_auth.setBackground(lock_blue);
+                Btn_auth.setBackground(auth_blue);
                 Text_auth.setText("인증됨");
             } else {        // 인증을 안 했으면
                 isAuth = false;
-                Btn_auth.setBackground(lock_red);
+                Btn_auth.setBackground(auth_red);
                 Text_auth.setText("인증 필요");
             }
         });
