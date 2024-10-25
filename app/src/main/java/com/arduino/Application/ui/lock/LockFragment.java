@@ -1,6 +1,5 @@
 package com.arduino.Application.ui.lock;
 
-import android.annotation.SuppressLint;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
@@ -31,17 +30,16 @@ public class LockFragment extends Fragment {
     // 리니어 레이아웃, 텍스트 뷰, 이미지 뷰, 아이콘, 버튼, Drawable 초기화
     TextView Text_lock;
     Button Btn_lock;
-    
+
     Drawable Btn_blue;
     Drawable Btn_red;
 
     private FragmentLockBinding binding;
     View root;
     MainActivity mainActivity;
-    
+
     private boolean lockStatus = false;
 
-    @SuppressLint("SetTextI18n")
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         LockViewModel lockViewModel = new ViewModelProvider(requireActivity()).get(LockViewModel.class);
@@ -54,7 +52,7 @@ public class LockFragment extends Fragment {
         // 리니어 레이아웃, 텍스트 뷰, 이미지 뷰, 아이콘, 버튼, Drawable 선언
         Text_lock = root.findViewById(R.id.text_lock);
         Btn_lock = root.findViewById(R.id.lock_btn);
-        
+
         Btn_blue = ContextCompat.getDrawable(requireContext(), R.drawable.button_round);
         Btn_red = ContextCompat.getDrawable(requireContext(), R.drawable.button_round_off);
 
@@ -112,7 +110,7 @@ public class LockFragment extends Fragment {
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
-                handler.post(() -> Toast.makeText(getActivity(), "데이터 로드중 에러 발생", Toast.LENGTH_SHORT).show());
+                handler.post(() -> Toast.makeText(getActivity(), "로드중 에러 발생", Toast.LENGTH_SHORT).show());
             }
 
             handler.post(() -> {
@@ -149,7 +147,7 @@ public class LockFragment extends Fragment {
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
-                handler.post(() -> Toast.makeText(getActivity(), "데이터 로드중 에러 발생", Toast.LENGTH_SHORT).show());
+                handler.post(() -> Toast.makeText(getActivity(), "로드중 에러 발생", Toast.LENGTH_SHORT).show());
             }
 
             handler.post(() -> {
@@ -161,11 +159,24 @@ public class LockFragment extends Fragment {
         });
     }
 
-    @SuppressLint("ResourceAsColor")
+    private int checkConnection() {
+        if (mainActivity != null) {
+            return mainActivity.checkConnection();
+        } else {
+            return -1;
+        }
+    }
+
     public void onResume() {
         super.onResume();
 
         checkLock();
+        if (checkConnection() != 9) {
+            Toast.makeText(getActivity(), "캐리어와 연결되지 않아 잠금 모드를 사용할 수 없습니다", Toast.LENGTH_SHORT).show();
+            Btn_lock.setEnabled(false);
+        } else {
+            Btn_lock.setEnabled(true);
+        }
     }
 
     @Override

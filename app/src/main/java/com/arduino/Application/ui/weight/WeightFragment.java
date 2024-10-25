@@ -183,7 +183,7 @@ public class WeightFragment extends Fragment {
 
         // 무게 측정 버튼 클릭 이벤트 리스너 설정
         Btn_weight.setOnClickListener(view -> {
-            Toast.makeText(getActivity(), "무게를 측정합니다", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), "무게를 측정합니다!", Toast.LENGTH_SHORT).show();
             measureWeight();
         });
 
@@ -229,7 +229,7 @@ public class WeightFragment extends Fragment {
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
-                    handler.post(() -> Toast.makeText(getActivity(), "데이터 로드중 에러 발생", Toast.LENGTH_SHORT).show());
+                    handler.post(() -> Toast.makeText(getActivity(), "로드중 에러 발생", Toast.LENGTH_SHORT).show());
                 }
 
                 handler.post(() -> {

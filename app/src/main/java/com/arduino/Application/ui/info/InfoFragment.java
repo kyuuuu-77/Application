@@ -81,7 +81,7 @@ public class InfoFragment extends Fragment {
         Icon_BT = root.findViewById(R.id.bt_icon);
 
         // ViewModel 선언
-        // 자동검색 상태
+        // 자동검색 상태 (Boolean)
         infoViewModel.getAutoSearchLiveData().observe(getViewLifecycleOwner(), search -> {
             if (search) {      // 자동 검색이 켜져 있으면
                 Icon_search.setImageResource(R.drawable.info_search_on);
@@ -92,7 +92,7 @@ public class InfoFragment extends Fragment {
             }
         });
 
-        // 신호세기
+        // 신호세기 (Integer)
         infoViewModel.getRssiLiveData().observe(getViewLifecycleOwner(), rssi -> {
             if (rssi == 999) {       // rssi 값을 측정할 수 없는 경우
                 Text_rssiMain.setText("측정불가");
@@ -105,7 +105,7 @@ public class InfoFragment extends Fragment {
             }
         });
 
-        // 배터리 상태
+        // 배터리 상태 (Integer)
         infoViewModel.getBatteryLiveData().observe(getViewLifecycleOwner(), batt -> {
             if (batt == -1) {
                 Text_battMain.setText("정보없음");
@@ -129,6 +129,8 @@ public class InfoFragment extends Fragment {
                 }
             }
         });
+
+        // 배터리 전압 상태를 표시 (Integer)
         infoViewModel.getbatteryVoltLiveData().observe(getViewLifecycleOwner(), voltage -> {
             if (voltage == -1) {
                 Text_battSub.setText("NULL V");
@@ -137,7 +139,7 @@ public class InfoFragment extends Fragment {
             }
         });
 
-        // 도난방지 상태
+        // 도난방지 상태 (Boolean)
         infoViewModel.getSecurityLiveData().observe(getViewLifecycleOwner(), security -> {
             if (security) {      // 도난 방지가 켜져 있으면
                 Text_securityMain.setText("사용중");
@@ -150,7 +152,7 @@ public class InfoFragment extends Fragment {
             }
         });
 
-        // 블루투스 상태
+        // 블루투스 상태 (Boolean)
         infoViewModel.getbleStatusLiveData().observe(getViewLifecycleOwner(), status -> {
             switch (status) {
                 case -1:
@@ -178,6 +180,8 @@ public class InfoFragment extends Fragment {
                     break;
             }
         });
+
+        // BLE 디바이스 이름 (String)
         infoViewModel.getdeviceNameLiveData().observe(getViewLifecycleOwner(), name -> Text_bleSub.setText(name));
 
         // 버튼 이벤트 리스너
@@ -186,12 +190,12 @@ public class InfoFragment extends Fragment {
             // 자동 검색, 도난방지, 도난방지 무시, 무게설정, 도착 시각 초기화
             resetSettings();
             checkAll();
-            Toast.makeText(getActivity(), "애플리케이션 설정 초기화 중...", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), "애플리케이션 설정 초기화 중", Toast.LENGTH_SHORT).show();
         });
         // 화면 갱신 버튼
         Btn_update.setOnClickListener(view -> {
             checkAll();
-            Toast.makeText(getActivity(), "데이터 갱신중...", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), "데이터 갱신중", Toast.LENGTH_SHORT).show();
         });
         return root;
     }
@@ -276,7 +280,7 @@ public class InfoFragment extends Fragment {
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
-                handler.post(() -> Toast.makeText(getActivity(), "데이터 로드중 에러 발생", Toast.LENGTH_SHORT).show());
+                handler.post(() -> Toast.makeText(getActivity(), "로드중 에러 발생", Toast.LENGTH_SHORT).show());
             }
 
             handler.post(() -> {

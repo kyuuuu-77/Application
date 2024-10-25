@@ -21,6 +21,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.BitmapFactory;
 import android.graphics.PixelFormat;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -198,6 +199,7 @@ public class MainActivity extends AppCompatActivity {
         bagDropViewModel = new ViewModelProvider(this).get(BagDropViewModel.class);
         infoViewModel = new ViewModelProvider(this).get(InfoViewModel.class);
 
+        // 오버레이 권한 확인
         checkOverlayPermission();
     }
 
@@ -214,7 +216,7 @@ public class MainActivity extends AppCompatActivity {
                 || super.onSupportNavigateUp();
     }
 
-    // 퍼미션(권한)을 체크하는 메서드
+    // 블루투스 및 위치 퍼미션(권한)을 체크하는 메서드
     @RequiresApi(api = Build.VERSION_CODES.S)
     public void checkPermission() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
@@ -291,7 +293,7 @@ public class MainActivity extends AppCompatActivity {
     public void BT_on() {
         if (mBluetoothAdapter == null) {
             homeViewModel.setBluetoothStatus(-1);
-            Toast.makeText(getApplicationContext(), "블루투스를 지원하지 않는 기종입니다.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "블루투스를 지원하지 않는 기종입니다", Toast.LENGTH_SHORT).show();
         } else {
             if (mBluetoothAdapter.isEnabled()) {
                 homeViewModel.setBluetoothStatus(0);
@@ -332,7 +334,7 @@ public class MainActivity extends AppCompatActivity {
             Intent intentBluetoothDisable = new Intent("android.bluetooth.adapter.action.REQUEST_DISABLE");
             startActivityForResult(intentBluetoothDisable, BT_REQUEST_DISABLE);
         } else {
-            Toast.makeText(getApplicationContext(), "블루투스가 이미 비활성화되어 있습니다.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "블루투스가 이미 비활성화되어 있습니다", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -347,7 +349,7 @@ public class MainActivity extends AppCompatActivity {
             toolbar.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.orange_500));
             whenBTOff();
         } else {
-            Toast.makeText(getApplicationContext(), "블루투스가 이미 비활성화되어 있습니다.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "블루투스가 이미 비활성화되어 있습니다", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -431,6 +433,8 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
     }
 
+    private MediaPlayer mediaPlayer;
+
     // 오버레이를 표시하는 메서드
     @SuppressLint("InflateParams")
     private void showOverlay() {
@@ -460,12 +464,20 @@ public class MainActivity extends AppCompatActivity {
             Button overlayBtnCheck = overlayView.findViewById(R.id.overlay_check);
             Button overlayBtnIgnore = overlayView.findViewById(R.id.overlay_ignore);
 
+            // 미디어 플레이어 초기화
+            mediaPlayer = MediaPlayer.create(this, R.raw.bell);
+            mediaPlayer.start();
+            mediaPlayer.setLooping(true);
+
             // 확인 버튼을 누른 경우
             overlayBtnCheck.setOnClickListener(v -> {
                 checkOverlayPermission();
                 if (Settings.canDrawOverlays(MainActivity.this)) {
                     ringBell(false);
-                    Toast.makeText(this, "캐리어를 계속 확인합니다.", Toast.LENGTH_SHORT).show();
+                    mediaPlayer.stop();
+                    mediaPlayer.release();
+                    mediaPlayer = null;
+                    Toast.makeText(this, "캐리어를 계속 확인합니다", Toast.LENGTH_SHORT).show();
                     removeOverlay();
                 }
             });
@@ -475,9 +487,12 @@ public class MainActivity extends AppCompatActivity {
                 checkOverlayPermission();
                 if (Settings.canDrawOverlays(MainActivity.this)) {
                     ringBell(false);
+                    mediaPlayer.stop();
+                    mediaPlayer.release();
+                    mediaPlayer = null;
                     ignoreSecurity = true;
                     findViewModel.setIgnore(true);
-                    Toast.makeText(this, "도난방지 경고를 무시합니다.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "도난방지 경고를 무시합니다", Toast.LENGTH_SHORT).show();
                     removeOverlay();
                 }
             });
@@ -517,14 +532,14 @@ public class MainActivity extends AppCompatActivity {
 
                 // 선택된 블루투스 디바이스를 연결하는 메서드
                 builder.setItems(items, (dialog, item) -> connectSelectedDevice(items[item].toString()));
-                Toast.makeText(getApplicationContext(), "스마트 캐리어와 연결하려면 FB301(73F06C)를 선택하세요.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "스마트 캐리어와 연결하려면 FB301(73F06C)를 선택하세요!", Toast.LENGTH_SHORT).show();
                 AlertDialog alert = builder.create();
                 alert.show();
             } else {        // 페어링 가능한 장치가 없을때
-                Toast.makeText(getApplicationContext(), "페어링 된 디바이스가 없습니다.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "페어링 된 디바이스가 없습니다", Toast.LENGTH_SHORT).show();
             }
         } else {            // 블루투스가 꺼져 있을때
-            Toast.makeText(getApplicationContext(), "블루투스가 비활성화되어 있습니다.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "블루투스가 비활성화되어 있습니다", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -534,7 +549,7 @@ public class MainActivity extends AppCompatActivity {
             checkPermission();
         }
         bluetoothGatt = device.connectGatt(this, false, bluetoothGattCallback);
-        runOnUiThread(() -> Toast.makeText(getApplicationContext(), "디바이스에 연결 시도 중...", Toast.LENGTH_SHORT).show());
+        runOnUiThread(() -> Toast.makeText(getApplicationContext(), "디바이스에 연결 시도 중", Toast.LENGTH_SHORT).show());
         isSuitcase = true;
     }
 
@@ -557,14 +572,14 @@ public class MainActivity extends AppCompatActivity {
     // 주변의 BLE 디바이스를 스캔
     public void startLeScan() {
         if (mBluetoothAdapter == null || !mBluetoothAdapter.isEnabled()) {
-            Toast.makeText(this, "블루투스가 꺼져있어 자동 검색을 수행할 수 없습니다.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "블루투스가 꺼져있어 자동 검색을 사용할 수 없습니다", Toast.LENGTH_SHORT).show();
             return;
         }
         bluetoothLeScanner = mBluetoothAdapter.getBluetoothLeScanner();
 
         // 리스캐너 사용할 수 없을때
         if (bluetoothLeScanner == null) {
-            Toast.makeText(this, "BluetoothLeScanner 초기화 오류", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "스캐너 초기화 오류로 자동 검색을 사용할 수 없습니다", Toast.LENGTH_LONG).show();
             return;
         }
 
@@ -661,7 +676,7 @@ public class MainActivity extends AppCompatActivity {
                         bagDropViewModel.setBagDropBtn(false);
                         bagDropViewModel.setRemainTime(-1);
                         createNotif("bagdrop", "백드랍 모드 종료", "스마트 캐리어와 연결되었습니다!\n이제 백드랍 모드를 종료합니다.");
-                        Toast.makeText(MainActivity.this, "캐리어와 다시 연결되었으므로 백드랍 모드를 종료합니다.", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MainActivity.this, "캐리어와 다시 연결되었으므로 백드랍 모드를 종료합니다", Toast.LENGTH_SHORT).show();
                     });
                 })
                 .setCancelable(false).show();
@@ -754,7 +769,7 @@ public class MainActivity extends AppCompatActivity {
         isConnected = false;
 
         runOnUiThread(() -> {
-            createNotif("connect", "캐리어와 연결 끊김", "스마트 캐리어와 연결이 끊겼습니다.");
+            createNotif("connect", "캐리어와 연결 끊김", "스마트 캐리어와 연결이 끊겼습니다");
             window.setStatusBarColor(ContextCompat.getColor(getApplicationContext(), R.color.green_500));
             toolbar.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.green_500));
 
@@ -770,7 +785,7 @@ public class MainActivity extends AppCompatActivity {
             infoViewModel.setRssi(999);
             infoViewModel.setSecurity(false);
             infoViewModel.setBleStatus(1);
-            Toast.makeText(getApplicationContext(), "디바이스와의 연결이 끊어졌습니다", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "캐리어와 연결이 끊어졌습니다", Toast.LENGTH_SHORT).show();
         });
     }
 
@@ -839,7 +854,7 @@ public class MainActivity extends AppCompatActivity {
 
                         homeViewModel.setHomeText("잘못된 디바이스에 연결되었습니다");
                         homeViewModel.setConnectBtn(0);
-                        Toast.makeText(getApplicationContext(), "연결된 디바이스는 스마트 캐리어가 아닙니다.", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(), "연결된 디바이스는 스마트 캐리어가 아닙니다", Toast.LENGTH_SHORT).show();
                     });
                 }
 
@@ -856,7 +871,7 @@ public class MainActivity extends AppCompatActivity {
                         runOnUiThread(() -> {
                             createNotif("bagdrop", "백드랍 모드 동작중", "백드랍 모드가 동작중입니다.\n도착 예정시각 10분 전까지 캐리어와 연결을 끊습니다.");
                             homeViewModel.setHomeText("백드랍 모드를 사용중입니다");
-                            Toast.makeText(getApplicationContext(), "백드랍 모드가 계속 동작중입니다!", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getApplicationContext(), "백드랍 모드가 계속 동작 중입니다!", Toast.LENGTH_SHORT).show();
                         });
                     }
                 } else if (mBluetoothAdapter.isEnabled() && isConnected) {
@@ -1129,7 +1144,7 @@ public class MainActivity extends AppCompatActivity {
     public boolean security_ON() {
         security = true;
         createNotif("security", "도난방지 동작", "도난방지 모드가 동작합니다.\n캐리어와 멀어지는 경우 알림을 받을 수 있습니다.");
-        Toast.makeText(this, "도난방지를 사용합니다.", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "도난방지를 사용합니다", Toast.LENGTH_SHORT).show();
         checkSecurity();
 
         return security;
@@ -1139,7 +1154,7 @@ public class MainActivity extends AppCompatActivity {
     public boolean security_OFF() {
         security = false;
         createNotif("security", "도난방지 동작 안함", "도난방지 모드가 동작하지 않습니다.\n캐리어와 멀어지는 경우 알림을 받을 수 없습니다.");
-        Toast.makeText(this, "도난방지를 사용하지 않습니다.", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "도난방지를 사용하지 않습니다", Toast.LENGTH_SHORT).show();
         checkSecurity();
 
         return security;
@@ -1188,18 +1203,18 @@ public class MainActivity extends AppCompatActivity {
 
                     // 벨 울리기 실패
                     if (data == null) {
-                        runOnUiThread(() -> Toast.makeText(this, "벨을 울릴 수 없습니다.", Toast.LENGTH_SHORT).show());
+                        runOnUiThread(() -> Toast.makeText(this, "벨을 울릴 수 없습니다", Toast.LENGTH_SHORT).show());
                         return -1;
                     } else if (data.trim().equals("ring_suc")) {   // 벨 울리기 성공
                         data = "ring_suc";
                         runOnUiThread(() -> Toast.makeText(this, "벨 울리기 성공!", Toast.LENGTH_SHORT).show());
                         return 1;
                     } else {    // 잘못된 값을 받은 경우
-                        runOnUiThread(() -> Toast.makeText(this, "벨을 울릴 수 없습니다.\n잘못된 인자값이 전달되었습니다.", Toast.LENGTH_SHORT).show());
+                        runOnUiThread(() -> Toast.makeText(this, "잘못된 인자값이 전달되었습니다", Toast.LENGTH_SHORT).show());
                         return -1;
                     }
                 } catch (NumberFormatException | NullPointerException e) {
-                    Toast.makeText(this, e.getMessage() + "에러가 발생했습니다.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, e.getMessage() + "에러가 발생했습니다", Toast.LENGTH_SHORT).show();
                     return -1;
                 }
             } else {   // 벨 울리기 중지 동작
@@ -1266,24 +1281,29 @@ public class MainActivity extends AppCompatActivity {
         bleAuthHandler.postDelayed(bleAuthRunnable, 1000);
     }
 
+    // 인증 번호를 변경하는 메서드
     public void changeAuth(String password) {
-        data = null;
+        if (writeCharacteristic != null && mBluetoothAdapter.isEnabled()) {
+            data = null;
 
-        sendData("change_" + password);
-        checkData();
+            sendData("change_" + password);
+            checkData();
 
-        runOnUiThread(() -> {
-            if (data == null) {         // 데이터를 못 받은 경우
-                Toast.makeText(getApplicationContext(), "인증번호 변경 실패\n잠시후 다시 시도하세요!", Toast.LENGTH_SHORT).show();
-            } else {
-                if (data.trim().equals("change_suc")) {
-                    getPassword = password;
-                    Toast.makeText(getApplicationContext(), "인증번호 변경 성공!", Toast.LENGTH_SHORT).show();
+            runOnUiThread(() -> {
+                if (data == null) {         // 데이터를 못 받은 경우
+                        Toast.makeText(getApplicationContext(), "인증번호 변경 실패\n잠시 후 다시 시도하세요!", Toast.LENGTH_SHORT).show();
                 } else {
-                    Toast.makeText(getApplicationContext(), "잘못된 데이터를 받았습니다!", Toast.LENGTH_SHORT).show();
+                    if (data.trim().equals("change_suc")) {
+                        getPassword = password;
+                        Toast.makeText(getApplicationContext(), "인증번호 변경 성공!", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(getApplicationContext(), "잘못된 데이터를 받았습니다!", Toast.LENGTH_SHORT).show();
+                    }
                 }
-            }
-        });
+            });
+        } else {
+            runOnUiThread(() -> Toast.makeText(getApplicationContext(), "캐리어와 연결이 되어 있지 않습니다", Toast.LENGTH_SHORT).show());
+        }
     }
 
     // RSSI 신호 세기 정도를 전달하는 메서드
@@ -1314,7 +1334,7 @@ public class MainActivity extends AppCompatActivity {
 
     // 설정을 초기화 하는 메서드
     public void resetSettings() {
-        // 자동검색, 도난방지, 방해금지, 무게 옵션, 무게 측정값, 시각 설정 초기화
+        // 자동검색, 도난방지, 방해금지, 무게 옵션, 무게 측정값, 시간 설정 초기화
         isAutoSearch = true;
         security = false;
         ignoreSecurity = false;
@@ -1347,14 +1367,14 @@ public class MainActivity extends AppCompatActivity {
             checkData();
 
             if (data == null) {     // 통신이 제대로 되지 않은 경우
-                runOnUiThread(() -> Toast.makeText(this, "통신에 문제가 있어서 동작을 수행할 수 없습니다.", Toast.LENGTH_SHORT).show());
+                runOnUiThread(() -> Toast.makeText(this, "통신 이상으로 동작을 수행할 수 없습니다", Toast.LENGTH_SHORT).show());
             } else if (data.trim().equals("lock_on")) {
                 isLock = true;
             } else if (data.trim().equals("lock_off")){
                 isLock = false;
             }
         } else {
-            runOnUiThread(() -> Toast.makeText(this, "캐리어와 연결을 확인하세요.", Toast.LENGTH_SHORT).show());
+            runOnUiThread(() -> Toast.makeText(this, "캐리어와 연결을 확인하세요", Toast.LENGTH_SHORT).show());
         }
 
         runOnUiThread(() -> lockViewModel.setLockStatus(isLock));
@@ -1370,16 +1390,16 @@ public class MainActivity extends AppCompatActivity {
             checkData();
 
             if (data == null) {     // 통신이 제대로 되지 않은 경우
-                runOnUiThread(() -> Toast.makeText(this, "통신에 문제가 있어서 동작을 수행할 수 없습니다.", Toast.LENGTH_SHORT).show());
+                runOnUiThread(() -> Toast.makeText(this, "통신에 문제가 있어서 동작을 수행할 수 없습니다", Toast.LENGTH_SHORT).show());
             } else if (data.trim().equals("lock_suc")) {
-                runOnUiThread(() -> Toast.makeText(this, "성공적으로 잠궜습니다!", Toast.LENGTH_SHORT).show());
+                runOnUiThread(() -> Toast.makeText(this, "캐리어를 성공적으로 잠갔습니다!", Toast.LENGTH_SHORT).show());
                 isLock = true;
                 runOnUiThread(() -> lockViewModel.setLockStatus(true));
             } else {
-                runOnUiThread(() -> Toast.makeText(this, "잘못된 인자 값을 받았습니다.", Toast.LENGTH_SHORT).show());
+                runOnUiThread(() -> Toast.makeText(this, "잘못된 인자 값을 받았습니다", Toast.LENGTH_SHORT).show());
             }
         } else {
-            runOnUiThread(() -> Toast.makeText(this, "캐리어와 연결을 확인하세요.", Toast.LENGTH_SHORT).show());
+            runOnUiThread(() -> Toast.makeText(this, "캐리어와 연결을 확인하세요", Toast.LENGTH_SHORT).show());
         }
     }
 
@@ -1392,16 +1412,16 @@ public class MainActivity extends AppCompatActivity {
             checkData();
 
             if (data == null) {     // 통신이 제대로 되지 않은 경우
-                runOnUiThread(() -> Toast.makeText(this, "통신에 문제가 있어서 동작을 수행할 수 없습니다.", Toast.LENGTH_SHORT).show());
+                runOnUiThread(() -> Toast.makeText(this, "통신에 문제가 있어서 동작을 수행할 수 없습니다", Toast.LENGTH_SHORT).show());
             } else if (data.trim().equals("unlock_suc")) {
-                runOnUiThread(() -> Toast.makeText(this, "성공적으로 잠금 해제가 되었습니다!", Toast.LENGTH_SHORT).show());
+                runOnUiThread(() -> Toast.makeText(this, "캐리어가 성공적으로 잠금 해제 되었습니다!", Toast.LENGTH_SHORT).show());
                 isLock = false;
                 runOnUiThread(() ->lockViewModel.setLockStatus(false));
             } else {
-                runOnUiThread(() -> Toast.makeText(this, "잘못된 인자 값을 받았습니다.", Toast.LENGTH_SHORT).show());
+                runOnUiThread(() -> Toast.makeText(this, "잘못된 인자 값을 받았습니다", Toast.LENGTH_SHORT).show());
             }
         } else {
-            runOnUiThread(() -> Toast.makeText(this, "캐리어와 연결을 확인하세요.", Toast.LENGTH_SHORT).show());
+            runOnUiThread(() -> Toast.makeText(this, "캐리어와 연결을 확인하세요", Toast.LENGTH_SHORT).show());
         }
     }
 
@@ -1463,7 +1483,7 @@ public class MainActivity extends AppCompatActivity {
                             } else if (data.trim().equals("auth_fail")) {
                                 isAuth = false;
                                 getPassword = null;
-                                handler.post(() -> Toast.makeText(getApplicationContext(), "비밀번호가 틀렸습니다! 다시 입력하세요.", Toast.LENGTH_SHORT).show());
+                                handler.post(() -> Toast.makeText(getApplicationContext(), "비밀번호가 틀렸습니다! 다시 입력하세요", Toast.LENGTH_SHORT).show());
                                 bleAuthHandler.removeCallbacks(bleAuthRunnable);
                             } else {
                                 isAuth = false;
@@ -1473,7 +1493,7 @@ public class MainActivity extends AppCompatActivity {
                         }
                         Thread.sleep(1000);
                     } catch (InterruptedException e) {
-                        handler.post(() -> Toast.makeText(getApplicationContext(), "데이터 로드중 에러 발생", Toast.LENGTH_SHORT).show());
+                        handler.post(() -> Toast.makeText(getApplicationContext(), "로드중 에러 발생", Toast.LENGTH_SHORT).show());
                     }
                 });
             } else {
@@ -1580,6 +1600,11 @@ public class MainActivity extends AppCompatActivity {
 
         if (manager != null) {  // 앱 종료시에 알림을 모두 지움
             manager.cancelAll();
+        }
+        if (mediaPlayer != null) {
+            mediaPlayer.stop();
+            mediaPlayer.release();
+            mediaPlayer = null;
         }
 
         stopRSSIMeasurement();          // RSSI 측정 중지
