@@ -10,7 +10,7 @@
     <string name="splash_name">Suitcase Genie</string>
     <string name="weight_popup">Notification</string>
     <string name="app_version">1.30</string>
-    <string name="app_date">2024.10.17/15</string>
+    <string name="app_date">2024.10.25/14</string>
     <string name="app_update_log">캐리어를 잠그는 기능이 새로 추가되었습니다!\n알림 기능 추가, UI/UX 디자인 개선, 버그 수정, 최적화 등</string>
     <string name="loading" tools:ignore="TypographyEllipsis">로드중...</string>
 
