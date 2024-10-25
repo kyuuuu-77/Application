@@ -21,6 +21,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.BitmapFactory;
 import android.graphics.PixelFormat;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -432,6 +433,8 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
     }
 
+    private MediaPlayer mediaPlayer;
+
     // 오버레이를 표시하는 메서드
     @SuppressLint("InflateParams")
     private void showOverlay() {
@@ -461,11 +464,19 @@ public class MainActivity extends AppCompatActivity {
             Button overlayBtnCheck = overlayView.findViewById(R.id.overlay_check);
             Button overlayBtnIgnore = overlayView.findViewById(R.id.overlay_ignore);
 
+            // 미디어 플레이어 초기화
+            mediaPlayer = MediaPlayer.create(this, R.raw.bell);
+            mediaPlayer.start();
+            mediaPlayer.setLooping(true);
+
             // 확인 버튼을 누른 경우
             overlayBtnCheck.setOnClickListener(v -> {
                 checkOverlayPermission();
                 if (Settings.canDrawOverlays(MainActivity.this)) {
                     ringBell(false);
+                    mediaPlayer.stop();
+                    mediaPlayer.release();
+                    mediaPlayer = null;
                     Toast.makeText(this, "캐리어를 계속 확인합니다", Toast.LENGTH_SHORT).show();
                     removeOverlay();
                 }
@@ -476,6 +487,9 @@ public class MainActivity extends AppCompatActivity {
                 checkOverlayPermission();
                 if (Settings.canDrawOverlays(MainActivity.this)) {
                     ringBell(false);
+                    mediaPlayer.stop();
+                    mediaPlayer.release();
+                    mediaPlayer = null;
                     ignoreSecurity = true;
                     findViewModel.setIgnore(true);
                     Toast.makeText(this, "도난방지 경고를 무시합니다", Toast.LENGTH_SHORT).show();
@@ -1586,6 +1600,11 @@ public class MainActivity extends AppCompatActivity {
 
         if (manager != null) {  // 앱 종료시에 알림을 모두 지움
             manager.cancelAll();
+        }
+        if (mediaPlayer != null) {
+            mediaPlayer.stop();
+            mediaPlayer.release();
+            mediaPlayer = null;
         }
 
         stopRSSIMeasurement();          // RSSI 측정 중지
