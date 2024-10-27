@@ -7,13 +7,11 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -24,9 +22,6 @@ import androidx.lifecycle.ViewModelProvider;
 import com.arduino.Application.MainActivity;
 import com.arduino.Application.R;
 import com.arduino.Application.databinding.FragmentBagdropBinding;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class BagDropFragment extends Fragment {
 
@@ -58,6 +53,11 @@ public class BagDropFragment extends Fragment {
     private BagDropViewModel bagDropViewModel;
     MainActivity mainActivity;
 
+    // 선택 된 시간과 분을 저장
+    private int selectedHour;
+    private int selectedMin;
+
+    // 백드랍 Fragment 전역 변수
     private int arriveTime = -1;
     private boolean bagDropMode = false;
 
@@ -110,7 +110,7 @@ public class BagDropFragment extends Fragment {
                 }
             }
         });
-        
+
         // 백드랍 모드 동작 여부 (Boolean)
         bagDropViewModel.getBagDropStatusLiveData().observe(getViewLifecycleOwner(), bagDrop -> {
             if (bagDrop) {
@@ -121,7 +121,7 @@ public class BagDropFragment extends Fragment {
                 Text_bagDrop.setTextColor(ContextCompat.getColor(requireActivity(), R.color.orange_500));
             }
         });
-        
+
         // 스마트 캐리어 연결 여부 (Boolean)
         bagDropViewModel.getConnectStatusLiveData().observe(getViewLifecycleOwner(), connect -> {
             if (connect) {
@@ -134,7 +134,7 @@ public class BagDropFragment extends Fragment {
                 Icon_connect.setImageResource(R.drawable.bagdrop_not_checked);
             }
         });
-        
+
         // 무게 측정 여부 (Double)
         bagDropViewModel.getWeightLiveData().observe(getViewLifecycleOwner(), weight -> {
             if (weight == -1) {     // 무게가 측정되지 않은 경우
@@ -184,7 +184,7 @@ public class BagDropFragment extends Fragment {
                 setBagDrop(false);
                 bagDropViewModel.setBagDropBtn(false);
                 bagDropViewModel.setBagDropStatus(false);
-                Toast.makeText(getActivity(), "백드랍 모드가 중지됩니다.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), "백드랍 모드가 중지됩니다", Toast.LENGTH_SHORT).show();
                 Linear_remain.setVisibility(View.INVISIBLE);
             } else {                // 백드랍 모드 꺼짐 -> 켜짐
                 setBagDrop(true);
@@ -203,7 +203,7 @@ public class BagDropFragment extends Fragment {
     }
 
     // 커스텀 다이얼로그를 표시하는 메서드
-    @SuppressLint("DefaultLocale")
+    @SuppressLint({"DefaultLocale", "SetTextI18n"})
     private void showCustomDialog() {
         LayoutInflater inflater = LayoutInflater.from(getContext());
         View dialogView = inflater.inflate(R.layout.custom_dialog_time, null);
@@ -214,59 +214,16 @@ public class BagDropFragment extends Fragment {
         // 커스텀 다이얼로그의 버튼, 텍스트 뷰 초기화 및 선언
         Button checkBtn = dialogView.findViewById(R.id.confirm);
         Button cancelBtn = dialogView.findViewById(R.id.cancel);
-        TextView textHour = dialogView.findViewById(R.id.selectedHour);
-        TextView textMin = dialogView.findViewById(R.id.selectedMin);
+        TextView text_hour = dialogView.findViewById(R.id.selectedHour);
+        TextView text_min = dialogView.findViewById(R.id.selectedMin);
 
-        // 시간과 분을 선택하는 스피너
-        final Spinner hourSpinner = dialogView.findViewById(R.id.hour_spinner);
-        final Spinner minuteSpinner = dialogView.findViewById(R.id.minute_spinner);
-
-        // 리스트 설정
-        List<String> hours = new ArrayList<>();
-        for (int i = 0; i < 24; i++) {
-            hours.add(String.format("%d", i));
-        }
-        List<String> minutes = new ArrayList<>();
-        for (int i = 0; i < 60; i++) {
-            minutes.add(String.format("%d", i));
-        }
-
-        // 어뎁터 설정 (시간)
-        ArrayAdapter<String> hourAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, hours);
-        hourAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        hourSpinner.setAdapter(hourAdapter);
-
-        // 어뎁터 설정 (분)
-        ArrayAdapter<String> minuteAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, minutes);
-        minuteAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        minuteSpinner.setAdapter(minuteAdapter);
-
-        // 아이템 선택 리스너 (시간)
-        hourSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @SuppressLint("SetTextI18n")
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                String selectedHour = hourSpinner.getSelectedItem().toString();
-                textHour.setText(selectedHour + "시");
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-            }
-        });
-
-        // 아이템 선택 리스너 (분)
-        minuteSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @SuppressLint("SetTextI18n")
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                String selectedMin = minuteSpinner.getSelectedItem().toString();
-                textMin.setText(selectedMin + "분");
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-            }
+        // 시간과 분을 선택하는 타임피커
+        TimePicker timePicker = dialogView.findViewById(R.id.time_picker);
+        timePicker.setOnTimeChangedListener((view, hourOfDay, minute) -> {
+            selectedHour = hourOfDay;
+            selectedMin = minute;
+            text_hour.setText(selectedHour + "시");
+            text_min.setText(selectedMin + " 분");
         });
 
         AlertDialog dialog = builder.create();
@@ -275,9 +232,7 @@ public class BagDropFragment extends Fragment {
 
         // 확인 버튼을 누르면 -> 설정 시각 전달
         checkBtn.setOnClickListener(v -> {
-            int hour = Integer.parseInt((String) hourSpinner.getSelectedItem());
-            int min = Integer.parseInt((String) minuteSpinner.getSelectedItem());
-            setTime(hour, min);
+            setTime(selectedHour, selectedMin);
 
             arriveTime = checkTime();
 
@@ -393,7 +348,6 @@ public class BagDropFragment extends Fragment {
             bagDropViewModel.setBagDropBtn(false);
             bagDropViewModel.setBagDropStatus(false);
         }
-
         checkCanUseBagDrop();
     }
 

@@ -188,7 +188,7 @@ public class FindFragment extends Fragment {
         signalGraph_handler.postDelayed(signalGraph_handler_runnable, 1000);
 
         // ViewModel 선언
-        // 알림 버튼 상태
+        // 알림 버튼 상태 (Boolean)
         findViewModel.getIgnoreLiveData().observe(getViewLifecycleOwner(), ignore -> {
             if (ignore) {     // 무시 상태이면
                 Text_ignore.setText("무시");
@@ -199,7 +199,7 @@ public class FindFragment extends Fragment {
             }
         });
 
-        // 도난방지 상태
+        // 도난방지 상태 (Boolean)
         findViewModel.getAlertStatusLiveData().observe(getViewLifecycleOwner(), status -> {
             if (status) {       // 도난방지가 켜져 있으면
                 Text_securityMain.setText("동작중");
@@ -212,7 +212,7 @@ public class FindFragment extends Fragment {
             }
         });
 
-        // 캐리어 거리
+        // 캐리어 거리 (Integer)
         findViewModel.getDistanceLiveData().observe(getViewLifecycleOwner(), bag_distance -> {
             switch (bag_distance) {
                 case -1:
@@ -260,7 +260,7 @@ public class FindFragment extends Fragment {
             }
         });
 
-        // 도난방지 버튼 상태
+        // 도난방지 버튼 상태 (Integer)
         findViewModel.getAlertBtnLiveData().observe(getViewLifecycleOwner(), status -> {
             if (status == -1) {     // 도난방지 사용불가
                 Btn_security.setText("도난방지 사용불가");      
@@ -368,7 +368,7 @@ public class FindFragment extends Fragment {
                         int status = mainActivity.ringBell(false);
                         if (status != 2) {
                             SystemClock.sleep(5000);
-//                            Toast.makeText(getActivity(), "벨 중지에 실패했습니다. 5초후에 다시 시도합니다.", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getActivity(), "벨 중지에 실패했습니다. 5초후에 다시 시도합니다.", Toast.LENGTH_SHORT).show();
                         } else {
                             break;
                         }
@@ -377,7 +377,7 @@ public class FindFragment extends Fragment {
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
-                    handler.post(() -> Toast.makeText(getActivity(), "데이터 로드중 에러 발생", Toast.LENGTH_SHORT).show());
+                    handler.post(() -> Toast.makeText(getActivity(), "로드중 에러 발생", Toast.LENGTH_SHORT).show());
                 }
 
                 handler.post(() -> {

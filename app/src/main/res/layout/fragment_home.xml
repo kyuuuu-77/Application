@@ -50,9 +50,9 @@
 
         <Button
             android:id="@+id/authenticate"
-            android:layout_width="42dp"
-            android:layout_height="42dp"
-            android:background="@drawable/home_lock_on"
+            android:layout_width="41dp"
+            android:layout_height="41dp"
+            android:background="@drawable/home_auth_off"
             app:backgroundTint="@null"
             tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck" />
 

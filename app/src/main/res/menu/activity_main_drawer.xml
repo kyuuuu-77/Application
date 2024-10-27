@@ -13,6 +13,10 @@
             android:icon="@drawable/ic_menu_find"
             android:title="@string/menu_find" />
         <item
+            android:id="@+id/nav_lock"
+            android:icon="@drawable/ic_menu_lock"
+            android:title="캐리어 잠금" />
+        <item
             android:id="@+id/nav_weight"
             android:icon="@drawable/ic_menu_weight"
             android:title="@string/menu_weight" />
