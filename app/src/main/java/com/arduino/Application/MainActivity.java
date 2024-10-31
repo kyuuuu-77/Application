@@ -78,8 +78,6 @@ import java.util.concurrent.Executors;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCallback;
 
-import org.w3c.dom.Text;
-
 public class MainActivity extends AppCompatActivity {
 
     private AppBarConfiguration mAppBarConfiguration;
@@ -272,16 +270,20 @@ public class MainActivity extends AppCompatActivity {
             sub_update.setText(getString(R.string.app_update_log1));
             app_ver.setText(getString(R.string.app_version));
             app_date.setText(getString(R.string.app_date));
+
+            Button checkBtn = dialogView.findViewById(R.id.confirm);
+
+            android.app.AlertDialog dialog = builder.create();
+            dialog.setCancelable(true);
+            dialog.show();
+
             github_link.setOnClickListener(v -> {
                 String github_url = "https://github.com/kyuuuu-77/Application";
                 Toast.makeText(this, "애플리케이션 소스가 있는 깃허브로 이동합니다!", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(github_url));
                 startActivity(intent);
             });
-
-            android.app.AlertDialog dialog = builder.create();
-            dialog.setCancelable(true);
-            dialog.show();
+            checkBtn.setOnClickListener(v -> dialog.dismiss());
 
             return true;
         }
