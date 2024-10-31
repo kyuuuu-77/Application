@@ -246,7 +246,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    // toolbar(자동검색,앱정보)
+    // toolbar (자동검색,앱정보)
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
@@ -256,10 +256,11 @@ public class MainActivity extends AppCompatActivity {
         } else if (id == R.id.app_info) {
             String version = getString(R.string.app_version);
             String date = getString(R.string.app_date);
-            String update = getString(R.string.app_update_log);
-            String message = String.format("애플리케이션 버전 -> %s\n버전 날짜 -> %s\n업데이트 내역 -> %s", version, date, update);
+            String update0 = getString(R.string.app_update_log0);
+            String update1 = getString(R.string.app_update_log1);
+            String message = String.format("애플리케이션 버전 -> %s\n버전 날짜 -> %s\n메인 업데이트 내역 -> %s\n마이너 업데이트 내역 -> %s", version, date, update0, update1);
             new AlertDialog.Builder(this)
-                    .setTitle("앱 정보")
+                    .setTitle("스마트 캐리어 앱 정보")
                     .setMessage(message)
                     .setPositiveButton("확인", (dialog, which) -> dialog.dismiss())
                     .show();
@@ -1040,11 +1041,14 @@ public class MainActivity extends AppCompatActivity {
                             infoViewModel.setBattery(Integer.parseInt(percentage));
                         }
                     }
-                } catch (NumberFormatException | NullPointerException | ArrayIndexOutOfBoundsException e) {
+                } catch (NumberFormatException | NullPointerException e) {
                     Toast.makeText(this, e.getMessage() + "에러가 발생했습니다.", Toast.LENGTH_SHORT).show();
                     infoViewModel.setBattery(-1);
                     infoViewModel.setBatteryVolt(-1);
                     Toast.makeText(getApplicationContext(), "배터리 정보 취득 실패", Toast.LENGTH_SHORT).show();
+                } catch (ArrayIndexOutOfBoundsException e) {    // 잘못된 데이터를 받은 경우에 통신 다시 시도 (통신이 잠시 끊긴 경우 발생)
+                    Toast.makeText(this, e.getMessage() + "통신 재시도", Toast.LENGTH_SHORT).show();
+                    checkBattery();
                 }
             });
         } else {
@@ -1092,7 +1096,12 @@ public class MainActivity extends AppCompatActivity {
                         weightViewModel.setWeightInfo(-999);
                     } else if (weight[0] > weight[1]) {      // 허용무게 초과시
                         weightViewModel.setWeightInfo(weight[0] - weight[1]);
-                    } else {                                // 무게 초과하지 않은 경우
+                    } else if (weight[0] <= 0) {     // 무게가 0이거나 음의 값일 경우
+                        weightViewModel.setWeightNow((double) -2);
+                        weightViewModel.setWeightInfo(-3);
+                        Toast.makeText(this, "무게값이 올바르지 않습니다. 다시 측정하세요!", Toast.LENGTH_SHORT).show();
+                    }
+                    else {                                // 무게 초과하지 않은 경우
                         weightViewModel.setWeightInfo(0);
                     }
                 });

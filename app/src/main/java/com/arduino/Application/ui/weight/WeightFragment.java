@@ -95,8 +95,13 @@ public class WeightFragment extends Fragment {
         weightViewModel.getWeightNowLiveData().observe(getViewLifecycleOwner(), weight -> {
             if (weight == -1) {
                 Text_weightNow.setText("-- Kg");
+                Text_weightNow.setTextColor(ContextCompat.getColor(requireActivity(), R.color.indigo_500));
+            } else if (weight == -2) {
+                Text_weightNow.setText("잘못된 무게");
+                Text_weightNow.setTextColor(ContextCompat.getColor(requireActivity(), R.color.red_500));
             } else {
                 Text_weightNow.setText(weight + " Kg");
+                Text_weightNow.setTextColor(ContextCompat.getColor(requireActivity(), R.color.indigo_500));
             }
         });
 
@@ -120,6 +125,9 @@ public class WeightFragment extends Fragment {
             } else if (over == -2) {
                 Text_weightInfo.setText("무게 측정에 실패하였습니다");
                 Text_weightInfo.setTextColor(ContextCompat.getColor(requireActivity(), R.color.red_500));
+            } else if (over == -3) {
+                Text_weightInfo.setText("잘못된 무게 데이터입니다");
+                Text_weightInfo.setTextColor(ContextCompat.getColor(requireActivity(), R.color.pink_500));
             } else {
                 Text_weightInfo.setText(String.format("%.1f", over) + " Kg 초과하였습니다.");
                 Text_weightInfo.setTextColor(ContextCompat.getColor(requireActivity(), R.color.orange_500));

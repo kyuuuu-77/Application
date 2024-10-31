@@ -368,7 +368,7 @@ public class FindFragment extends Fragment {
                         int status = mainActivity.ringBell(false);
                         if (status != 2) {
                             SystemClock.sleep(5000);
-                            Toast.makeText(getActivity(), "벨 중지에 실패했습니다. 5초후에 다시 시도합니다.", Toast.LENGTH_SHORT).show();
+                            handler.post(() -> Toast.makeText(getActivity(), "벨 중지에 실패했습니다. 5초후에 다시 시도합니다.", Toast.LENGTH_SHORT).show());
                         } else {
                             break;
                         }
