@@ -37,6 +37,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.widget.Toolbar;
@@ -77,6 +78,8 @@ import java.util.concurrent.Executors;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCallback;
 
+import org.w3c.dom.Text;
+
 public class MainActivity extends AppCompatActivity {
 
     private AppBarConfiguration mAppBarConfiguration;
@@ -114,7 +117,7 @@ public class MainActivity extends AppCompatActivity {
     private InfoViewModel infoViewModel;
 
     // 프로그램 동작을 위한 전역 변수
-    private Boolean isDialogShowing = false;
+    private boolean isDialogShowing = false;
     private boolean isSuitcase = false;
     private boolean isAutoSearch = true;
     private boolean rssiSignal = false;
@@ -254,16 +257,32 @@ public class MainActivity extends AppCompatActivity {
         if (id == R.id.action_settings) {
             showAutoSearchDialog();
         } else if (id == R.id.app_info) {
-            String version = getString(R.string.app_version);
-            String date = getString(R.string.app_date);
-            String update0 = getString(R.string.app_update_log0);
-            String update1 = getString(R.string.app_update_log1);
-            String message = String.format("애플리케이션 버전 -> %s\n버전 날짜 -> %s\n메인 업데이트 내역 -> %s\n마이너 업데이트 내역 -> %s", version, date, update0, update1);
-            new AlertDialog.Builder(this)
-                    .setTitle("스마트 캐리어 앱 정보")
-                    .setMessage(message)
-                    .setPositiveButton("확인", (dialog, which) -> dialog.dismiss())
-                    .show();
+            LayoutInflater inflater = LayoutInflater.from(this);
+            View dialogView = inflater.inflate(R.layout.custom_dialog_info, null);
+
+            android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(this);
+            builder.setView(dialogView);
+            TextView main_update = dialogView.findViewById(R.id.update_main);
+            TextView sub_update = dialogView.findViewById(R.id.update_sub);
+            TextView app_ver = dialogView.findViewById(R.id.app_ver);
+            TextView app_date = dialogView.findViewById(R.id.app_date);
+            TextView github_link = dialogView.findViewById(R.id.text_link);
+
+            main_update.setText(getString(R.string.app_update_log0));
+            sub_update.setText(getString(R.string.app_update_log1));
+            app_ver.setText(getString(R.string.app_version));
+            app_date.setText(getString(R.string.app_date));
+            github_link.setOnClickListener(v -> {
+                String github_url = "https://github.com/kyuuuu-77/Application";
+                Toast.makeText(this, "애플리케이션 소스가 있는 깃허브로 이동합니다!", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(github_url));
+                startActivity(intent);
+            });
+
+            android.app.AlertDialog dialog = builder.create();
+            dialog.setCancelable(true);
+            dialog.show();
+
             return true;
         }
         return super.onOptionsItemSelected(item);

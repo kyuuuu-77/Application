@@ -14,6 +14,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
+        android:gravity="center"
         android:padding="30dp">
 
         <LinearLayout
@@ -43,15 +44,139 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:layout_marginTop="15dp">
+            android:layout_marginTop="15dp"
+            android:gravity="center">
 
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0">
 
+                <LinearLayout
+                    android:layout_width="130dp"
+                    android:layout_height="100dp"
+                    android:layout_margin="12dp"
+                    android:background="@drawable/icon_rounded"
+                    android:backgroundTint="@color/white"
+                    android:elevation="5dp"
+                    android:gravity="center_vertical"
+                    android:orientation="vertical"
+                    android:padding="10dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="5dp"
+                        android:text="버전"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/app_ver"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/black"
+                        android:textSize="21sp"
+                        android:textStyle="bold" />
+                    <TextView
+                        android:id="@+id/app_date"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="130dp"
+                    android:layout_height="100dp"
+                    android:layout_margin="12dp"
+                    android:background="@drawable/icon_rounded"
+                    android:backgroundTint="@color/white"
+                    android:elevation="5dp"
+                    android:gravity="center_vertical"
+                    android:orientation="vertical"
+                    android:padding="10dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="5dp"
+                        android:text="개발 소스"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/text_link"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="깃허브 공개"
+                        android:textColor="@color/black"
+                        android:textSize="20sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/linear_connect"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/background_indigo"
+                android:gravity="center_vertical"
+                android:padding="10dp"
+                android:layout_marginTop="10dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="메인 업데이트"
+                    android:textColor="@android:color/background_light"
+                    android:textSize="22sp"
+                    android:textStyle="bold"
+                    tools:ignore="TextContrastCheck,TextSizeCheck" />
+
+                <TextView
+                    android:id="@+id/update_main"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@android:color/background_light"
+                    android:textSize="17sp"
+                    tools:ignore="TextSizeCheck,TextContrastCheck" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/background_indigo"
+                android:gravity="center_vertical"
+                android:padding="10dp"
+                android:layout_marginTop="10dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="마이너 업데이트"
+                    android:textColor="@android:color/background_light"
+                    android:textSize="22sp"
+                    android:textStyle="bold"
+                    tools:ignore="TextContrastCheck,TextSizeCheck" />
+
+                <TextView
+                    android:id="@+id/update_sub"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@android:color/background_light"
+                    android:textSize="17sp"
+                    tools:ignore="TextSizeCheck,TextContrastCheck" />
+            </LinearLayout>
 
         </LinearLayout>
 
         <TextView
-            android:id="@+id/dialog_title2"
-            android:layout_width="match_parent"
+            android:layout_width="200dp"
             android:layout_height="wrap_content"
             android:padding="10dp"
             android:layout_marginTop="20dp"
