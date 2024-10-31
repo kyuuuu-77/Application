@@ -1,6 +1,9 @@
 # ✈️  Smart Suitcase
 스마트 캐리어
 
+Language :
+[English](./lang/README_EN.md) | [日本語](./lang/README_JA.md)
+
 ## 💻 프로젝트 소개 (Introduction)
 ESP32와 BLE를 통해 통신 및 제어 가능하고 다양한 기능이 사용 가능한 스마트 캐리어 애플리케이션을 개발하는 프로젝트입니다.
 
