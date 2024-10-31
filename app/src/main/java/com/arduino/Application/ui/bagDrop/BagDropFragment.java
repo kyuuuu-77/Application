@@ -323,12 +323,12 @@ public class BagDropFragment extends Fragment {
         bagDropViewModel.setConnectStatus(checkConnection() == 9);
 
         // 캐리어 무게 측정 여부 확인
-        if (checkWeight() != 0 && checkWeight() != -1) {
+        if (checkWeight() <= 0) {    //무게가 0보다 작은 경우 (잘못된 값)
+            bagDropViewModel.setWeight((double) -2);
+        } else if (checkWeight() != 0 && checkWeight() != -1) {
             // 무게 측정결과가 0이나 -1이 아니라면 -> 한마디로 무게를 측정했으면
             double weightTmp = checkWeight();
             bagDropViewModel.setWeight(weightTmp);
-        } else if (checkWeight() <= 0) {    //무게가 0보다 작은 경우 (잘못된 값)
-            bagDropViewModel.setWeight((double) -2);
         } else {
             // 무게를 측정하지 않았으면
             bagDropViewModel.setWeight((double) -1);
