@@ -9,9 +9,10 @@
     <string name="action_appInfo">앱 정보</string>
     <string name="splash_name">Suitcase Genie</string>
     <string name="weight_popup">Notification</string>
-    <string name="app_version">1.30</string>
-    <string name="app_date">2024.10.25/14</string>
-    <string name="app_update_log">캐리어를 잠그는 기능이 새로 추가되었습니다!\n알림 기능 추가, UI/UX 디자인 개선, 버그 수정, 최적화 등</string>
+    <string name="app_version">ver 1.302</string>
+    <string name="app_date">2024.10.31/16</string>
+    <string name="app_update_log0">캐리어를 잠그는 기능이 새로 추가되었습니다!\n캐리어 알림 기능 추가, UI/UX 디자인 개선\n앱 정보 화면 개선</string>
+    <string name="app_update_log1">무게 데이터가 올바르지 않은 경우의 동작 수정\n캐리어와 통신 로직 수정\n앱 버그 수정, 최적화, 앱 튕김 현상 개선 등</string>
     <string name="loading" tools:ignore="TypographyEllipsis">로드중...</string>
 
     <!-- 네비게이션 바 -->
@@ -128,5 +129,14 @@
     <string name="auth_main">캐리어와 인증을 하지 않아 캐리어가 잠겨 있습니다.\n캐리어의 대부분 기능을 사용할 수 없습니다.</string>
     <string name="auth_sub">캐리어 인증 필요</string>
     <string name="text_change_password">New Password</string>
+
+    <!-- 다이얼로그 앱 정보 화면 -->
+    <string name="app_info_title">앱 정보</string>
+    <string name="app_info_ver">버전</string>
+    <string name="app_info_src_main">개발 소스</string>
+    <string name="app_info_src_sub">깃허브 공개</string>
+    <string name="app_info_title_main">메인 업데이트</string>
+    <string name="app_info_title_sub">마이너 업데이트</string>
+    <string name="app_info_okayBtn">확인</string>
 
 </resources>

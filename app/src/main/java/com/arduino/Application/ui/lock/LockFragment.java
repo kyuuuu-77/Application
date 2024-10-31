@@ -60,6 +60,7 @@ public class LockFragment extends Fragment {
         LottieAnimationView lottieLock = root.findViewById(R.id.lock_lottie);
 
         // ViewModel 선언
+        // 캐리어 잠금 상태 (Boolean)
         lockViewModel.getLockStatusLiveData().observe(getViewLifecycleOwner(), status -> {
             lockStatus = status;
             if (lockStatus) {   // 캐리어가 잠김 경우

@@ -37,6 +37,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.widget.Toolbar;
@@ -114,7 +115,7 @@ public class MainActivity extends AppCompatActivity {
     private InfoViewModel infoViewModel;
 
     // 프로그램 동작을 위한 전역 변수
-    private Boolean isDialogShowing = false;
+    private boolean isDialogShowing = false;
     private boolean isSuitcase = false;
     private boolean isAutoSearch = true;
     private boolean rssiSignal = false;
@@ -246,7 +247,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    // toolbar(자동검색,앱정보)
+    // toolbar (자동검색,앱정보)
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
@@ -254,15 +255,36 @@ public class MainActivity extends AppCompatActivity {
         if (id == R.id.action_settings) {
             showAutoSearchDialog();
         } else if (id == R.id.app_info) {
-            String version = getString(R.string.app_version);
-            String date = getString(R.string.app_date);
-            String update = getString(R.string.app_update_log);
-            String message = String.format("애플리케이션 버전 -> %s\n버전 날짜 -> %s\n업데이트 내역 -> %s", version, date, update);
-            new AlertDialog.Builder(this)
-                    .setTitle("앱 정보")
-                    .setMessage(message)
-                    .setPositiveButton("확인", (dialog, which) -> dialog.dismiss())
-                    .show();
+            LayoutInflater inflater = LayoutInflater.from(this);
+            View dialogView = inflater.inflate(R.layout.custom_dialog_info, null);
+
+            android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(this);
+            builder.setView(dialogView);
+            TextView main_update = dialogView.findViewById(R.id.update_main);
+            TextView sub_update = dialogView.findViewById(R.id.update_sub);
+            TextView app_ver = dialogView.findViewById(R.id.app_ver);
+            TextView app_date = dialogView.findViewById(R.id.app_date);
+            TextView github_link = dialogView.findViewById(R.id.text_link);
+
+            main_update.setText(getString(R.string.app_update_log0));
+            sub_update.setText(getString(R.string.app_update_log1));
+            app_ver.setText(getString(R.string.app_version));
+            app_date.setText(getString(R.string.app_date));
+
+            Button checkBtn = dialogView.findViewById(R.id.confirm);
+
+            android.app.AlertDialog dialog = builder.create();
+            dialog.setCancelable(true);
+            dialog.show();
+
+            github_link.setOnClickListener(v -> {
+                String github_url = "https://github.com/kyuuuu-77/Application";
+                Toast.makeText(this, "애플리케이션 소스가 있는 깃허브로 이동합니다!", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(github_url));
+                startActivity(intent);
+            });
+            checkBtn.setOnClickListener(v -> dialog.dismiss());
+
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -1040,11 +1062,14 @@ public class MainActivity extends AppCompatActivity {
                             infoViewModel.setBattery(Integer.parseInt(percentage));
                         }
                     }
-                } catch (NumberFormatException | NullPointerException | ArrayIndexOutOfBoundsException e) {
+                } catch (NumberFormatException | NullPointerException e) {
                     Toast.makeText(this, e.getMessage() + "에러가 발생했습니다.", Toast.LENGTH_SHORT).show();
                     infoViewModel.setBattery(-1);
                     infoViewModel.setBatteryVolt(-1);
                     Toast.makeText(getApplicationContext(), "배터리 정보 취득 실패", Toast.LENGTH_SHORT).show();
+                } catch (ArrayIndexOutOfBoundsException e) {    // 잘못된 데이터를 받은 경우에 통신 다시 시도 (통신이 잠시 끊긴 경우 발생)
+                    Toast.makeText(this, e.getMessage() + "통신 재시도", Toast.LENGTH_SHORT).show();
+                    checkBattery();
                 }
             });
         } else {
@@ -1092,7 +1117,13 @@ public class MainActivity extends AppCompatActivity {
                         weightViewModel.setWeightInfo(-999);
                     } else if (weight[0] > weight[1]) {      // 허용무게 초과시
                         weightViewModel.setWeightInfo(weight[0] - weight[1]);
-                    } else {                                // 무게 초과하지 않은 경우
+                    } else if (weight[0] <= 0) {     // 무게가 0이거나 음의 값일 경우
+                        weightViewModel.setWeightNow((double) -2);
+                        weightViewModel.setWeightInfo(-3);
+                        weight[0] = -0.1;
+                        Toast.makeText(this, "무게값이 올바르지 않습니다. 다시 측정하세요!", Toast.LENGTH_SHORT).show();
+                    }
+                    else {                                // 무게 초과하지 않은 경우
                         weightViewModel.setWeightInfo(0);
                     }
                 });
@@ -1362,9 +1393,13 @@ public class MainActivity extends AppCompatActivity {
     public boolean checkLock() {
         if (writeCharacteristic != null) {
             data = null;
-            sendData("check_lock");
+            sendData("menu 5");
 
             checkData();
+
+            if (data != null && data.trim().equals("auth_suc")) {
+                checkLock();
+            }
 
             if (data == null) {     // 통신이 제대로 되지 않은 경우
                 runOnUiThread(() -> Toast.makeText(this, "통신 이상으로 동작을 수행할 수 없습니다", Toast.LENGTH_SHORT).show());

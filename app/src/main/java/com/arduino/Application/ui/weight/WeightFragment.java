@@ -91,22 +91,27 @@ public class WeightFragment extends Fragment {
         navigationView = root.findViewById(R.id.nav_view_weight_fragment);
 
         // ViewModel 선언
-        // 측정된 무게 값
+        // 측정된 무게 값 (Double)
         weightViewModel.getWeightNowLiveData().observe(getViewLifecycleOwner(), weight -> {
             if (weight == -1) {
                 Text_weightNow.setText("-- Kg");
+                Text_weightNow.setTextColor(ContextCompat.getColor(requireActivity(), R.color.indigo_500));
+            } else if (weight == -2) {
+                Text_weightNow.setText("잘못된 무게");
+                Text_weightNow.setTextColor(ContextCompat.getColor(requireActivity(), R.color.red_500));
             } else {
                 Text_weightNow.setText(weight + " Kg");
+                Text_weightNow.setTextColor(ContextCompat.getColor(requireActivity(), R.color.indigo_500));
             }
         });
 
-        // 무게 설정 상태
+        // 무게 설정 상태 (Integer)
         weightViewModel.getWeightSetLiveData().observe(getViewLifecycleOwner(), target -> {
             weight[1] = target;
             Text_weightSet.setText("허용 무게 : " + target + " Kg");
         });
 
-        // 무게 초과 여부
+        // 무게 초과 여부 (Integer)
         weightViewModel.getWeightInfoLiveData().observe(getViewLifecycleOwner(), over -> {
             if (over == -999) {
                 Text_weightInfo.setText("32 Kg을 초과하였습니다");
@@ -120,13 +125,16 @@ public class WeightFragment extends Fragment {
             } else if (over == -2) {
                 Text_weightInfo.setText("무게 측정에 실패하였습니다");
                 Text_weightInfo.setTextColor(ContextCompat.getColor(requireActivity(), R.color.red_500));
+            } else if (over == -3) {
+                Text_weightInfo.setText("잘못된 무게 데이터입니다");
+                Text_weightInfo.setTextColor(ContextCompat.getColor(requireActivity(), R.color.pink_500));
             } else {
                 Text_weightInfo.setText(String.format("%.1f", over) + " Kg 초과하였습니다.");
                 Text_weightInfo.setTextColor(ContextCompat.getColor(requireActivity(), R.color.orange_500));
             }
         });
 
-        // 측정 버튼 상태
+        // 측정 버튼 상태 (Integer)
         weightViewModel.getWeightBtnLiveData().observe(getViewLifecycleOwner(), status -> {
             switch (status) {
                 case 1:
@@ -219,10 +227,6 @@ public class WeightFragment extends Fragment {
                         if (weight[0] > 32.0) {
                             showCustomDialog(3);
                             Text_weightNow.setTextColor(ContextCompat.getColor(requireActivity(), R.color.red_500));
-                        } else if (weight[0] > maxSet) {
-                            Text_weightNow.setTextColor(ContextCompat.getColor(requireActivity(), R.color.orange_500));
-                        } else {
-                            Text_weightNow.setTextColor(ContextCompat.getColor(requireActivity(), R.color.indigo_500));
                         }
                     }
                 });
@@ -280,6 +284,8 @@ public class WeightFragment extends Fragment {
                 Text_weightNow.setTextColor(ContextCompat.getColor(requireActivity(), R.color.red_500));
             } else if (weight[0] > maxSet) {    // 허용 무게를 초과한 경우
                 Text_weightNow.setTextColor(ContextCompat.getColor(requireActivity(), R.color.orange_500));
+            } else if (weight[0] < 0) {
+                Text_weightNow.setTextColor(ContextCompat.getColor(requireActivity(), R.color.red_500));
             } else {                            // 무게를 초과하지 않은 경우
                 Text_weightNow.setTextColor(ContextCompat.getColor(requireActivity(), R.color.indigo_500));
             }
