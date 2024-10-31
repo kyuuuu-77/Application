@@ -1099,6 +1099,7 @@ public class MainActivity extends AppCompatActivity {
                     } else if (weight[0] <= 0) {     // 무게가 0이거나 음의 값일 경우
                         weightViewModel.setWeightNow((double) -2);
                         weightViewModel.setWeightInfo(-3);
+                        weight[0] = -0.1;
                         Toast.makeText(this, "무게값이 올바르지 않습니다. 다시 측정하세요!", Toast.LENGTH_SHORT).show();
                     }
                     else {                                // 무게 초과하지 않은 경우
@@ -1371,9 +1372,13 @@ public class MainActivity extends AppCompatActivity {
     public boolean checkLock() {
         if (writeCharacteristic != null) {
             data = null;
-            sendData("check_lock");
+            sendData("menu 5");
 
             checkData();
+
+            if (data != null && data.trim().equals("auth_suc")) {
+                checkLock();
+            }
 
             if (data == null) {     // 통신이 제대로 되지 않은 경우
                 runOnUiThread(() -> Toast.makeText(this, "통신 이상으로 동작을 수행할 수 없습니다", Toast.LENGTH_SHORT).show());

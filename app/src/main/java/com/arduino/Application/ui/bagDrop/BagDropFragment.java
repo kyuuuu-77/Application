@@ -161,7 +161,11 @@ public class BagDropFragment extends Fragment {
                 Linear_time.setBackground(layout_orange);
                 Icon_time.setImageResource(R.drawable.bagdrop_not_checked);
             } else {
-                Text_checkTime.setText(time / 100 + "시 " + time % 100 + "분");
+                if (time % 100 == 0) {
+                    Text_checkTime.setText(time / 100 + "시 " + "정각");
+                } else {
+                    Text_checkTime.setText(time / 100 + "시 " + time % 100 + "분");
+                }
                 Linear_time.setBackground(layout_indigo);
                 Icon_time.setImageResource(R.drawable.bagdrop_checked);
             }
@@ -307,7 +311,7 @@ public class BagDropFragment extends Fragment {
             Toast.makeText(getActivity(), "백드랍 모드 동작중!", Toast.LENGTH_SHORT).show();
             Btn_bagDrop.setEnabled(true);
         }
-        if (checkConnection() == 9 && checkWeight() != 0 && arriveTime != -1) {
+        if (checkConnection() == 9 && checkWeight() > 0 && arriveTime != -1) {
             Toast.makeText(getActivity(), "백드랍 모드를 사용할 수 있습니다!", Toast.LENGTH_SHORT).show();
             Btn_bagDrop.setEnabled(true);
         } else {
@@ -315,7 +319,6 @@ public class BagDropFragment extends Fragment {
         }
     }
 
-    @SuppressLint("ResourceAsColor")
     public void onResume() {
         super.onResume();
 
@@ -323,7 +326,7 @@ public class BagDropFragment extends Fragment {
         bagDropViewModel.setConnectStatus(checkConnection() == 9);
 
         // 캐리어 무게 측정 여부 확인
-        if (checkWeight() <= 0) {    //무게가 0보다 작은 경우 (잘못된 값)
+        if (checkWeight() < 0) {    //무게가 0보다 작은 경우 (잘못된 값)
             bagDropViewModel.setWeight((double) -2);
         } else if (checkWeight() != 0 && checkWeight() != -1) {
             // 무게 측정결과가 0이나 -1이 아니라면 -> 한마디로 무게를 측정했으면

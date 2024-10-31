@@ -284,6 +284,8 @@ public class WeightFragment extends Fragment {
                 Text_weightNow.setTextColor(ContextCompat.getColor(requireActivity(), R.color.red_500));
             } else if (weight[0] > maxSet) {    // 허용 무게를 초과한 경우
                 Text_weightNow.setTextColor(ContextCompat.getColor(requireActivity(), R.color.orange_500));
+            } else if (weight[0] < 0) {
+                Text_weightNow.setTextColor(ContextCompat.getColor(requireActivity(), R.color.red_500));
             } else {                            // 무게를 초과하지 않은 경우
                 Text_weightNow.setTextColor(ContextCompat.getColor(requireActivity(), R.color.indigo_500));
             }
