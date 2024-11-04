@@ -969,16 +969,16 @@ public class MainActivity extends AppCompatActivity {
             } else {                // 도난 방지가 켜져 있으면
                 if (firstRssi > -12) {
                     runOnUiThread(() -> {
-                        if (rssi_global > -6) {
+                        if (rssi_global > -4) {
                             findViewModel.setDistance(0);
                             rssi_strength = 5;
-                        } else if (rssi_global > -12) {
+                        } else if (rssi_global > -8) {
                             findViewModel.setDistance(1);
                             rssi_strength = 4;
-                        } else if (rssi_global > -18) {
+                        } else if (rssi_global > -14) {
                             findViewModel.setDistance(2);
                             rssi_strength = 3;
-                        } else if (rssi_global > -25) {
+                        } else if (rssi_global > -18) {
                             findViewModel.setDistance(3);
                             rssi_strength = 2;
                         } else {
@@ -1131,7 +1131,7 @@ public class MainActivity extends AppCompatActivity {
                 runOnUiThread(() -> weightViewModel.setWeightBtn(2));
                 return weight[0];
             } catch (NumberFormatException | NullPointerException e) {
-                Toast.makeText(this, e.getMessage() + "에러가 발생했습니다.", Toast.LENGTH_SHORT).show();
+                runOnUiThread(() -> Toast.makeText(this, e.getMessage() + "에러가 발생했습니다.", Toast.LENGTH_SHORT).show());
                 return -1;
             }
         } else {

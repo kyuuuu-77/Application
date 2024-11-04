@@ -28,7 +28,7 @@
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:importantForAccessibility="no"
-                android:src="@drawable/lock_lock" />
+                android:src="@drawable/home_auth_off" />
 
             <TextView
                 android:id="@+id/dialog_title"
