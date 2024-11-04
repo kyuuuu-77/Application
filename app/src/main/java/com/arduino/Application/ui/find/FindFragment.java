@@ -165,7 +165,7 @@ public class FindFragment extends Fragment {
 
                 // 0 ~ 10 까지, length = 11
                 try {
-                    for (int i = values.length - 1; i > 0 ; i--) {
+                    for (int i = values.length - 1; i > 0; i--) {
                         values[i] = values[i - 1];
                     }
                     values[0] = getRSSIStrength();      // 현재의 신호세기 값을 입력
@@ -263,7 +263,7 @@ public class FindFragment extends Fragment {
         // 도난방지 버튼 상태 (Integer)
         findViewModel.getAlertBtnLiveData().observe(getViewLifecycleOwner(), status -> {
             if (status == -1) {     // 도난방지 사용불가
-                Btn_security.setText("도난방지 사용불가");      
+                Btn_security.setText("도난방지 사용불가");
                 Btn_security.setBackground(Btn_red);
                 Btn_security.setEnabled(false);
             } else if (status == 0) {       // 도난방지 켜기

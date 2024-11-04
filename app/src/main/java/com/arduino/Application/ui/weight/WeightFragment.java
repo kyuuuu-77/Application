@@ -201,6 +201,7 @@ public class WeightFragment extends Fragment {
         return root;
     }
 
+    // 무게 측정 메서드
     private void measureWeight() {
         // 로딩 애니메이션 (로티 애니메이션) 및 비동기 처리 구문
         LottieAnimationView lottieView = root.findViewById(R.id.lottieView);

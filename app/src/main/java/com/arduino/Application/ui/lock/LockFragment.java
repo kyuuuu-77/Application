@@ -62,21 +62,33 @@ public class LockFragment extends Fragment {
         // ViewModel 선언
         // 캐리어 잠금 상태 (Boolean)
         lockViewModel.getLockStatusLiveData().observe(getViewLifecycleOwner(), status -> {
-            lockStatus = status;
-            if (lockStatus) {   // 캐리어가 잠김 경우
+            int lockMode = status;
+            if (lockMode == 1) {   // 캐리어가 잠김 경우
                 Text_lock.setText("잠금 상태");
                 Text_lock.setTextColor(ContextCompat.getColor(requireActivity(), R.color.indigo_500));
                 Btn_lock.setText("캐리어 잠금 해제");
                 Btn_lock.setBackground(Btn_red);
+                Btn_lock.setEnabled(true);
 
                 lottieLock.setAnimation(R.raw.lock_on);
                 lottieLock.playAnimation();
                 lottieLock.setRepeatCount(LottieDrawable.INFINITE);
-            } else {        // 캐리어가 잠기지 않은 경우
+            } else if (lockMode == 0) {        // 캐리어가 잠기지 않은 경우
                 Text_lock.setText("잠금 해제 상태");
                 Text_lock.setTextColor(ContextCompat.getColor(requireActivity(), R.color.orange_500));
                 Btn_lock.setText("캐리어 잠그기");
                 Btn_lock.setBackground(Btn_blue);
+                Btn_lock.setEnabled(true);
+
+                lottieLock.setAnimation(R.raw.lock_off);
+                lottieLock.playAnimation();
+                lottieLock.setRepeatCount(1);
+            } else {    // 확인할 수 없는 경우 -1
+                Text_lock.setText("확인 불가");
+                Text_lock.setTextColor(ContextCompat.getColor(requireActivity(), R.color.red_500));
+                Btn_lock.setText("잠금기능 사용불가");
+                Btn_lock.setBackground(Btn_red);
+                Btn_lock.setEnabled(false);
 
                 lottieLock.setAnimation(R.raw.lock_off);
                 lottieLock.playAnimation();
@@ -105,10 +117,10 @@ public class LockFragment extends Fragment {
         });
         executorService.execute(() -> {
             // 백그라운드 작업 처리
-            if (mainActivity != null) {
-                lockStatus = mainActivity.checkLock();
-            }
             try {
+                if (mainActivity != null) {
+                    lockStatus = mainActivity.checkLock() == 1;
+                }
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
                 handler.post(() -> Toast.makeText(getActivity(), "로드중 에러 발생", Toast.LENGTH_SHORT).show());
