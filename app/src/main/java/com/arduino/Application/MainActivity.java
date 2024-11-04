@@ -129,7 +129,6 @@ public class MainActivity extends AppCompatActivity {
     private boolean isAuth = false;
     private boolean isOverlayShowing = false;
     private final double[] weight = {0.0, 0.0};   // 무게 값, 무게 타겟 값
-    private int isLock = 0;
     private String data;
     private String deviceName = null;   // ble 디바이스 이름
     private String getPassword;
@@ -138,6 +137,7 @@ public class MainActivity extends AppCompatActivity {
     private int rssi_strength = -1;
     private int firstRssi = 99;
     private int setHourMin = -1;
+    private int isLock = 0;
 
     // 윈도우, 툴바 및 메뉴 관련 변수
     Window window;
