@@ -232,7 +232,7 @@ public class BagDropFragment extends Fragment {
         timePicker.setOnTimeChangedListener((view, hourOfDay, minute) -> {
             selectedHour = hourOfDay;
             selectedMin = minute;
-            text_hour.setText(selectedHour + "시");
+            text_hour.setText(selectedHour + " 시");
             text_min.setText(selectedMin + " 분");
         });
 
