@@ -69,6 +69,7 @@ public class LockFragment extends Fragment {
                 Btn_lock.setText("캐리어 잠금 해제");
                 Btn_lock.setBackground(Btn_red);
                 Btn_lock.setEnabled(true);
+                lockStatus = true;
 
                 lottieLock.setAnimation(R.raw.lock_on);
                 lottieLock.playAnimation();
@@ -79,6 +80,7 @@ public class LockFragment extends Fragment {
                 Btn_lock.setText("캐리어 잠그기");
                 Btn_lock.setBackground(Btn_blue);
                 Btn_lock.setEnabled(true);
+                lockStatus = false;
 
                 lottieLock.setAnimation(R.raw.lock_off);
                 lottieLock.playAnimation();
@@ -89,6 +91,7 @@ public class LockFragment extends Fragment {
                 Btn_lock.setText("잠금기능 사용불가");
                 Btn_lock.setBackground(Btn_red);
                 Btn_lock.setEnabled(false);
+                lockStatus = false;
 
                 lottieLock.setAnimation(R.raw.lock_off);
                 lottieLock.playAnimation();

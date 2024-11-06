@@ -3,6 +3,7 @@ package com.arduino.Application.ui.find;
 import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.graphics.drawable.Drawable;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -355,28 +356,29 @@ public class FindFragment extends Fragment {
                 Btn_security.setEnabled(false);
             });
             executorService.execute(() -> {
-                // 백그라운드 작업 처리
-                if (onOff) {   // 벨 울리기 동작
-                    int status = mainActivity.ringBell(true);
-                    if (status == 1) {  // 벨 울리기 성공한 경우
-                        handler.post(() -> showCustomDialog(3));
-                    } else {    // 벨 울리기 실패한 경우
-                        handler.post(() -> showCustomDialog(2));
-                    }
-                } else {    // 벨 울리기 멈춤
-                    while (true) {
-                        int status = mainActivity.ringBell(false);
-                        if (status != 2) {
-                            SystemClock.sleep(5000);
-                            handler.post(() -> Toast.makeText(getActivity(), "벨 중지에 실패했습니다. 5초후에 다시 시도합니다.", Toast.LENGTH_SHORT).show());
-                        } else {
-                            break;
+                try {
+                    // 백그라운드 작업 처리
+                    if (onOff) {   // 벨 울리기 동작
+                        int status = mainActivity.ringBell(true);
+                        if (status == 1) {  // 벨 울리기 성공한 경우
+                            handler.post(() -> showCustomDialog(3));
+                        } else {    // 벨 울리기 실패한 경우
+                            handler.post(() -> showCustomDialog(2));
+                        }
+                    } else {    // 벨 울리기 멈춤
+                        while (true) {
+                            int status = mainActivity.ringBell(false);
+                            if (status != 2) {
+                                SystemClock.sleep(5000);
+                                handler.post(() -> Toast.makeText(getActivity(), "벨 중지에 실패했습니다. 5초후에 다시 시도합니다.", Toast.LENGTH_SHORT).show());
+                            } else {
+                                break;
+                            }
                         }
                     }
-                }
-                try {
+
                     Thread.sleep(1000);
-                } catch (InterruptedException e) {
+                } catch (InterruptedException | NullPointerException e) {
                     handler.post(() -> Toast.makeText(getActivity(), "로드중 에러 발생", Toast.LENGTH_SHORT).show());
                 }
 
