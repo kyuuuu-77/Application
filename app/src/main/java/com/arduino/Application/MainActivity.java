@@ -1070,8 +1070,7 @@ public class MainActivity extends AppCompatActivity {
                     infoViewModel.setBattery(-1);
                     infoViewModel.setBatteryVolt(-1);
                     Toast.makeText(getApplicationContext(), "배터리 정보 취득 실패", Toast.LENGTH_SHORT).show();
-                } catch (
-                        ArrayIndexOutOfBoundsException e) {    // 잘못된 데이터를 받은 경우에 통신 다시 시도 (통신이 잠시 끊긴 경우 발생)
+                } catch (ArrayIndexOutOfBoundsException e) {    // 잘못된 데이터를 받은 경우에 통신 다시 시도 (통신이 잠시 끊긴 경우 발생)
                     Toast.makeText(this, e.getMessage() + "통신 재시도", Toast.LENGTH_SHORT).show();
                     checkBattery();
                 }
@@ -1091,10 +1090,8 @@ public class MainActivity extends AppCompatActivity {
         if (writeCharacteristic != null) {      // 무게를 측정할 수 있으면
             // 무게값 초기화
             data = null;
-
             // 동작값을 먼저 전송 -> 캐리어에서 값 인식 후 무게값 전달
             sendData("menu 3");
-
             checkData();
 
             try {
@@ -1114,9 +1111,10 @@ public class MainActivity extends AppCompatActivity {
                 double tmp_weight = Double.parseDouble(data);
                 weight[0] = Math.round(tmp_weight*10) / 10.0;
                 weight[1] = maxSet;
-                runOnUiThread(() -> weightViewModel.setWeightNow(weight[0]));
 
                 runOnUiThread(() -> {
+                    weightViewModel.setWeightNow(weight[0]);
+
                     if (weight[0] > 32) {                    // 32kg 초과시
                         weightViewModel.setWeightInfo(-999);
                     } else if (weight[0] > weight[1]) {      // 허용무게 초과시
@@ -1129,9 +1127,10 @@ public class MainActivity extends AppCompatActivity {
                     } else {                                // 무게 초과하지 않은 경우
                         weightViewModel.setWeightInfo(0);
                     }
+
+                    weightViewModel.setWeightBtn(2);
                 });
 
-                runOnUiThread(() -> weightViewModel.setWeightBtn(2));
                 return weight[0];
             } catch (NumberFormatException | NullPointerException e) {
                 runOnUiThread(() -> Toast.makeText(this, e.getMessage() + "에러가 발생했습니다.", Toast.LENGTH_SHORT).show());
@@ -1224,10 +1223,8 @@ public class MainActivity extends AppCompatActivity {
     public int ringBell(boolean onOff) {
         if (writeCharacteristic != null) {      // 통신이 가능할 때
             if (onOff) {      // 벨 울리기 시작
-                // 데이터 값 초기화
                 data = null;
                 sendData("menu 1");
-
                 checkData();
 
                 try {
@@ -1254,15 +1251,19 @@ public class MainActivity extends AppCompatActivity {
             } else {   // 벨 울리기 중지 동작
                 data = null;
                 sendData("menu 2");
-
                 checkData();
 
-                if (data == null) {
-                    return -1;
-                } else if (data.trim().equals("ring_stop")) {   // 벨 울리기 중지 성공
-                    data = null;
-                    return 2;
-                } else {
+                try {
+                    if (data == null) {
+                        return -1;
+                    } else if (data.trim().equals("ring_stop")) {   // 벨 울리기 중지 성공
+                        data = null;
+                        return 2;
+                    } else {
+                        return -1;
+                    }
+                } catch (NullPointerException e) {
+                    runOnUiThread(() -> Toast.makeText(this, e.getMessage() + "에러가 발생했습니다", Toast.LENGTH_SHORT).show());
                     return -1;
                 }
             }
@@ -1272,7 +1273,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    // 연결 상태를 전달하는 메서드
+    // BLE 연결 상태를 전달하는 메서드
     public int checkConnection() {
         if (mBluetoothAdapter == null) {        // 블루투스를 지원하지 않는 디바이스
             runOnUiThread(() -> infoViewModel.setBleStatus(-1));
@@ -1319,7 +1320,6 @@ public class MainActivity extends AppCompatActivity {
     public void changeAuth(String password) {
         if (writeCharacteristic != null && mBluetoothAdapter.isEnabled()) {
             data = null;
-
             sendData("change_" + password);
             checkData();
 
@@ -1444,7 +1444,7 @@ public class MainActivity extends AppCompatActivity {
                         Toast.makeText(this, "잘못된 인자 값을 받았습니다", Toast.LENGTH_SHORT).show();
                     }
                 });
-            } catch(NullPointerException e) {
+            } catch (NullPointerException e) {
                 runOnUiThread(() -> Toast.makeText(this, e.getMessage() + "에러가 발생했습니다", Toast.LENGTH_SHORT).show());
             }
         } else {
@@ -1471,7 +1471,7 @@ public class MainActivity extends AppCompatActivity {
                         Toast.makeText(this, "잘못된 인자 값을 받았습니다", Toast.LENGTH_SHORT).show();
                     }
                 });
-            } catch(NullPointerException e) {
+            } catch (NullPointerException e) {
                 runOnUiThread(() -> Toast.makeText(this, e.getMessage() + "에러가 발생했습니다", Toast.LENGTH_SHORT).show());
             }
         } else {
@@ -1493,7 +1493,7 @@ public class MainActivity extends AppCompatActivity {
                 checkPermission();
             }
             bluetoothGatt.disconnect();     // 블루투스 연결을 끊고
-            bagDropHandler.postDelayed(bagDropRunnable, 10000);     // 핸들러 동작
+            bagDropHandler.postDelayed(bagDropRunnable, 5000);     // 핸들러 동작
 
             inactiveMenu(true);
         } else {
@@ -1594,7 +1594,7 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-    // 알람을 띄우는 메서드
+    // 알람을 띄우는 Notification 메서드
     private void createNotif(String channel_id, String big, String summary) {
         checkAlertPermission();
 
@@ -1644,7 +1644,7 @@ public class MainActivity extends AppCompatActivity {
         setUIColor();
         startLeScan();
 
-        if (!isAuth) {
+        if (!isAuth) {      // 인증되지 않은 경우 메뉴 비활성화
             inactiveMenu(false);
         } else {
             activeMenu(false);
