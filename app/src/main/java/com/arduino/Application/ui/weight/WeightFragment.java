@@ -218,20 +218,21 @@ public class WeightFragment extends Fragment {
                 Btn_weight.setEnabled(false);
             });
             executorService.execute(() -> {
-                // 백그라운드 작업 처리
-                weight[0] = mainActivity.measureWeight(maxSet);
-                handler.post(() -> {
-                    if (weight[0] == -1) {
-                        showCustomDialog(2);
-                        weightViewModel.setWeightBtn(-1);
-                    } else {
-                        if (weight[0] > 32.0) {
-                            showCustomDialog(3);
-                            Text_weightNow.setTextColor(ContextCompat.getColor(requireActivity(), R.color.red_500));
-                        }
-                    }
-                });
                 try {
+                    // 백그라운드 작업 처리
+                    weight[0] = mainActivity.measureWeight(maxSet);
+                    handler.post(() -> {
+                        if (weight[0] == -1) {
+                            showCustomDialog(2);
+                            weightViewModel.setWeightBtn(-1);
+                        } else {
+                            if (weight[0] > 32.0) {
+                                showCustomDialog(3);
+                                Text_weightNow.setTextColor(ContextCompat.getColor(requireActivity(), R.color.red_500));
+                            }
+                        }
+                    });
+
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
                     handler.post(() -> Toast.makeText(getActivity(), "로드중 에러 발생", Toast.LENGTH_SHORT).show());

@@ -152,15 +152,16 @@ public class LockFragment extends Fragment {
             Btn_lock.setEnabled(false);
         });
         executorService.execute(() -> {
-            // 백그라운드 작업 처리
-            if (mainActivity != null) {
-                if (onOff) {        // 잠그는 메서드
-                    mainActivity.setLock();
-                } else {            // 잠금 해제 메서드
-                    mainActivity.setUnlock();
-                }
-            }
             try {
+                // 백그라운드 작업 처리
+                if (mainActivity != null) {
+                    if (onOff) {        // 잠그는 메서드
+                        mainActivity.setLock();
+                    } else {            // 잠금 해제 메서드
+                        mainActivity.setUnlock();
+                    }
+                }
+
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
                 handler.post(() -> Toast.makeText(getActivity(), "로드중 에러 발생", Toast.LENGTH_SHORT).show());

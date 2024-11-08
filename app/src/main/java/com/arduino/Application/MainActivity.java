@@ -894,7 +894,7 @@ public class MainActivity extends AppCompatActivity {
                         runOnUiThread(() -> {
                             // 정확한 시각 추가
                             createNotif("bagdrop", "백드랍 모드 동작중", "백드랍 모드가 동작중입니다\n도착 예정시각인 "
-                                    + setHourMin / 100 + "시 " + setHourMin % 100 +"분까지 캐리어와 연결을 해제합니다");
+                                    + setHourMin / 100 + "시 " + setHourMin % 100 + "분까지 캐리어와 연결을 해제합니다");
                             homeViewModel.setHomeText("백드랍 모드를 사용중입니다");
                             Toast.makeText(getApplicationContext(), "백드랍 모드가 계속 동작 중입니다!", Toast.LENGTH_SHORT).show();
                         });
@@ -1109,7 +1109,7 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 double tmp_weight = Double.parseDouble(data);
-                weight[0] = Math.round(tmp_weight*10) / 10.0;
+                weight[0] = Math.round(tmp_weight * 10) / 10.0;
                 weight[1] = maxSet;
 
                 runOnUiThread(() -> {

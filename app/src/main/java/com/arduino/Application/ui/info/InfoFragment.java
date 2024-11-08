@@ -271,13 +271,14 @@ public class InfoFragment extends Fragment {
             Btn_reset.setEnabled(false);
         });
         executorService.execute(() -> {
-            // 백그라운드 작업 처리
-            checkBattery();
-            checkRssi();
-            checkAutoSearch();
-            checkSecurity();
-            checkConnection();
             try {
+                // 백그라운드 작업 처리
+                checkBattery();
+                checkRssi();
+                checkAutoSearch();
+                checkSecurity();
+                checkConnection();
+
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
                 handler.post(() -> Toast.makeText(getActivity(), "로드중 에러 발생", Toast.LENGTH_SHORT).show());
