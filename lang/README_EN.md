@@ -58,7 +58,7 @@ weight sensor, TP4056 (charge Module), 0.96 inch 128 X 64 LCD, 1KΩ resistance,
 
 #### Development Version
 - `2024.10.31 16:16 (KST) 1.302` (Master branch 기준)<br>
-- `2024.10.31 16:16 (KST) 1.302` (Development branch 기준)
+- `2024.11.05 0:22 (KST) 1.31` (Development branch 기준)
 
 ------
-📌 *updated 2024.10.31*
+📌 *updated 2024.11.05*

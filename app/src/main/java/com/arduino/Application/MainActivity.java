@@ -129,7 +129,6 @@ public class MainActivity extends AppCompatActivity {
     private boolean isAuth = false;
     private boolean isOverlayShowing = false;
     private final double[] weight = {0.0, 0.0};   // 무게 값, 무게 타겟 값
-    private boolean isLock = false;
     private String data;
     private String deviceName = null;   // ble 디바이스 이름
     private String getPassword;
@@ -138,6 +137,7 @@ public class MainActivity extends AppCompatActivity {
     private int rssi_strength = -1;
     private int firstRssi = 99;
     private int setHourMin = -1;
+    private int isLock = 0;
 
     // 윈도우, 툴바 및 메뉴 관련 변수
     Window window;
@@ -771,6 +771,7 @@ public class MainActivity extends AppCompatActivity {
 
             homeViewModel.setHomeText("스마트 캐리어에 연결되었습니다");
             homeViewModel.setConnectBtn(1);
+            weightViewModel.setWeightBtn(1);
             bagDropViewModel.setConnectStatus(true);
             infoViewModel.setBleStatus(9);
             Toast.makeText(getApplicationContext(), "스마트 캐리어에 연결됨", Toast.LENGTH_SHORT).show();
@@ -891,7 +892,9 @@ public class MainActivity extends AppCompatActivity {
                         handler_RSSI.removeCallbacks(runnable_RSSI);
                         bluetoothGatt.disconnect();
                         runOnUiThread(() -> {
-                            createNotif("bagdrop", "백드랍 모드 동작중", "백드랍 모드가 동작중입니다.\n도착 예정시각 10분 전까지 캐리어와 연결을 끊습니다.");
+                            // 정확한 시각 추가
+                            createNotif("bagdrop", "백드랍 모드 동작중", "백드랍 모드가 동작중입니다\n도착 예정시각인 "
+                                    + setHourMin / 100 + "시 " + setHourMin % 100 +"분까지 캐리어와 연결을 해제합니다");
                             homeViewModel.setHomeText("백드랍 모드를 사용중입니다");
                             Toast.makeText(getApplicationContext(), "백드랍 모드가 계속 동작 중입니다!", Toast.LENGTH_SHORT).show();
                         });
@@ -1043,7 +1046,7 @@ public class MainActivity extends AppCompatActivity {
 
             checkData();
             runOnUiThread(() -> {
-                try{
+                try {
                     // 배터리 정보를 받지 못했으면
                     if (data == null) {
                         infoViewModel.setBattery(-1);
@@ -1067,7 +1070,8 @@ public class MainActivity extends AppCompatActivity {
                     infoViewModel.setBattery(-1);
                     infoViewModel.setBatteryVolt(-1);
                     Toast.makeText(getApplicationContext(), "배터리 정보 취득 실패", Toast.LENGTH_SHORT).show();
-                } catch (ArrayIndexOutOfBoundsException e) {    // 잘못된 데이터를 받은 경우에 통신 다시 시도 (통신이 잠시 끊긴 경우 발생)
+                } catch (
+                        ArrayIndexOutOfBoundsException e) {    // 잘못된 데이터를 받은 경우에 통신 다시 시도 (통신이 잠시 끊긴 경우 발생)
                     Toast.makeText(this, e.getMessage() + "통신 재시도", Toast.LENGTH_SHORT).show();
                     checkBattery();
                 }
@@ -1108,9 +1112,9 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 double tmp_weight = Double.parseDouble(data);
-                weight[0] = tmp_weight;
+                weight[0] = Math.round(tmp_weight*10) / 10.0;
                 weight[1] = maxSet;
-                runOnUiThread(() -> weightViewModel.setWeightNow(tmp_weight));
+                runOnUiThread(() -> weightViewModel.setWeightNow(weight[0]));
 
                 runOnUiThread(() -> {
                     if (weight[0] > 32) {                    // 32kg 초과시
@@ -1122,8 +1126,7 @@ public class MainActivity extends AppCompatActivity {
                         weightViewModel.setWeightInfo(-3);
                         weight[0] = -0.1;
                         Toast.makeText(this, "무게값이 올바르지 않습니다. 다시 측정하세요!", Toast.LENGTH_SHORT).show();
-                    }
-                    else {                                // 무게 초과하지 않은 경우
+                    } else {                                // 무게 초과하지 않은 경우
                         weightViewModel.setWeightInfo(0);
                     }
                 });
@@ -1245,7 +1248,7 @@ public class MainActivity extends AppCompatActivity {
                         return -1;
                     }
                 } catch (NumberFormatException | NullPointerException e) {
-                    Toast.makeText(this, e.getMessage() + "에러가 발생했습니다", Toast.LENGTH_SHORT).show();
+                    runOnUiThread(() -> Toast.makeText(this, e.getMessage() + "에러가 발생했습니다", Toast.LENGTH_SHORT).show());
                     return -1;
                 }
             } else {   // 벨 울리기 중지 동작
@@ -1322,7 +1325,7 @@ public class MainActivity extends AppCompatActivity {
 
             runOnUiThread(() -> {
                 if (data == null) {         // 데이터를 못 받은 경우
-                        Toast.makeText(getApplicationContext(), "인증번호 변경 실패\n잠시 후 다시 시도하세요!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "인증번호 변경 실패\n잠시 후 다시 시도하세요!", Toast.LENGTH_SHORT).show();
                 } else {
                     if (data.trim().equals("change_suc")) {
                         getPassword = password;
@@ -1390,23 +1393,29 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // 캐리어 잠금 여부를 확인하는 메서드
-    public boolean checkLock() {
+    public int checkLock() {
         if (writeCharacteristic != null) {
             data = null;
             sendData("menu 5");
-
             checkData();
 
-            if (data != null && data.trim().equals("auth_suc")) {
-                checkLock();
-            }
+            try {
+                runOnUiThread(() -> {
+                    if (data != null && data.trim().equals("auth_suc")) {
+                        checkLock();
+                    }
 
-            if (data == null) {     // 통신이 제대로 되지 않은 경우
-                runOnUiThread(() -> Toast.makeText(this, "통신 이상으로 동작을 수행할 수 없습니다", Toast.LENGTH_SHORT).show());
-            } else if (data.trim().equals("lock_on")) {
-                isLock = true;
-            } else if (data.trim().equals("lock_off")){
-                isLock = false;
+                    if (data == null) {     // 통신이 제대로 되지 않은 경우
+                        Toast.makeText(this, "통신 이상으로 동작을 수행할 수 없습니다", Toast.LENGTH_SHORT).show();
+                        isLock = -1;
+                    } else if (data.trim().equals("lock_on")) {
+                        isLock = 1;
+                    } else if (data.trim().equals("lock_off")) {
+                        isLock = 0;
+                    }
+                });
+            } catch (NullPointerException e) {
+                runOnUiThread(() -> Toast.makeText(this, e.getMessage() + "에러가 발생했습니다", Toast.LENGTH_SHORT).show());
             }
         } else {
             runOnUiThread(() -> Toast.makeText(this, "캐리어와 연결을 확인하세요", Toast.LENGTH_SHORT).show());
@@ -1421,17 +1430,22 @@ public class MainActivity extends AppCompatActivity {
         if (writeCharacteristic != null) {
             data = null;
             sendData("lock_on");
-
             checkData();
 
-            if (data == null) {     // 통신이 제대로 되지 않은 경우
-                runOnUiThread(() -> Toast.makeText(this, "통신에 문제가 있어서 동작을 수행할 수 없습니다", Toast.LENGTH_SHORT).show());
-            } else if (data.trim().equals("lock_suc")) {
-                runOnUiThread(() -> Toast.makeText(this, "캐리어를 성공적으로 잠갔습니다!", Toast.LENGTH_SHORT).show());
-                isLock = true;
-                runOnUiThread(() -> lockViewModel.setLockStatus(true));
-            } else {
-                runOnUiThread(() -> Toast.makeText(this, "잘못된 인자 값을 받았습니다", Toast.LENGTH_SHORT).show());
+            try {
+                runOnUiThread(() -> {
+                    if (data == null) {     // 통신이 제대로 되지 않은 경우
+                        Toast.makeText(this, "통신에 문제가 있어서 동작을 수행할 수 없습니다", Toast.LENGTH_SHORT).show();
+                    } else if (data.trim().equals("lock_suc")) {
+                        Toast.makeText(this, "캐리어를 성공적으로 잠갔습니다!", Toast.LENGTH_SHORT).show();
+                        isLock = 1;
+                        lockViewModel.setLockStatus(isLock);
+                    } else {
+                        Toast.makeText(this, "잘못된 인자 값을 받았습니다", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            } catch(NullPointerException e) {
+                runOnUiThread(() -> Toast.makeText(this, e.getMessage() + "에러가 발생했습니다", Toast.LENGTH_SHORT).show());
             }
         } else {
             runOnUiThread(() -> Toast.makeText(this, "캐리어와 연결을 확인하세요", Toast.LENGTH_SHORT).show());
@@ -1443,17 +1457,22 @@ public class MainActivity extends AppCompatActivity {
         if (writeCharacteristic != null) {
             data = null;
             sendData("lock_off");
-
             checkData();
 
-            if (data == null) {     // 통신이 제대로 되지 않은 경우
-                runOnUiThread(() -> Toast.makeText(this, "통신에 문제가 있어서 동작을 수행할 수 없습니다", Toast.LENGTH_SHORT).show());
-            } else if (data.trim().equals("unlock_suc")) {
-                runOnUiThread(() -> Toast.makeText(this, "캐리어가 성공적으로 잠금 해제 되었습니다!", Toast.LENGTH_SHORT).show());
-                isLock = false;
-                runOnUiThread(() ->lockViewModel.setLockStatus(false));
-            } else {
-                runOnUiThread(() -> Toast.makeText(this, "잘못된 인자 값을 받았습니다", Toast.LENGTH_SHORT).show());
+            try {
+                runOnUiThread(() -> {
+                    if (data == null) {     // 통신이 제대로 되지 않은 경우
+                        Toast.makeText(this, "통신에 문제가 있어서 동작을 수행할 수 없습니다", Toast.LENGTH_SHORT).show();
+                    } else if (data.trim().equals("unlock_suc")) {
+                        Toast.makeText(this, "캐리어가 성공적으로 잠금 해제 되었습니다!", Toast.LENGTH_SHORT).show();
+                        isLock = 0;
+                        lockViewModel.setLockStatus(isLock);
+                    } else {
+                        Toast.makeText(this, "잘못된 인자 값을 받았습니다", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            } catch(NullPointerException e) {
+                runOnUiThread(() -> Toast.makeText(this, e.getMessage() + "에러가 발생했습니다", Toast.LENGTH_SHORT).show());
             }
         } else {
             runOnUiThread(() -> Toast.makeText(this, "캐리어와 연결을 확인하세요", Toast.LENGTH_SHORT).show());
@@ -1522,13 +1541,15 @@ public class MainActivity extends AppCompatActivity {
                                 bleAuthHandler.removeCallbacks(bleAuthRunnable);
                             } else {
                                 isAuth = false;
-                                handler.post(() ->Toast.makeText(getApplicationContext(), "잘못된 데이터를 받았습니다!", Toast.LENGTH_SHORT).show());
+                                handler.post(() -> Toast.makeText(getApplicationContext(), "잘못된 데이터를 받았습니다!", Toast.LENGTH_SHORT).show());
                                 bleAuthHandler.postDelayed(this, 3000);        // 3초 마다 인증 재시도
                             }
                         }
                         Thread.sleep(1000);
                     } catch (InterruptedException e) {
                         handler.post(() -> Toast.makeText(getApplicationContext(), "로드중 에러 발생", Toast.LENGTH_SHORT).show());
+                    } catch (NullPointerException e) {
+                        handler.post(() -> Toast.makeText(getApplicationContext(), e.getMessage() + "에러가 발생했습니다", Toast.LENGTH_SHORT).show());
                     }
                 });
             } else {
@@ -1633,10 +1654,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
 
-        if (manager != null) {  // 앱 종료시에 알림을 모두 지움
+        if (manager != null) {      // 앱 종료시에 알림을 모두 지움
             manager.cancelAll();
         }
-        if (mediaPlayer != null) {
+        if (mediaPlayer != null) {      // 미디어 플레이어 동작 중지
             mediaPlayer.stop();
             mediaPlayer.release();
             mediaPlayer = null;

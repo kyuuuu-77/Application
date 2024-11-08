@@ -6,13 +6,14 @@ import androidx.lifecycle.ViewModel;
 
 public class LockViewModel extends ViewModel {
 
-    private final MutableLiveData<Boolean> lockStatusLiveData = new MutableLiveData<>();
+    private final MutableLiveData<Integer> lockStatusLiveData = new MutableLiveData<>();
 
     // 잠금 여부
-    public LiveData<Boolean> getLockStatusLiveData() {
+    public LiveData<Integer> getLockStatusLiveData() {
         return lockStatusLiveData;
     }
-    public void setLockStatus(Boolean status) {
+
+    public void setLockStatus(Integer status) {
         lockStatusLiveData.setValue(status);
     }
 
