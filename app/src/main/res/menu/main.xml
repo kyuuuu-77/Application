@@ -11,4 +11,9 @@
         android:orderInCategory="200"
         android:title="@string/action_appInfo"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/calib_weight"
+        android:orderInCategory="300"
+        android:title="@string/action_calib"
+        app:showAsAction="never" />
 </menu>

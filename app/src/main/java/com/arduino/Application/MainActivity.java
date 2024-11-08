@@ -286,6 +286,8 @@ public class MainActivity extends AppCompatActivity {
             checkBtn.setOnClickListener(v -> dialog.dismiss());
 
             return true;
+        } else if (id == R.id.calib_weight) {
+            showCalibWeightDialog();
         }
         return super.onOptionsItemSelected(item);
     }
@@ -307,6 +309,52 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(this, "자동 검색이 꺼집니다.", Toast.LENGTH_SHORT).show();
                     dialog.dismiss();
                 }))
+                .show();
+    }
+
+    // 자동검색 팝업창을 띄우는 메서드
+    private void showCalibWeightDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("무게 영점 초기화")
+                .setMessage("현재 상태를 기준으로 영점을 초기화 할까요?")
+                .setPositiveButton("초기화", (dialog, which) -> {
+                    if (writeCharacteristic != null && mBluetoothAdapter.isEnabled()) {
+                        ExecutorService executorService = Executors.newSingleThreadExecutor();
+                        Handler handler = new Handler(Looper.getMainLooper());
+
+                        executorService.execute(() -> {
+                            // 백그라운드 작업 처리
+                            try {
+                                data = null;
+                                sendData("set 0");
+                                checkData();
+
+                                handler.post(() -> {
+                                    if (data == null) {
+                                        Toast.makeText(this, "영점 조절에 실패했습니다", Toast.LENGTH_SHORT).show();
+                                    } else {
+                                        if (data.equals("set0_suc")) {
+                                            Toast.makeText(this, "영점 초기화에 성공했습니다!", Toast.LENGTH_SHORT).show();
+                                        } else {
+                                            Toast.makeText(this, "잘못된 데이터를 받았습니다. 잠시후 다시 시도하세요", Toast.LENGTH_SHORT).show();
+                                        }
+                                    }
+                                });
+
+                                Thread.sleep(500);
+                            } catch (InterruptedException e) {
+                                handler.post(() -> Toast.makeText(getApplicationContext(), "로드중 에러 발생", Toast.LENGTH_SHORT).show());
+                            } catch (NullPointerException e) {
+                                handler.post(() -> Toast.makeText(getApplicationContext(), e.getMessage() + "에러가 발생했습니다", Toast.LENGTH_SHORT).show());
+                            }
+                        });
+                    } else {
+                        Toast.makeText(this, "캐리어에 연결한 후 다시 시도하세요", Toast.LENGTH_SHORT).show();
+                    }
+
+                    dialog.dismiss();
+                })
+                .setNegativeButton("취소", ((dialog, which) -> dialog.dismiss()))
                 .show();
     }
 
