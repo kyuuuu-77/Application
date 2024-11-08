@@ -333,7 +333,7 @@ public class MainActivity extends AppCompatActivity {
                                     if (data == null) {
                                         Toast.makeText(this, "영점 조절에 실패했습니다", Toast.LENGTH_SHORT).show();
                                     } else {
-                                        if (data.equals("set0_suc")) {
+                                        if (data.trim().equals("set0_suc")) {
                                             Toast.makeText(this, "영점 초기화에 성공했습니다!", Toast.LENGTH_SHORT).show();
                                         } else {
                                             Toast.makeText(this, "잘못된 데이터를 받았습니다. 잠시후 다시 시도하세요", Toast.LENGTH_SHORT).show();
