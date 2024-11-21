@@ -7,12 +7,13 @@
     <string name="nav_header_desc">네비게이션 해더</string>
     <string name="action_autoSearch">자동 검색</string>
     <string name="action_appInfo">앱 정보</string>
+    <string name="action_calib">무게 영점 초기화</string>
     <string name="splash_name">Suitcase Genie</string>
     <string name="weight_popup">Notification</string>
-    <string name="app_version">ver 1.31</string>
-    <string name="app_date">2024.11.05/01</string>
+    <string name="app_version">ver 1.311</string>
+    <string name="app_date">2024.11.08/12</string>
     <string name="app_update_log0">캐리어를 잠그는 기능이 새로 추가되었습니다!\n캐리어 알림 기능 추가, UI/UX 디자인 개선\n앱 정보 화면 개선</string>
-    <string name="app_update_log1">무게 데이터가 올바르지 않은 경우의 동작 수정\n캐리어와 통신 로직 수정\n앱 버그 수정, 최적화, 앱 튕김 현상 개선 등</string>
+    <string name="app_update_log1">무게 데이터가 올바르지 않은 경우의 동작 수정\n캐리어와 통신 로직 수정\n앱 버그 수정, 앱 코드 최적화, 튕김 현상 개선 등</string>
     <string name="loading" tools:ignore="TypographyEllipsis">로드중...</string>
 
     <!-- 네비게이션 바 -->
@@ -112,8 +113,8 @@
     <string name="dialogTime_hour">시</string>
     <string name="dialogTime_min">분</string>
     <string name="dialogTime_selectedTime">선택된 시간 :</string>
-    <string name="dialogTime_setHour">hh시</string>
-    <string name="dialogTime_setMin">mm분</string>
+    <string name="dialogTime_setHour">-- 시</string>
+    <string name="dialogTime_setMin">-- 분</string>
 
     <!-- 다이얼로그 배터리 부족 화면 -->
     <string name="battery_main">배터리 경고!</string>

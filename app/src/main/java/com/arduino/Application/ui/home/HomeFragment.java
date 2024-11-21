@@ -281,9 +281,9 @@ public class HomeFragment extends Fragment {
                             lottieView.playAnimation();
                         });
                         executorService.execute(() -> {
-                            // 백그라운드 작업 처리
-                            mainActivity.changeAuth(password);
                             try {
+                                // 백그라운드 작업 처리
+                                mainActivity.changeAuth(password);
                                 Thread.sleep(1000);
                             } catch (InterruptedException e) {
                                 handler.post(() -> Toast.makeText(getActivity(), "로드중 에러 발생", Toast.LENGTH_SHORT).show());

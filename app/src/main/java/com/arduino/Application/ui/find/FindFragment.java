@@ -3,7 +3,6 @@ package com.arduino.Application.ui.find;
 import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.graphics.drawable.Drawable;
-import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;

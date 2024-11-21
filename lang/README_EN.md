@@ -19,6 +19,7 @@ weight sensor, TP4056 (charge Module), 0.96 inch 128 X 64 LCD, 1KΩ resistance,
 #### App bar (Toolbar)
 - Automatic search setting
 - Check application information
+- Reset scale to zero
 #### Main Screen
 - Bluetooth(BLE) connection
 - Automatic search and connection
@@ -57,8 +58,9 @@ weight sensor, TP4056 (charge Module), 0.96 inch 128 X 64 LCD, 1KΩ resistance,
 ###### *Android 9.0 Pie (API 28) ~ Android 14 (API 34)* 
 
 #### Development Version
-- `2024.10.31 16:16 (KST) 1.302` (Master branch 기준)<br>
-- `2024.11.05 0:22 (KST) 1.31` (Development branch 기준)
+- `2024.10.31 16:16 (KST) 1.302` (Master branch)<br>
+- `2024.11.05 0:22 (KST) 1.31` (Development branch)<br>
+- `2024.11.08 12:37 (KST) 1.311` (nightly branch)
 
 ------
-📌 *updated 2024.11.05*
+📌 *updated 2024.11.08*
